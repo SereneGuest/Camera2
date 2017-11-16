@@ -1,0 +1,64 @@
+<resources>
+    <string name="app_name">Camera2</string>
+    <string name="action_photo_1">API 1 photo</string>
+    <string name="action_video_1">API 1 video</string>
+    <string name="action_photo_2">API 2 photo</string>
+    <string name="action_video_2">ApI 2 video</string>
+    <string name="action_dual_camera">Dual Camera2</string>
+
+    <string name="flashlight_auto">flashlight auto</string>
+    <string name="flashlight_on">flashlight on</string>
+    <string name="flashlight_off">flashlight off</string>
+    <string name="flashlight_torch">flashlight torch</string>
+
+    <string name="permission_tip">Tip</string>
+    <string name="permission_msg">request permission failed! \n
+            you can grant permission in setting interface -> Permissions</string>
+    <string name="permission_btn_setting">go to setting</string>
+    <string name="permission_btn_quit">quit</string>
+
+    <string name="mode_photo">Normal</string>
+    <string name="mode_dual_camera">Dual Camera</string>
+    <string name="mode_professional">Professional</string>
+
+    <string-array name="module_list">
+        <item>@string/mode_photo</item>
+        <item>@string/mode_dual_camera</item>
+        <item>@string/mode_professional</item>
+    </string-array>
+
+    <string name="settings_msg">Settings</string>
+    <string name="settings_camera">Camera Settings</string>
+    <string name="settings_disable">Camera Settings Not Available</string>
+
+    <!--for setting start-->
+    <string name="setting_camera_id">Camera ID</string>
+    <string name="setting_main_camera_id">Main Camera ID</string>
+    <string name="setting_aux_camera_id">Aux Camera ID</string>
+    <string name="setting_camera_id_0">Open Camera 0</string>
+    <string name="setting_camera_id_1">Open Camera 1</string>
+    <string name="setting_camera_id_2">Open Camera 2</string>
+    <string name="setting_camera_id_3">Open Camera 3</string>
+    <string name="setting_camera_value_0">0</string>
+    <string name="setting_camera_value_1">1</string>
+    <string name="setting_camera_value_2">2</string>
+    <string name="setting_camera_value_3">3</string>
+    <string-array name="setting_camera_id_entries">
+        <item>@string/setting_camera_id_0</item>
+        <item>@string/setting_camera_id_1</item>
+        <item>@string/setting_camera_id_2</item>
+        <item>@string/setting_camera_id_3</item>
+    </string-array>
+    <string-array name="setting_camera_id_entries_value">
+        <item>@string/setting_camera_value_0</item>
+        <item>@string/setting_camera_value_1</item>
+        <item>@string/setting_camera_value_2</item>
+        <item>@string/setting_camera_value_3</item>
+    </string-array>
+
+    <string name="setting_picture_size">Picture Size</string>
+
+    <string name="setting_preview_size">Preview Size</string>
+    <!--for setting start-->
+
+</resources>

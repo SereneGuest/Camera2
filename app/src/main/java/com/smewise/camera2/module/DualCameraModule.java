@@ -1,0 +1,208 @@
+package com.smewise.camera2.module;
+
+
+import android.graphics.SurfaceTexture;
+import android.hardware.camera2.CameraCharacteristics;
+import android.hardware.camera2.CameraDevice;
+import android.hardware.camera2.CaptureRequest;
+import android.net.Uri;
+import android.util.Log;
+import android.view.View;
+
+import com.smewise.camera2.Config;
+import com.smewise.camera2.R;
+import com.smewise.camera2.manager.Camera2Manager;
+import com.smewise.camera2.manager.CameraSettings;
+import com.smewise.camera2.manager.SessionManager;
+import com.smewise.camera2.manager.FocusOverlayManager;
+import com.smewise.camera2.ui.CameraBaseUI;
+import com.smewise.camera2.ui.DualCameraUI;
+import com.smewise.camera2.utils.FileSaver;
+import com.smewise.camera2.utils.MediaFunc;
+
+
+/**
+ * Created by wenzhe on 16-3-8.
+ */
+public class DualCameraModule extends CameraModule implements FileSaver.FileListener {
+
+    private static final String TAG = Config.TAG_PREFIX + "DualModule";
+
+    private SurfaceTexture mainSurfaceTexture;
+    private SurfaceTexture auxSurfaceTexture;
+
+    private DualCameraUI mUI;
+    private SessionManager sessionManager;
+
+    private FocusOverlayManager mFocusManager;
+
+    @Override
+    protected void init() {
+        mUI = new DualCameraUI(appContext, mainHandler, mCameraUiEvent);
+        mUI.setCoverView(getCoverView());
+        mFocusManager = new FocusOverlayManager(mUI.getFocusView(), mainHandler.getLooper());
+        mFocusManager.setListener(mCameraUiEvent);
+    }
+
+    @Override
+    public void start() {
+        String mainId = getSettingManager().getCameraId(CameraSettings.KEY_MAIN_CAMERA_ID);
+        String auxId = getSettingManager().getCameraId(CameraSettings.KEY_AUX_CAMERA_ID);
+        Camera2Manager.getManager().setCameraId(mainId, auxId);
+        Camera2Manager.getManager().setDualCameraMode(true);
+        Camera2Manager.getManager().openCamera(
+                appContext, cameraEvent, mainHandler, getCameraThread());
+        if (sessionManager == null) {
+            sessionManager = new SessionManager(appContext, mainHandler,
+                    mFocusManager, getSettingManager());
+        }
+        // when module changed , need update listener
+        fileSaver.setFileListener(this);
+        rootView.addView(mUI.getRootView());
+
+        isFirstPreviewLoaded = false;
+        isModulePause = false;
+        Log.d(TAG, "start module");
+    }
+
+    private Camera2Manager.Event cameraEvent = new Camera2Manager.Event() {
+        @Override
+        public void onCameraOpen(CameraDevice device) {
+            isCameraOpened = true;
+            if (isSurfaceAvailable) {
+                sessionManager.createPreviewSession(
+                        mainSurfaceTexture, auxSurfaceTexture, mCallback);
+            }
+        }
+    };
+
+    private boolean isMainComeBack = false;
+    private boolean isAuxComeBack = false;
+    private SessionManager.Callback mCallback = new SessionManager.Callback() {
+        @Override
+        public void onMainData(byte[] data, int width, int height) {
+            Log.e(TAG, "main data complete");
+            fileSaver.saveFile(width, height, getToolKit().getOrientation(), data, "MAIN");
+            isMainComeBack = true;
+            enableUiAfterShot();
+        }
+
+        @Override
+        public void onAuxData(byte[] data, int width, int height) {
+            Log.e(TAG, "aux data complete");
+            fileSaver.saveFile(width, height, getToolKit().getOrientation(), data, "AUX");
+            isAuxComeBack = true;
+            enableUiAfterShot();
+        }
+
+        @Override
+        public void onRequestComplete() {
+            hideCoverView();
+        }
+
+        @Override
+        public void onViewChange(int width, int height) {
+            mUI.setTextureUIPreviewSize(width, height);
+            mFocusManager.setPreviewSize(width, height);
+        }
+    };
+
+    private void enableUiAfterShot() {
+        if (isMainComeBack && isAuxComeBack) {
+            mUI.setUIClickable(true);
+            isMainComeBack = false;
+            isAuxComeBack = false;
+            sessionManager.restartPreviewAfterShot();
+        }
+    }
+
+    @Override
+    public void stop() {
+        isModulePause = true;
+        mFocusManager.hideFocusUI();
+        mFocusManager.removeDelayMessage();
+        sessionManager.release();
+        Camera2Manager.getManager().releaseCamera(getCameraThread());
+        isCameraOpened = false;
+        isFirstPreviewLoaded = false;
+        // remove ui
+        rootView.removeAllViews();
+        Log.d(TAG, "stop module");
+    }
+
+    @Override
+    public void onFileSaved(Uri uri, String path) {
+        mUI.setUIClickable(true);
+        mUI.setImgBitmap(appContext, mainHandler);
+    }
+
+    private void takePicture() {
+        mUI.setUIClickable(false);
+        sessionManager.sendCaptureRequest(getToolKit().getOrientation());
+    }
+
+    private CameraBaseUI.CameraUiEvent mCameraUiEvent = new CameraBaseUI.CameraUiEvent() {
+        @Override
+        public void onClick(View view) {
+            switch (view.getId()) {
+                case R.id.btn_shutter:
+                    takePicture();
+                    break;
+                case R.id.btn_setting:
+                    showSetting();
+                    break;
+                case R.id.thumbnail:
+                    MediaFunc.goToGallery(appContext);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        @Override
+        public void onPreviewUiReady(SurfaceTexture mainSurface, SurfaceTexture auxSurface) {
+            Log.d(TAG, "onSurfaceTextureAvailable");
+            mainSurfaceTexture = mainSurface;
+            auxSurfaceTexture = auxSurface;
+            isSurfaceAvailable = true;
+            if (isCameraOpened) {
+                sessionManager.createPreviewSession(mainSurface, auxSurface, mCallback);
+            }
+        }
+
+        @Override
+        public void onPreviewUiDestroy() {
+            isSurfaceAvailable = false;
+            Log.d(TAG, "onSurfaceTextureDestroyed");
+        }
+
+        @Override
+        public void onTouchToFocus(float x, float y) {
+            mFocusManager.startFocus(x, y);
+            CameraCharacteristics main =
+                    Camera2Manager.getManager().getCharacteristics(Config.MAIN_ID);
+            sessionManager.sendControlAfAeRequest(
+                    mFocusManager.getFocusArea(main, true), mFocusManager.getFocusArea(main,
+                            false));
+        }
+
+        @Override
+        public void resetTouchToFocus() {
+            if (!isModulePause) {
+                sessionManager.sendControlFocusModeRequest(
+                        CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+            }
+        }
+
+        @Override
+        public void onChangeModule(int index) {
+            setNewModule(index);
+        }
+
+        @Override
+        public <T> void onSettingChange(CaptureRequest.Key<T> key, T value) {
+
+        }
+    };
+
+}

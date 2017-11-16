@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="settings"
+        android:enabled="true"
+        android:icon="@mipmap/cover_icon_photo"
+        android:shortcutShortLabel="@string/settings_camera"
+        android:shortcutLongLabel="@string/settings_msg"
+        android:shortcutDisabledMessage="@string/settings_disable">
+
+        <intent
+            android:action="com.smewise.camera2.setting"
+            android:targetPackage="com.smewise.camera2"
+            android:targetClass="com.smewise.camera2.CameraActivity"/>
+        <categories android:name="android.shortcut.conversation"/>
+    </shortcut>
+</shortcuts>

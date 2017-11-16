@@ -1,0 +1,140 @@
+package com.smewise.camera2.utils;
+
+import android.content.Context;
+import android.graphics.ImageFormat;
+import android.graphics.Point;
+import android.graphics.SurfaceTexture;
+import android.hardware.camera2.CameraCharacteristics;
+import android.hardware.camera2.params.StreamConfigurationMap;
+import android.util.DisplayMetrics;
+import android.util.Size;
+import android.view.WindowManager;
+
+import com.smewise.camera2.Config;
+
+import java.util.Arrays;
+import java.util.Comparator;
+
+/**
+ * Created by wenzhe on 12/15/16.
+ */
+
+public class CameraUtil {
+
+    private final String TAG = this.getClass().getSimpleName();
+
+    public static double RATIO_4X3 = 1.333333333;
+    public static double RATIO_16X9 = 1.777777778;
+    public static double ASPECT_TOLERANCE = 0.00001;
+    public static final String SPLIT_TAG = "x";
+
+    private static void sortCamera2Size(Size[] sizes) {
+        Comparator<Size> comparator = new Comparator<Size>() {
+            @Override
+            public int compare(Size o1, Size o2) {
+                return o2.getWidth() * o2.getHeight() - o1.getWidth() * o1.getHeight();
+            }
+        };
+        Arrays.sort(sizes, comparator);
+    }
+
+    private static Size getLargestSizeByRatio(Size[] sizes, double ratio, int maxWidth) {
+        for (Size size : sizes) {
+            double tmp = size.getWidth() / (double)size.getHeight() - ratio;
+            if (size.getWidth() <= maxWidth && Math.abs(tmp) < ASPECT_TOLERANCE) {
+                return size;
+            }
+        }
+        return sizes[0];
+    }
+
+    public static Size getPictureSize(StreamConfigurationMap map, double ratio) {
+        Size[] supportSize = map.getOutputSizes(ImageFormat.JPEG);
+        sortCamera2Size(supportSize);
+        for (Size size : supportSize) {
+            double tmp = size.getWidth() / (double)size.getHeight() - ratio;
+            if (Math.abs(tmp) < ASPECT_TOLERANCE) {
+                return size;
+            }
+        }
+        return supportSize[0];
+    }
+    /* size format is "width x height"*/
+    public static String[] getPictureSizeList(StreamConfigurationMap map) {
+        Size[] supportSize = map.getOutputSizes(ImageFormat.JPEG);
+        sortCamera2Size(supportSize);
+        String[] sizeStr = new String[supportSize.length];
+        for (int i = 0; i < supportSize.length; i++) {
+            sizeStr[i] = supportSize[i].getWidth() + SPLIT_TAG + supportSize[i].getHeight();
+        }
+        return sizeStr;
+    }
+
+    public static String[] getPreviewSizeList(StreamConfigurationMap map) {
+        Size[] supportSize = map.getOutputSizes(SurfaceTexture.class);
+        sortCamera2Size(supportSize);
+        String[] sizeStr = new String[supportSize.length];
+        for (int i = 0; i < supportSize.length; i++) {
+            sizeStr[i] = supportSize[i].getWidth() + SPLIT_TAG + supportSize[i].getHeight();
+        }
+        return sizeStr;
+    }
+
+    public static Size getPreviewSize(StreamConfigurationMap map, double ratio) {
+        Size[] supportSize = map.getOutputSizes(SurfaceTexture.class);
+        sortCamera2Size(supportSize);
+        for (Size size : supportSize) {
+            double tmp = size.getWidth() / (double)size.getHeight() - ratio;
+            if (Math.abs(tmp) < ASPECT_TOLERANCE) {
+                return size;
+            }
+        }
+        return supportSize[0];
+    }
+
+    public static Size getPreviewUiSize(Context context, Size previewSize) {
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context
+                .WINDOW_SERVICE);
+        DisplayMetrics metrics = new DisplayMetrics();
+        windowManager.getDefaultDisplay().getMetrics(metrics);
+        double ratio = previewSize.getWidth() / (double) previewSize.getHeight();
+        int w = (int) Math.ceil(metrics.widthPixels * ratio);
+        int h = metrics.widthPixels;
+        return new Size(w, h);
+    }
+
+    public static int getJpgRotation(CameraCharacteristics c, int deviceRotation) {
+        int result ;
+        int sensorRotation = c.get(CameraCharacteristics.SENSOR_ORIENTATION);
+        if (c.get(CameraCharacteristics.LENS_FACING)
+                == CameraCharacteristics.LENS_FACING_BACK) {
+            result = (sensorRotation + deviceRotation) % 360;
+        } else {
+            result = (sensorRotation - deviceRotation + 360) % 360;
+        }
+        return result;
+    }
+
+    public static Point getDisplaySize(Context context) {
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context
+                .WINDOW_SERVICE);
+        Point point = new Point();
+        windowManager.getDefaultDisplay().getSize(point);
+        return point;
+    }
+
+    public static int getVirtualKeyHeight(Context context) {
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context
+                .WINDOW_SERVICE);
+        Point defaultPoint = new Point();
+        Point realPoint = new Point();
+        windowManager.getDefaultDisplay().getSize(defaultPoint);
+        windowManager.getDefaultDisplay().getRealSize(realPoint);
+        return realPoint.y - defaultPoint.y;
+    }
+
+    public static int getBottomBarHeight(int screenWidth) {
+        return (int) (screenWidth * (RATIO_16X9 - RATIO_4X3));
+    }
+
+}
