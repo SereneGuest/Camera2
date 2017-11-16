@@ -4,6 +4,7 @@ package com.smewise.camera2.module;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
+import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CaptureRequest;
 import android.net.Uri;
 import android.util.Log;
@@ -46,8 +47,10 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
 
     @Override
     public void start() {
+        String[] idList = Camera2Manager.getManager().getCameraIdList(appContext);
         String mainId = getSettingManager().getCameraId(CameraSettings.KEY_MAIN_CAMERA_ID);
-        String auxId = getSettingManager().getCameraId(CameraSettings.KEY_AUX_CAMERA_ID);
+        String auxId = getSettingManager().getCameraId(CameraSettings.KEY_AUX_CAMERA_ID,
+                idList[idList.length - 1]);
         Camera2Manager.getManager().setCameraId(mainId, auxId);
         Camera2Manager.getManager().setDualCameraMode(true);
         Camera2Manager.getManager().openCamera(

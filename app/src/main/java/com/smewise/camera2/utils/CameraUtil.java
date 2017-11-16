@@ -7,6 +7,7 @@ import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.Size;
 import android.view.WindowManager;
 
@@ -38,18 +39,8 @@ public class CameraUtil {
         Arrays.sort(sizes, comparator);
     }
 
-    private static Size getLargestSizeByRatio(Size[] sizes, double ratio, int maxWidth) {
-        for (Size size : sizes) {
-            double tmp = size.getWidth() / (double)size.getHeight() - ratio;
-            if (size.getWidth() <= maxWidth && Math.abs(tmp) < ASPECT_TOLERANCE) {
-                return size;
-            }
-        }
-        return sizes[0];
-    }
-
-    public static Size getPictureSize(StreamConfigurationMap map, double ratio) {
-        Size[] supportSize = map.getOutputSizes(ImageFormat.JPEG);
+    public static Size getPictureSize(StreamConfigurationMap map, double ratio, int format) {
+        Size[] supportSize = map.getOutputSizes(format);
         sortCamera2Size(supportSize);
         for (Size size : supportSize) {
             double tmp = size.getWidth() / (double)size.getHeight() - ratio;
@@ -59,9 +50,10 @@ public class CameraUtil {
         }
         return supportSize[0];
     }
+
     /* size format is "width x height"*/
-    public static String[] getPictureSizeList(StreamConfigurationMap map) {
-        Size[] supportSize = map.getOutputSizes(ImageFormat.JPEG);
+    public static String[] getPictureSizeList(StreamConfigurationMap map, int format) {
+        Size[] supportSize = map.getOutputSizes(format);
         sortCamera2Size(supportSize);
         String[] sizeStr = new String[supportSize.length];
         for (int i = 0; i < supportSize.length; i++) {
@@ -135,6 +127,58 @@ public class CameraUtil {
 
     public static int getBottomBarHeight(int screenWidth) {
         return (int) (screenWidth * (RATIO_16X9 - RATIO_4X3));
+    }
+
+    public static String[][] getOutputFormat(int[] supportFormat) {
+        String[][] formatStr = new String[2][supportFormat.length];
+        for (int i = 0; i < supportFormat.length; i++) {
+            formatStr[0][i] = format2String(supportFormat[i]);
+            formatStr[1][i] = String.valueOf(supportFormat[i]);
+        }
+        return formatStr;
+    }
+
+    public static String format2String(int format) {
+        switch (format) {
+            case ImageFormat.RGB_565:
+                return "RGB_565";
+            case ImageFormat.NV16:
+                return "NV16";
+            case ImageFormat.YUY2:
+                return "YUY2";
+            case ImageFormat.YV12:
+                return "YV12";
+            case ImageFormat.JPEG:
+                return "JPEG";
+            case ImageFormat.NV21:
+                return "NV21";
+            case ImageFormat.YUV_420_888:
+                return "YUV_420_888";
+            case ImageFormat.YUV_422_888:
+                return "YUV_422_888";
+            case ImageFormat.YUV_444_888:
+                return "YUV_444_888";
+            case ImageFormat.FLEX_RGB_888:
+                return "FLEX_RGB_888";
+            case ImageFormat.FLEX_RGBA_8888:
+                return "FLEX_RGBA_8888";
+            case ImageFormat.RAW_SENSOR:
+                return "RAW_SENSOR";
+            case ImageFormat.RAW_PRIVATE:
+                return "RAW_PRIVATE";
+            case ImageFormat.RAW10:
+                return "RAW10";
+            case ImageFormat.RAW12:
+                return "RAW12";
+            case ImageFormat.DEPTH16:
+                return "DEPTH16";
+            case ImageFormat.DEPTH_POINT_CLOUD:
+                return "DEPTH_POINT_CLOUD";
+            case ImageFormat.PRIVATE:
+                return "PRIVATE";
+            default:
+                return "ERROR FORMAT";
+        }
     }
 
 }

@@ -57,7 +57,7 @@
     </string-array>
 
     <string name="setting_picture_size">Picture Size</string>
-
+    <string name="setting_picture_format">Picture Format</string>
     <string name="setting_preview_size">Preview Size</string>
     <!--for setting start-->
 

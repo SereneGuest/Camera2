@@ -30,9 +30,9 @@ public class CameraSettings {
     public static final String KEY_AUX_PICTURE_SIZE = "pref_aux_picture_size";
     public static final String KEY_AUX_PREVIEW_SIZE = "pref_aux_preview_size";
     public static final String KEY_AUX_CAMERA_ID = "pref_aux_camera_id";
-
-    private static final String DEFAULT_VALUE = "NO_VALUE";
-    private static final String DEFAULT_CAMERA_ID = "0";
+    public static final String KEY_PICTURE_FORMAT = "pref_picture_format";
+    public static final String KEY_MAIN_PICTURE_FORMAT = "pref_main_picture_format";
+    public static final String KEY_AUX_PICTURE_FORMAT = "pref_aux_picture_format";
 
     private SharedPreferences mSharedPreference;
 
@@ -42,14 +42,46 @@ public class CameraSettings {
     }
 
     public String getCameraId(String key) {
-        return mSharedPreference.getString(key, DEFAULT_CAMERA_ID);
+        String defaultValue = KEY_AUX_CAMERA_ID.equals(key) ? Config.AUX_ID : Config.MAIN_ID;
+        return mSharedPreference.getString(key, defaultValue);
     }
 
+    public String getCameraId(String key, String defaultValue) {
+        return mSharedPreference.getString(key, defaultValue);
+    }
+
+
+    public int getPicFormat(String key) {
+        String format = mSharedPreference.getString(key, String.valueOf(Config.IMAGE_FORMAT));
+        return Integer.parseInt(format);
+    }
+
+    private int getPicFormatFormKey(String picSize) {
+        String formatKey;
+        switch (picSize) {
+            case KEY_PICTURE_SIZE:
+                formatKey = KEY_PICTURE_FORMAT;
+                break;
+            case KEY_MAIN_PICTURE_SIZE:
+                formatKey = KEY_MAIN_PICTURE_FORMAT;
+                break;
+            case KEY_AUX_PICTURE_SIZE:
+                formatKey = KEY_AUX_PICTURE_FORMAT;
+                break;
+            default:
+                formatKey = KEY_PICTURE_FORMAT;
+                break;
+        }
+        String format = mSharedPreference.getString(formatKey, String.valueOf(Config.IMAGE_FORMAT));
+        return Integer.parseInt(format);
+    }
+
+
     public Size getPictureSize(String key, StreamConfigurationMap map) {
-        String picStr = mSharedPreference.getString(key, DEFAULT_VALUE);
-        if (DEFAULT_VALUE.equals(picStr)) {
+        String picStr = mSharedPreference.getString(key, Config.NULL_VALUE);
+        if (Config.NULL_VALUE.equals(picStr)) {
             // preference not set, use default value
-            return CameraUtil.getPictureSize(map, CameraUtil.RATIO_4X3);
+            return CameraUtil.getPictureSize(map, Config.DEFAULT_RATIO, getPicFormatFormKey(key));
         } else {
             String[] size = picStr.split(CameraUtil.SPLIT_TAG);
             return new Size(Integer.parseInt(size[0]), Integer.parseInt(size[1]));
@@ -57,10 +89,10 @@ public class CameraSettings {
     }
 
     public Size getPreviewSize(String key, StreamConfigurationMap map) {
-        String preStr = mSharedPreference.getString(key, DEFAULT_VALUE);
-        if (DEFAULT_VALUE.equals(preStr)) {
+        String preStr = mSharedPreference.getString(key, Config.NULL_VALUE);
+        if (Config.NULL_VALUE.equals(preStr)) {
             // preference not set, use default value
-            return CameraUtil.getPreviewSize(map, CameraUtil.RATIO_4X3);
+            return CameraUtil.getPreviewSize(map, Config.DEFAULT_RATIO);
         } else {
             String[] size = preStr.split(CameraUtil.SPLIT_TAG);
             return new Size(Integer.parseInt(size[0]), Integer.parseInt(size[1]));

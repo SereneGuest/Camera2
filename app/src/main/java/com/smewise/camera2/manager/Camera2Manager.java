@@ -96,6 +96,18 @@ public class Camera2Manager implements CameraController {
         return null;
     }
 
+    public String[] getCameraIdList(Context context) {
+        if (mCameraManager == null) {
+            mCameraManager = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
+        }
+        try {
+            return mCameraManager.getCameraIdList();
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public CameraCharacteristics getCharacteristics(String id) {
         try {
             return mCameraManager.getCameraCharacteristics(id);
