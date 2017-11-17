@@ -59,6 +59,8 @@
     <string name="setting_picture_size">Picture Size</string>
     <string name="setting_picture_format">Picture Format</string>
     <string name="setting_preview_size">Preview Size</string>
+
+    <string name="setting_restart_preview">Restart preview after take picture </string>
     <!--for setting start-->
 
 </resources>

@@ -167,6 +167,9 @@ public class SettingFragment extends PreferenceFragment {
                             CameraSettings.KEY_AUX_PREVIEW_SIZE,
                             CameraSettings.KEY_AUX_PICTURE_FORMAT);
                     break;
+                case CameraSettings.KEY_RESTART_PREVIEW:
+                    // no need to set summary
+                    break;
                 default:
                     preference.setSummary(sharedPreferences.getString(key, "null"));
                     break;

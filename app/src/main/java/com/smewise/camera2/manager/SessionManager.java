@@ -62,6 +62,7 @@ public class SessionManager {
     private ImageReader mainImageReader;
     private ImageReader auxImageReader;
     private CaptureRequest mLatestPreviewRequest;
+    private CaptureRequest mAuxPreviewRequest;
     private int mLatestAfState = -1;
     private FocusOverlayManager mFocusManager;
     private CameraSettings mSettings;
@@ -111,8 +112,8 @@ public class SessionManager {
         mHelper.sendPreviewRequest(getPreviewRequestBuilder(mMainId, new Surface(mMainTexture)),
                 mainSession, mPreviewCallback);
         if (!isDualCamera()) {return;}
-        mHelper.sendPreviewRequest(
-                getPreviewRequestBuilder(mAuxId, new Surface(mAuxTexture)), auxSession, null);
+        mHelper.sendPreviewRequest(getPreviewRequestBuilder(mAuxId, new Surface(mAuxTexture)),
+                auxSession, mAuxPreviewCallback);
     }
 
     public void sendControlAfAeRequest(MeteringRectangle focusRect, MeteringRectangle
@@ -121,15 +122,15 @@ public class SessionManager {
                 focusRect, meteringRectangle, mainSession, mPreviewCallback);
         if (!isDualCamera()) {return;}
         mHelper.sendControlAfAeRequest(getPreviewRequestBuilder(mAuxId, new Surface(mAuxTexture)),
-                focusRect, meteringRectangle, auxSession, null);
+                focusRect, meteringRectangle, auxSession, mAuxPreviewCallback);
     }
 
     public void sendControlFocusModeRequest(int focusMode) {
         mHelper.sendFocusModeRequest(getPreviewRequestBuilder(
-                mMainId,new Surface(mMainTexture)),focusMode, mainSession, mPreviewCallback);
+                mMainId, new Surface(mMainTexture)), focusMode, mainSession, mPreviewCallback);
         if (!isDualCamera()) {return;}
         mHelper.sendFocusModeRequest(getPreviewRequestBuilder(
-                mAuxId, new Surface(mAuxTexture)), focusMode, auxSession, null);
+                mAuxId, new Surface(mAuxTexture)), focusMode, auxSession, mAuxPreviewCallback);
     }
 
     public void sendCaptureRequest(int deviceRotation) {
@@ -141,19 +142,22 @@ public class SessionManager {
         int auxRotation = CameraUtil.getJpgRotation(
                 getManager().getCharacteristics(mAuxId), deviceRotation);
         mHelper.sendCaptureRequest(getCaptureRequestBuilder(mAuxId, auxImageReader.getSurface()),
-                auxRotation, auxSession, mLatestPreviewRequest);
+                auxRotation, auxSession, mAuxPreviewRequest);
     }
 
     public void restartPreviewAfterShot() {
-        mHelper.sendRestartPreviewRequest(
-                getPreviewRequestBuilder(mMainId, new Surface(mMainTexture)), mainSession, null);
-        if (!isDualCamera()) {return;}
-        mHelper.sendRestartPreviewRequest(
-                getPreviewRequestBuilder(mAuxId, new Surface(mAuxTexture)), auxSession, null);
+        Log.d(TAG, "need start preview :" + mSettings.needStartPreview());
+        if (mSettings.needStartPreview()) {
+            sendPreviewRequest();
+        }
     }
 
     public <T> void sendControlSettingRequest(CaptureRequest.Key<T> key, T value) {
-
+        mHelper.sendControlSettingRequest(getPreviewRequestBuilder(mMainId,
+                new Surface(mMainTexture)), mainSession, mPreviewCallback, key, value);
+        if (!isDualCamera()) {return;}
+        mHelper.sendControlSettingRequest(getPreviewRequestBuilder(mAuxId,
+                new Surface(mAuxTexture)), auxSession, mAuxPreviewCallback, key, value);
     }
 
     /* need call after surface is available, after session configured
@@ -330,6 +334,23 @@ public class SessionManager {
             mLatestPreviewRequest = request;
             updateAfState(result);
             mCallback.onRequestComplete();
+        }
+    };
+
+    private CameraCaptureSession.CaptureCallback mAuxPreviewCallback = new CameraCaptureSession
+            .CaptureCallback() {
+
+        @Override
+        public void onCaptureProgressed(@NonNull CameraCaptureSession session, @NonNull
+                CaptureRequest request, @NonNull CaptureResult partialResult) {
+            super.onCaptureProgressed(session, request, partialResult);
+        }
+
+        @Override
+        public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull
+                CaptureRequest request, @NonNull TotalCaptureResult result) {
+            super.onCaptureCompleted(session, request, result);
+            mAuxPreviewRequest = request;
         }
     };
 

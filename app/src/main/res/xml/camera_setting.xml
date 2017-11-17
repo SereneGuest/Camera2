@@ -2,6 +2,16 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
+        android:title="Options">
+        <SwitchPreference
+            android:title="@string/setting_restart_preview"
+            android:key="pref_restart_preview"
+            android:summaryOff="false"
+            android:summaryOn="true"
+            android:defaultValue="true"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:title="Camera">
         <ListPreference
             android:title="@string/setting_camera_id"

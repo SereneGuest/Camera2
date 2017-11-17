@@ -110,7 +110,6 @@ public class RequestHelper {
             CameraCaptureSession session, CameraCaptureSession.CaptureCallback captureCallback) {
         try {
             builder.set(CaptureRequest.JPEG_ORIENTATION, rotation);
-            session.stopRepeating();
             session.capture(builder.build(), captureCallback, mHandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();
@@ -121,11 +120,14 @@ public class RequestHelper {
                                    CameraCaptureSession session, CaptureRequest captureRequest) {
         try {
             builder.set(CaptureRequest.JPEG_ORIENTATION, rotation);
+            // use same ae af mode as preview
             builder.set(CaptureRequest.CONTROL_AF_MODE,
                     captureRequest.get(CaptureRequest.CONTROL_AF_MODE));
+            builder.set(CaptureRequest.CONTROL_AE_MODE,
+                    captureRequest.get(CaptureRequest.CONTROL_AE_MODE));
+            // if control focus distance, need set distance when capture
             builder.set(CaptureRequest.LENS_FOCUS_DISTANCE,
                     captureRequest.get(CaptureRequest.LENS_FOCUS_DISTANCE));
-            session.stopRepeating();
             session.capture(builder.build(), null, mHandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();

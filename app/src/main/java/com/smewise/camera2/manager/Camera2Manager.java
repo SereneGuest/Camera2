@@ -202,11 +202,13 @@ public class Camera2Manager implements CameraController {
         @Override
         public void onDisconnected(@NonNull CameraDevice camera) {
             Log.w(TAG, "onDisconnected");
+            camera.close();
         }
 
         @Override
         public void onError(@NonNull CameraDevice camera, int error) {
             Log.e(TAG, "error occur when open camera :" + error);
+            camera.close();
         }
     };
 

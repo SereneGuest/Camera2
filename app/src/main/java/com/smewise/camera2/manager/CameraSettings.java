@@ -33,6 +33,7 @@ public class CameraSettings {
     public static final String KEY_PICTURE_FORMAT = "pref_picture_format";
     public static final String KEY_MAIN_PICTURE_FORMAT = "pref_main_picture_format";
     public static final String KEY_AUX_PICTURE_FORMAT = "pref_aux_picture_format";
+    public static final String KEY_RESTART_PREVIEW = "pref_restart_preview";
 
     private SharedPreferences mSharedPreference;
 
@@ -49,7 +50,6 @@ public class CameraSettings {
     public String getCameraId(String key, String defaultValue) {
         return mSharedPreference.getString(key, defaultValue);
     }
-
 
     public int getPicFormat(String key) {
         String format = mSharedPreference.getString(key, String.valueOf(Config.IMAGE_FORMAT));
@@ -76,6 +76,9 @@ public class CameraSettings {
         return Integer.parseInt(format);
     }
 
+    public boolean needStartPreview() {
+        return mSharedPreference.getBoolean(KEY_RESTART_PREVIEW, true);
+    }
 
     public Size getPictureSize(String key, StreamConfigurationMap map) {
         String picStr = mSharedPreference.getString(key, Config.NULL_VALUE);
