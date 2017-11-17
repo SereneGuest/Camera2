@@ -200,23 +200,27 @@ public class SessionManager {
         // default for single camera
         String picKey = CameraSettings.KEY_PICTURE_SIZE;
         String preKey = CameraSettings.KEY_PREVIEW_SIZE;
+        String formatKey = CameraSettings.KEY_PICTURE_FORMAT;
         if (id.equals(mAuxId) && isDualCamera()) {
             // dual camera, aux
             picKey = CameraSettings.KEY_AUX_PICTURE_SIZE;
             preKey = CameraSettings.KEY_AUX_PREVIEW_SIZE;
+            formatKey = CameraSettings.KEY_AUX_PICTURE_FORMAT;
         } else if (id.endsWith(mMainId) && isDualCamera()) {
             // dual camera, main
             picKey = CameraSettings.KEY_MAIN_PICTURE_SIZE;
             preKey = CameraSettings.KEY_MAIN_PREVIEW_SIZE;
+            formatKey = CameraSettings.KEY_MAIN_PICTURE_FORMAT;
         }
         Size previewSize = mSettings.getPreviewSize(preKey, map);
         texture.setDefaultBufferSize(previewSize.getWidth(), previewSize.getHeight());
         Size pictureSize = mSettings.getPictureSize(picKey, map);
         Surface surface = new Surface(texture);
+        int format = mSettings.getPicFormat(formatKey);
         if (id.equals(mMainId)) {
             Log.d(TAG, " main surface config");
             mainImageReader = ImageReader.newInstance(pictureSize.getWidth(),
-                    pictureSize.getHeight(), Config.IMAGE_FORMAT, 1);
+                    pictureSize.getHeight(), format, 1);
             mainImageReader.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() {
                 @Override
                 public void onImageAvailable(ImageReader reader) {
@@ -230,7 +234,7 @@ public class SessionManager {
         } else {
             Log.d(TAG, " aux surface config");
             auxImageReader = ImageReader.newInstance(pictureSize.getWidth(),
-                    pictureSize.getHeight(), Config.IMAGE_FORMAT, 1);
+                    pictureSize.getHeight(), format, 1);
             auxImageReader.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() {
                 @Override
                 public void onImageAvailable(ImageReader reader) {
