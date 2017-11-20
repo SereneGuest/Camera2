@@ -30,5 +30,8 @@
 
     <dimen name="setting_bar_height">60dp</dimen>
     <dimen name="setting_padding">15dp</dimen>
+    <dimen name="setting_catalog_padding">15dp</dimen>
+    <dimen name="setting_title_size">17sp</dimen>
+    <dimen name="setting_catalog_size">14sp</dimen>
     <dimen name="setting_text_size">16sp</dimen>
 </resources>

@@ -97,7 +97,7 @@ public class CoverView extends LinearLayout implements ViewTreeObserver.OnGlobal
 
 
     public void hideCoverWithAnimation() {
-        if (!mHideAnimator.isRunning()) {
+        if (!mHideAnimator.isRunning() && !mHideAnimator.isStarted()) {
             mHideAnimator.start();
         }
     }

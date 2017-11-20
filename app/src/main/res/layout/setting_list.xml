@@ -7,7 +7,7 @@
         android:layout_width="match_parent"
         android:text="@string/settings_msg"
         android:gravity="center_vertical"
-        android:textSize="@dimen/setting_text_size"
+        android:textSize="@dimen/setting_title_size"
         android:paddingStart="@dimen/setting_padding"
         android:textColor="@android:color/background_light"
         android:layout_height="@dimen/setting_bar_height"

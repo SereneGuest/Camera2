@@ -28,13 +28,13 @@
     </string-array>
 
     <string name="settings_msg">Settings</string>
-    <string name="settings_camera">Camera Settings</string>
-    <string name="settings_disable">Camera Settings Not Available</string>
+    <string name="settings_camera">Camera settings</string>
+    <string name="settings_disable">Camera settings not available</string>
 
     <!--for setting start-->
-    <string name="setting_camera_id">Camera ID</string>
-    <string name="setting_main_camera_id">Main Camera ID</string>
-    <string name="setting_aux_camera_id">Aux Camera ID</string>
+    <string name="setting_camera_id">Camera id</string>
+    <string name="setting_main_camera_id">Main camera id</string>
+    <string name="setting_aux_camera_id">Aux camera id</string>
     <string name="setting_camera_id_0">Open Camera 0</string>
     <string name="setting_camera_id_1">Open Camera 1</string>
     <string name="setting_camera_id_2">Open Camera 2</string>
@@ -56,9 +56,9 @@
         <item>@string/setting_camera_value_3</item>
     </string-array>
 
-    <string name="setting_picture_size">Picture Size</string>
-    <string name="setting_picture_format">Picture Format</string>
-    <string name="setting_preview_size">Preview Size</string>
+    <string name="setting_picture_size">Picture size</string>
+    <string name="setting_picture_format">Picture format</string>
+    <string name="setting_preview_size">Preview size</string>
 
     <string name="setting_restart_preview">Restart preview after take picture </string>
     <!--for setting start-->
