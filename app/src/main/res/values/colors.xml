@@ -2,12 +2,12 @@
 <resources>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorAccent">#209f55</color>
 
     <color name="focus_success">#13ce67</color>
     <color name="focus_failed">#ce132c</color>
     <color name="focus_normal">#e7d5fa</color>
-    <color name="outer_circle_color">#8844ef</color>
+    <color name="outer_circle_color">@color/colorAccent</color>
     <color name="inner_circle_color">#ffffff</color>
     <color name="color_record">#ef5d5d</color>
     <color name="color_background">#1b1b1b</color>

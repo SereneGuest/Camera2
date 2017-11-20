@@ -252,11 +252,16 @@ public class SessionManager {
 
     private byte[] getByteFromReader(ImageReader reader) {
         Image image = reader.acquireLatestImage();
-        ByteBuffer buffer = image.getPlanes()[0].getBuffer();
-        byte[] bytes = new byte[buffer.remaining()];
-        buffer.get(bytes);
+        int totalSize = 0;
+        for (Image.Plane plane : image.getPlanes()) {
+            totalSize += plane.getBuffer().remaining();
+        }
+        ByteBuffer totalBuffer = ByteBuffer.allocate(totalSize);
+        for (Image.Plane plane : image.getPlanes()) {
+            totalBuffer.put(plane.getBuffer());
+        }
         image.close();
-        return bytes;
+        return totalBuffer.array();
     }
 
     private void setSessionCallback() {
