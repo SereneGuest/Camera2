@@ -37,7 +37,9 @@ public class RequestHelper {
         int antiBandingMode = mCapability.getSupportedAntiBandingMode(session.getDevice().getId(),
                 CaptureRequest.CONTROL_AE_ANTIBANDING_MODE_AUTO);
         try {
-            builder.set(CaptureRequest.CONTROL_AE_ANTIBANDING_MODE, antiBandingMode);
+            if (antiBandingMode != -1) {
+                builder.set(CaptureRequest.CONTROL_AE_ANTIBANDING_MODE, antiBandingMode);
+            }
             builder.set(CaptureRequest.CONTROL_AF_MODE, afMode);
             builder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO);
             builder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_IDLE);
@@ -139,8 +141,8 @@ public class RequestHelper {
             CaptureRequest.Key<T> key, T value) {
         // control focus distance
         if (key.getName().equals(CaptureRequest.LENS_FOCUS_DISTANCE.getName())) {
-            float focusLength = mCapability.getMiniMumFocusDistance(session.getDevice().getId());
-            if (focusLength > 0) {
+            Float focusLength = mCapability.getMiniMumFocusDistance(session.getDevice().getId());
+            if (focusLength != null && focusLength > 0) {
                 builder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_OFF);
                 builder.set(CaptureRequest.LENS_FOCUS_DISTANCE, (Float) value * focusLength);
             } else {

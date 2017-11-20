@@ -36,7 +36,7 @@ public class CameraCapability {
         }
     }
 
-    public int[] getAvailableAFMode(String cameraId) {
+    private int[] getAvailableAFMode(String cameraId) {
         return getCharacteristics(cameraId).get(CameraCharacteristics.CONTROL_AF_AVAILABLE_MODES);
     }
 
@@ -52,20 +52,23 @@ public class CameraCapability {
     }
 
     public boolean isAERegionSupported(String cameraId) {
-        int aeRegionNum = getCharacteristics(cameraId).get(CameraCharacteristics
+        Integer aeRegionNum = getCharacteristics(cameraId).get(CameraCharacteristics
                 .CONTROL_MAX_REGIONS_AE);
-        return aeRegionNum > 0;
+        return aeRegionNum != null && aeRegionNum > 0;
     }
 
     public boolean isAFRegionSupported(String cameraId) {
-        int aeRegionNum = getCharacteristics(cameraId).get(CameraCharacteristics
+        Integer afRegionNum = getCharacteristics(cameraId).get(CameraCharacteristics
                 .CONTROL_MAX_REGIONS_AF);
-        return aeRegionNum > 0;
+        return afRegionNum != null && afRegionNum > 0;
     }
 
     public int getSupportedAntiBandingMode(String cameraId, int targetMode) {
         int[] listSupported = getCharacteristics(cameraId).get(CameraCharacteristics
                 .CONTROL_AE_AVAILABLE_ANTIBANDING_MODES);
+        if (listSupported == null) {
+            return -1;
+        }
         for (int support : listSupported) {
             if (support == targetMode) {
                 return targetMode;
@@ -75,28 +78,9 @@ public class CameraCapability {
         return listSupported[0];
     }
 
-    public boolean isSupportedAutoFocus(String cameraId) {
-        float focusLens = getCharacteristics(cameraId).get(CameraCharacteristics
-                .LENS_INFO_MINIMUM_FOCUS_DISTANCE);
-        return focusLens > 0;
-    }
-
-    public float getMiniMumFocusDistance(String cameraId) {
+    public Float getMiniMumFocusDistance(String cameraId) {
         return getCharacteristics(cameraId).get(CameraCharacteristics
                 .LENS_INFO_MINIMUM_FOCUS_DISTANCE);
     }
 
-    public float[] getSupportedAperture(String cameraId) {
-        return getCharacteristics(cameraId).get(CameraCharacteristics
-                .LENS_INFO_AVAILABLE_APERTURES);
-    }
-
-    public float[] getSupportedFocusLength(String cameraId) {
-        float[] focusLens = getCharacteristics(cameraId).get(CameraCharacteristics
-                .LENS_INFO_AVAILABLE_FOCAL_LENGTHS);
-        for (float length : focusLens) {
-            Log.d(TAG, "support lens: " + length);
-        }
-        return focusLens;
-    }
 }
