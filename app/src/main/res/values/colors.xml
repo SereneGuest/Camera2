@@ -18,7 +18,7 @@
 
     <color name="tab_text_color">#6bffffff</color>
     <color name="tab_selected_color">#ffffff</color>
-    <color name="tab_background">#68000000</color>
+    <color name="tab_background">#3b000000</color>
 
     <color name="button_color_normal">#68000000</color>
 

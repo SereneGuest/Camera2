@@ -21,17 +21,14 @@ import com.smewise.camera2.R;
 public class CoverView extends LinearLayout implements ViewTreeObserver.OnGlobalLayoutListener {
 
     private ImageView mCoverIcon;
-    private TextView mTextView;
-
     private Animator mShowAnimator;
     private Animator mHideAnimator;
+    private boolean mIsAnimatorEnd = true;
     private int[] mModuleSrc = new int[]{
             R.mipmap.cover_icon_photo,
             R.mipmap.cover_icon_dual,
             R.mipmap.cover_icon_photo,
     };
-    private String[] mModuleString;
-
 
     public CoverView(Context context) {
         this(context, null);
@@ -45,34 +42,24 @@ public class CoverView extends LinearLayout implements ViewTreeObserver.OnGlobal
         super(context, attrs, defStyleAttr);
         getViewTreeObserver().addOnGlobalLayoutListener(this);
         setClickable(true);
-        mModuleString = getResources().getStringArray(R.array.module_list);
     }
 
     public void setMode(int index) {
-        if (mTextView != null && mCoverIcon != null) {
-            mTextView.setText(mModuleString[index]);
+        if (mCoverIcon != null) {
             mCoverIcon.setImageResource(mModuleSrc[index]);
         }
-    }
-
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-        mCoverIcon = (ImageView) this.findViewById(R.id.cover_icon);
-        mTextView = (TextView) this.findViewById(R.id.cover_text);
     }
 
     private Animator createAnimation(boolean isShow) {
         Animator animator;
         if (isShow) {
-            //5个参数作用分别是 操作的view  圆心x坐标 圆心y坐标 动画开始半径 动画结束半径
             animator = ViewAnimationUtils.createCircularReveal(
                     this, getWidth() / 2, getHeight() / 2, 0, getHeight() / 2);
         } else {
             animator = ViewAnimationUtils.createCircularReveal(
                     this, getWidth() / 2, getHeight() / 2, getHeight() / 2, 0);
         }
-        animator.setDuration(700);
+        animator.setDuration(600);
         return animator;
     }
 
@@ -81,13 +68,13 @@ public class CoverView extends LinearLayout implements ViewTreeObserver.OnGlobal
         animator.setTarget(this);
         animator.setPropertyName("alpha");
         animator.setFloatValues(0, 1.0f);
-        animator.setDuration(500);
+        animator.setDuration(300);
         return animator;
     }
 
     public void showCoverWithAnimation() {
         if (!mShowAnimator.isRunning()) {
-            //mShowAnimator.start();
+            mShowAnimator.start();
             setVisibility(VISIBLE);
         }
     }
@@ -97,13 +84,15 @@ public class CoverView extends LinearLayout implements ViewTreeObserver.OnGlobal
 
 
     public void hideCoverWithAnimation() {
-        if (!mHideAnimator.isRunning() && !mHideAnimator.isStarted()) {
+        if (mIsAnimatorEnd) {
+            mIsAnimatorEnd = false;
             mHideAnimator.start();
         }
     }
 
     @Override
     public void onGlobalLayout() {
+        mCoverIcon = (ImageView) this.findViewById(R.id.cover_icon);
         mShowAnimator = createAlphaAnimation();
         mHideAnimator = createAnimation(false);
         mHideAnimator.addListener(new AnimatorListenerAdapter() {
@@ -111,6 +100,7 @@ public class CoverView extends LinearLayout implements ViewTreeObserver.OnGlobal
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
                 CoverView.this.setVisibility(GONE);
+                mIsAnimatorEnd = true;
             }
         });
     }

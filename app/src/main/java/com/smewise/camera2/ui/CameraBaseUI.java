@@ -100,6 +100,8 @@ public abstract class CameraBaseUI implements GestureTextureView.GestureListener
         if (mVirtualKeyHeight == 0 && is4x3) {
             params.setMargins(0, mTopBarHeight, 0, 0);
             bottomHeight -= mTopBarHeight;
+        } else if (mVirtualKeyHeight == 0) {
+            bottomHeight -= mTopBarHeight;
         }
         mPreviewContainer.setLayoutParams(params);
         //update bottom bar size

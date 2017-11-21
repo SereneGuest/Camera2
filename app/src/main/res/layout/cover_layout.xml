@@ -15,12 +15,6 @@
         android:id="@+id/cover_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/cover_icon_margin"/>
+        android:src="@mipmap/cover_icon_photo"/>
 
-    <TextView
-        android:id="@+id/cover_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:textColor="@color/colorAccent"/>
 </com.smewise.camera2.ui.CoverView>
