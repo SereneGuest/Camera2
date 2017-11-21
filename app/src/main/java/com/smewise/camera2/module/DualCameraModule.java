@@ -145,22 +145,6 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
     }
 
     private CameraBaseUI.CameraUiEvent mCameraUiEvent = new CameraBaseUI.CameraUiEvent() {
-        @Override
-        public void onClick(View view) {
-            switch (view.getId()) {
-                case R.id.btn_shutter:
-                    takePicture();
-                    break;
-                case R.id.btn_setting:
-                    showSetting();
-                    break;
-                case R.id.thumbnail:
-                    MediaFunc.goToGallery(appContext);
-                    break;
-                default:
-                    break;
-            }
-        }
 
         @Override
         public void onPreviewUiReady(SurfaceTexture mainSurface, SurfaceTexture auxSurface) {
@@ -198,14 +182,38 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
         }
 
         @Override
-        public void onChangeModule(int index) {
-            setNewModule(index);
-        }
-
-        @Override
         public <T> void onSettingChange(CaptureRequest.Key<T> key, T value) {
 
         }
+
+        @Override
+        public <T> void onAction(String type, T value) {
+            switch (type) {
+                case CameraBaseUI.ACTION_CLICK:
+                    handleClick((View) value);
+                    break;
+                case CameraBaseUI.ACTION_CHANGE_MODULE:
+                    setNewModule((Integer) value);
+                    break;
+                case CameraBaseUI.ACTION_SWITCH_CAMERA:
+                    break;
+                default:
+                    break;
+            }
+        }
     };
 
+    private void handleClick(View view) {
+        switch (view.getId()) {
+            case R.id.btn_shutter:
+                takePicture();
+                break;
+            case R.id.btn_setting:
+                showSetting();
+                break;
+            case R.id.thumbnail:
+                MediaFunc.goToGallery(appContext);
+                break;
+        }
+    }
 }

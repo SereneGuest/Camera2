@@ -35,10 +35,13 @@ public abstract class CameraBaseUI implements GestureTextureView.GestureListener
     private LinearLayout mBottomContainer;
     private FocusView mFocusView;
     private CoverView mCoverView;
+    // ui action
+    public static final String ACTION_CLICK = "camera.action.click";
+    public static final String ACTION_CHANGE_MODULE = "camera.action.change.module";
+    public static final String ACTION_SWITCH_CAMERA = "camera.action.switch.camera";
 
 
     public interface CameraUiEvent {
-        void onClick(View view);
 
         void onPreviewUiReady(SurfaceTexture mainSurface, SurfaceTexture auxSurface);
 
@@ -48,9 +51,9 @@ public abstract class CameraBaseUI implements GestureTextureView.GestureListener
 
         void resetTouchToFocus();
 
-        void onChangeModule(int index);
-
         <T> void onSettingChange(CaptureRequest.Key<T> key, T value);
+
+        <T> void onAction(String type, T value);
     }
 
     CameraBaseUI(Context context, Handler handler, CameraBaseUI.CameraUiEvent event) {
@@ -141,7 +144,7 @@ public abstract class CameraBaseUI implements GestureTextureView.GestureListener
     /* View.OnClickListener*/
     @Override
     public void onClick(View v) {
-        uiEvent.onClick(v);
+        uiEvent.onAction(ACTION_CLICK, v);
     }
 
     /* GestureTextureView.GestureListener */
@@ -155,7 +158,7 @@ public abstract class CameraBaseUI implements GestureTextureView.GestureListener
         int newIndex = ModuleManager.getCurrentIndex() + 1;
         if (ModuleManager.isValidIndex(newIndex)) {
             mCoverView.setAlpha(1.0f);
-            uiEvent.onChangeModule(newIndex);
+            uiEvent.onAction(ACTION_CHANGE_MODULE, newIndex);
         }
     }
 
@@ -164,7 +167,7 @@ public abstract class CameraBaseUI implements GestureTextureView.GestureListener
         int newIndex = ModuleManager.getCurrentIndex() - 1;
         if (ModuleManager.isValidIndex(newIndex)) {
             mCoverView.setAlpha(1.0f);
-            uiEvent.onChangeModule(newIndex);
+            uiEvent.onAction(ACTION_CHANGE_MODULE, newIndex);
         }
     }
 
