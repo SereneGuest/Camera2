@@ -11,6 +11,7 @@ import android.util.Size;
 
 import com.smewise.camera2.Config;
 import com.smewise.camera2.R;
+import com.smewise.camera2.ui.CameraMenu;
 import com.smewise.camera2.utils.CameraUtil;
 
 

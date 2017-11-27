@@ -9,6 +9,7 @@ import android.widget.RelativeLayout;
 import com.smewise.camera2.Config;
 import com.smewise.camera2.manager.CameraSettings;
 import com.smewise.camera2.manager.CameraToolKit;
+import com.smewise.camera2.ui.CameraMenu;
 import com.smewise.camera2.ui.CameraTab;
 import com.smewise.camera2.ui.CoverView;
 import com.smewise.camera2.utils.CameraThread;
@@ -29,7 +30,9 @@ public abstract class CameraModule {
     boolean isCameraOpened = false;
     boolean isFirstPreviewLoaded = false;
     boolean isModulePause = true;
+
     RelativeLayout rootView;
+    CameraMenu cameraMenu;
 
     public interface Controller {
         void changeModule(int module);
@@ -101,6 +104,10 @@ public abstract class CameraModule {
 
     void showSetting() {
         mController.showSetting(true);
+    }
+
+    void setCameraMenu(int resId) {
+        cameraMenu = new CameraMenu(appContext, resId);
     }
 
 }

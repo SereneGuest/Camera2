@@ -1,15 +1,10 @@
 <resources>
     <string name="app_name">Camera2</string>
-    <string name="action_photo_1">API 1 photo</string>
-    <string name="action_video_1">API 1 video</string>
-    <string name="action_photo_2">API 2 photo</string>
-    <string name="action_video_2">ApI 2 video</string>
-    <string name="action_dual_camera">Dual Camera2</string>
 
-    <string name="flashlight_auto">flashlight auto</string>
-    <string name="flashlight_on">flashlight on</string>
-    <string name="flashlight_off">flashlight off</string>
-    <string name="flashlight_torch">flashlight torch</string>
+    <string name="flashlight_auto">auto</string>
+    <string name="flashlight_on">on</string>
+    <string name="flashlight_off">off</string>
+    <string name="flashlight_torch">torch</string>
 
     <string name="permission_tip">Tip</string>
     <string name="permission_msg">request permission failed! \n
@@ -61,6 +56,17 @@
     <string name="setting_preview_size">Preview size</string>
 
     <string name="setting_restart_preview">Restart preview after take picture </string>
-    <!--for setting start-->
+    <!--for setting end-->
+
+    <!--for menu setting start-->
+    <string name="menu_switch_camera">Switch</string>
+    <string name="menu_flash_title">Flash</string>
+    <array name="menu_flash_icon">
+        <item>@drawable/flashlight_auto</item>
+        <item>@drawable/flashlight_off</item>
+        <item>@drawable/flashlight_on</item>
+        <item>@drawable/flashlight_torch</item>
+    </array>
+    <!--for menu setting end-->
 
 </resources>

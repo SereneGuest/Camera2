@@ -4,4 +4,13 @@
         <attr name="border_width" format="dimension" />
         <attr name="border_color" format="color" />
     </declare-styleable>
+    <declare-styleable name="CameraPreference">
+        <attr name="key" format="string" />
+        <attr name="title" format="string" />
+        <attr name="icon" format="reference" />
+        <attr name="defaultValue" format="string|reference" />
+        <attr name="entries" format="reference" />
+        <attr name="entryValues" format="reference" />
+        <attr name="entryIcons" format="reference" />
+    </declare-styleable>
 </resources>

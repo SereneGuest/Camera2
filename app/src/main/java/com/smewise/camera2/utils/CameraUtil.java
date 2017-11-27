@@ -22,7 +22,7 @@ import java.util.Comparator;
 
 public class CameraUtil {
 
-    private final String TAG = this.getClass().getSimpleName();
+    private static final String TAG = Config.TAG_PREFIX + "CameraUtil";
 
     public static double RATIO_4X3 = 1.333333333;
     public static double RATIO_16X9 = 1.777777778;
@@ -97,9 +97,13 @@ public class CameraUtil {
 
     public static int getJpgRotation(CameraCharacteristics c, int deviceRotation) {
         int result ;
-        int sensorRotation = c.get(CameraCharacteristics.SENSOR_ORIENTATION);
-        if (c.get(CameraCharacteristics.LENS_FACING)
-                == CameraCharacteristics.LENS_FACING_BACK) {
+        Integer sensorRotation = c.get(CameraCharacteristics.SENSOR_ORIENTATION);
+        Integer lensFace = c.get(CameraCharacteristics.LENS_FACING);
+        if (sensorRotation == null || lensFace == null) {
+            Log.e(TAG, "can not get sensor rotation or lens face");
+            return deviceRotation;
+        }
+        if (lensFace == CameraCharacteristics.LENS_FACING_BACK) {
             result = (sensorRotation + deviceRotation) % 360;
         } else {
             result = (sensorRotation - deviceRotation + 360) % 360;

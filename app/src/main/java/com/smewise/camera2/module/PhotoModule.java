@@ -39,6 +39,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener 
         mUI.setCoverView(getCoverView());
         mFocusManager = new FocusOverlayManager(mUI.getFocusView(), mainHandler.getLooper());
         mFocusManager.setListener(mCameraUiEvent);
+        setCameraMenu(R.xml.menu_preference);
     }
 
     @Override
@@ -192,6 +193,11 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener 
                 break;
             case R.id.thumbnail:
                 MediaFunc.goToGallery(appContext);
+                break;
+            case R.id.camera_menu:
+                cameraMenu.show(mUI.getBottomView());
+                break;
+            default:
                 break;
         }
     }

@@ -116,6 +116,10 @@ public abstract class CameraBaseUI implements GestureTextureView.GestureListener
         mFocusView.initFocusArea(width, height);
     }
 
+    public LinearLayout getBottomView() {
+        return mBottomContainer;
+    }
+
     public void setImgBitmap(final Context context, final Handler handler) {
         new Thread() {
             @Override

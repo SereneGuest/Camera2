@@ -3,16 +3,16 @@
               android:layout_above="@+id/bottom_container"
               android:layout_alignParentEnd="true"
               android:orientation="vertical"
-              android:layout_marginTop="@dimen/tab_layout_height"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content">
 
     <ImageButton
+        android:id="@+id/camera_menu"
         android:layout_width="@dimen/default_button_size"
         android:layout_height="@dimen/default_button_size"
         android:background="@drawable/button_bg"
         android:layout_margin="@dimen/default_controls_margin"
-        android:scaleType="center"
-        android:src="@mipmap/ic_switch_camera"/>
+        android:scaleType="centerInside"
+        android:src="@mipmap/ic_more"/>
 
 </LinearLayout>
