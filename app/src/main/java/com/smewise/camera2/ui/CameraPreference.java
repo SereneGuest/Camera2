@@ -50,6 +50,18 @@ public class CameraPreference {
         return mIcon;
     }
 
+    public CharSequence[] getEntries() {
+        return mEntries;
+    }
+
+    public CharSequence[] getEntryValues() {
+        return mEntryValues;
+    }
+
+    public int[] getEntryIcons() {
+        return mEntryIcons;
+    }
+
     private int[] getIds(Resources res, int iconsRes) {
         if (iconsRes == 0) return null;
         TypedArray array = res.obtainTypedArray(iconsRes);

@@ -195,7 +195,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener 
                 MediaFunc.goToGallery(appContext);
                 break;
             case R.id.camera_menu:
-                cameraMenu.show(mUI.getBottomView());
+                cameraMenu.show(mUI.getBottomView(), 0, mUI.getBottomView().getHeight());
                 break;
             default:
                 break;

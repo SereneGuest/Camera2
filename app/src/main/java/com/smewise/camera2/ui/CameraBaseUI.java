@@ -98,21 +98,36 @@ public abstract class CameraBaseUI implements GestureTextureView.GestureListener
         //update preview ui size
         boolean is4x3 = Math.abs(height / (double) width - CameraUtil.RATIO_4X3) < CameraUtil
                 .ASPECT_TOLERANCE;
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(width, height);
+        boolean is18x9 = (mDisplaySize.y + mVirtualKeyHeight) / (double) mDisplaySize.x > 1.8;
+        RelativeLayout.LayoutParams preParams = new RelativeLayout.LayoutParams(width, height);
+        RelativeLayout.LayoutParams bottomBarParams =
+                (RelativeLayout.LayoutParams) mBottomContainer.getLayoutParams();
         int bottomHeight = CameraUtil.getBottomBarHeight(mDisplaySize.x);
         if (mVirtualKeyHeight == 0 && is4x3) {
-            params.setMargins(0, mTopBarHeight, 0, 0);
+            // 4:3 no virtual key
+            preParams.setMargins(0, mTopBarHeight, 0, 0);
             bottomHeight -= mTopBarHeight;
         } else if (mVirtualKeyHeight == 0) {
+            // 16:9 no virtual key
             bottomHeight -= mTopBarHeight;
+        } else if (!is4x3) {
+            // 16:9 has virtual key
+            if (is18x9) {
+                preParams.setMargins(0, mDisplaySize.y - height, 0, 0);
+            }
+            mBottomContainer.setPadding(0, 0, 0, (int) (mVirtualKeyHeight / 1.5f));
+        } else {
+            // 4:3 has virtual key
+            if (is18x9) {
+                preParams.setMargins(0, mTopBarHeight, 0, 0);
+                bottomHeight = mDisplaySize.y - height - mTopBarHeight + mVirtualKeyHeight;
+            }
+            mBottomContainer.setPadding(0, 0, 0, (int) (mVirtualKeyHeight / 1.5f));
         }
-        mPreviewContainer.setLayoutParams(params);
-        //update bottom bar size
-        RelativeLayout.LayoutParams layoutParams =
-                (RelativeLayout.LayoutParams) mBottomContainer.getLayoutParams();
-        layoutParams.height = bottomHeight;
-        mBottomContainer.setPadding(0, 0, 0, (int) (mVirtualKeyHeight / 1.5f));
-        mBottomContainer.setLayoutParams(layoutParams);
+        mPreviewContainer.setLayoutParams(preParams);
+        bottomBarParams.height = bottomHeight;
+        mBottomContainer.setLayoutParams(bottomBarParams);
+
         mFocusView.initFocusArea(width, height);
     }
 

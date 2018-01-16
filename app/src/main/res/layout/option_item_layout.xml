@@ -6,7 +6,7 @@
               android:layout_height="@dimen/options_item_height"
               android:padding="@dimen/options_layout_margin"
               android:gravity="center"
-              android:background="@color/tab_background"
+              android:background="?android:attr/selectableItemBackgroundBorderless"
               android:layout_above="@+id/bottom_container"
               android:layout_alignParentEnd="true">
     <Button
@@ -20,9 +20,11 @@
         android:textColor="@color/options_text_color"
         android:textStyle="bold"
         android:textAllCaps="false"
+        android:clickable="false"
         android:layout_gravity="center"/>
     <TextView
         android:id="@+id/item_text"
+        android:clickable="false"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="@dimen/options_text_size"

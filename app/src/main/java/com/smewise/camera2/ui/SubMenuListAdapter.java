@@ -15,14 +15,19 @@ import com.smewise.camera2.R;
  * Created by wenzhe on 11/22/17.
  */
 
-public class ListAdapter extends RecyclerView.Adapter<ListAdapter.MyViewHolder> {
+public class SubMenuListAdapter extends RecyclerView.Adapter<SubMenuListAdapter.MyViewHolder> {
 
-    private PreferenceGroup mGroup;
+    private CameraPreference mPref;
     private Context mContext;
 
-    public ListAdapter(Context context, PreferenceGroup group) {
+    public SubMenuListAdapter(Context context, CameraPreference pref) {
         mContext = context;
-        mGroup = group;
+        mPref = pref;
+    }
+
+    public void updateDataSet(CameraPreference pref) {
+        mPref = pref;
+        notifyDataSetChanged();
     }
 
     @Override
@@ -34,13 +39,18 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.MyViewHolder> 
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        holder.itemText.setText(mGroup.get(position).getTitle());
-        holder.itemIcon.setBackgroundResource(mGroup.get(position).getIcon());
+        holder.itemText.setText(mPref.getEntries()[position]);
+        if (mPref.getEntryIcons() != null) {
+            holder.itemIcon.setBackgroundResource(mPref.getEntryIcons()[position]);
+            holder.itemIcon.setVisibility(View.VISIBLE);
+        } else {
+            holder.itemIcon.setVisibility(View.GONE);
+        }
     }
 
     @Override
     public int getItemCount() {
-        return mGroup.size();
+        return mPref.getEntries().length;
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder {
