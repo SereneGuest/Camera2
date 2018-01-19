@@ -27,6 +27,6 @@
     <color name="setting_catalog_bg">#f5f5f5</color>
 
     <color name="options_text_color">#ffaaaaaa</color>
-    <color name="pop_window_bg">@color/tab_background</color>
+    <color name="pop_window_bg">#bb000000</color>
 
 </resources>

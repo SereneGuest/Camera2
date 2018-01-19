@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupWindow;
@@ -27,8 +28,8 @@ public abstract class CameraBaseMenu {
 
     protected CameraBaseMenu(Context context) {
         // init recycler view
-        recycleView = new RecyclerView(context);
-        recycleView.setBackgroundResource(R.color.pop_window_bg);
+        View rootView = LayoutInflater.from(context).inflate(R.layout.pop_up_layout, null);
+        recycleView = (RecyclerView) rootView.findViewById(R.id.pop_list);
         StaggeredGridLayoutManager manager = new StaggeredGridLayoutManager(1,
                 StaggeredGridLayoutManager.HORIZONTAL);
         manager.setReverseLayout(true);
@@ -36,7 +37,7 @@ public abstract class CameraBaseMenu {
         recycleView.setHasFixedSize(true);
         // init pop window
         popWindow = new PopupWindow(context);
-        popWindow.setContentView(recycleView);
+        popWindow.setContentView(rootView);
         popWindow.setOutsideTouchable(true);
         popWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         popWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);

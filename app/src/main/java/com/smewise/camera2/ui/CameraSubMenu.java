@@ -26,6 +26,6 @@ public class CameraSubMenu extends CameraBaseMenu{
 
     @Override
     public void show(View view, int xOffset, int yOffset) {
-        popWindow.showAtLocation(view, Gravity.BOTTOM | Gravity.RIGHT, xOffset, yOffset);
+        popWindow.showAtLocation(view, Gravity.BOTTOM | Gravity.CENTER, xOffset, yOffset);
     }
 }

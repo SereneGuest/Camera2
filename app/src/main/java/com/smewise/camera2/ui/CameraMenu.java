@@ -44,6 +44,6 @@ public class CameraMenu extends CameraBaseMenu{
     @Override
     public void show(View view, int xOffset, int yOffset) {
         mShowView = view;
-        popWindow.showAtLocation(view, Gravity.BOTTOM | Gravity.RIGHT, xOffset, yOffset);
+        popWindow.showAtLocation(view, Gravity.BOTTOM | Gravity.CENTER, xOffset, yOffset);
     }
 }
