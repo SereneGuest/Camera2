@@ -1,25 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="wrap_content"
-              android:minWidth="@dimen/options_min_width"
-              android:layout_height="@dimen/options_item_height"
-              android:padding="@dimen/options_layout_margin"
-              android:gravity="center"
-              android:background="?android:attr/selectableItemBackgroundBorderless"
-              android:layout_above="@+id/bottom_container"
-              android:layout_alignParentEnd="true">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:minWidth="@dimen/options_min_width"
+    android:layout_height="@dimen/options_item_height"
+    android:padding="@dimen/options_layout_margin"
+    android:gravity="center"
+    android:background="?android:attr/selectableItemBackgroundBorderless">
     <Button
         android:id="@+id/item_icon"
         android:layout_width="@dimen/options_img_size"
         android:layout_height="@dimen/options_img_size"
-        android:tint="@color/options_text_color"
         android:scaleType="centerInside"
         android:background="@mipmap/flashlight_auto"
-        android:textSize="@dimen/options_button_text_size"
-        android:textColor="@color/options_text_color"
-        android:textStyle="bold"
-        android:textAllCaps="false"
         android:clickable="false"
         android:layout_gravity="center"/>
     <TextView
@@ -27,6 +21,7 @@
         android:clickable="false"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingTop="@dimen/options_text_margin"
         android:textSize="@dimen/options_text_size"
         android:textColor="@color/options_text_color"
         android:layout_gravity="center"/>

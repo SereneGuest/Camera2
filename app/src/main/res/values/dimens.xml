@@ -36,8 +36,9 @@
     <dimen name="setting_text_size">16sp</dimen>
 
     <dimen name="options_item_height">60dp</dimen>
-    <dimen name="options_img_size">25dp</dimen>
-    <dimen name="options_text_size">12sp</dimen>
+    <dimen name="options_img_size">30dp</dimen>
+    <dimen name="options_text_size">13sp</dimen>
+    <dimen name="options_text_margin">5dp</dimen>
     <dimen name="options_button_text_size">15sp</dimen>
     <dimen name="options_layout_margin">3dp</dimen>
     <dimen name="options_min_width">80dp</dimen>

@@ -1,8 +1,10 @@
 package com.smewise.camera2.ui;
 
 import android.content.Context;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.smewise.camera2.utils.XmlInflater;
 

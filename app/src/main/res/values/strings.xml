@@ -62,11 +62,21 @@
     <string name="menu_switch_camera">Switch</string>
     <string name="menu_flash_title">Flash</string>
     <array name="menu_flash_icon">
-        <item>@drawable/flashlight_auto</item>
-        <item>@drawable/flashlight_off</item>
-        <item>@drawable/flashlight_on</item>
-        <item>@drawable/flashlight_torch</item>
+        <item>@mipmap/flashlight_auto</item>
+        <item>@mipmap/flashlight_off</item>
+        <item>@mipmap/flashlight_on</item>
+        <item>@mipmap/flashlight_torch</item>
     </array>
+    <array name="menu_flash_entries">
+        <item>@string/flash_auto</item>
+        <item>@string/flash_off</item>
+        <item>@string/flash_on</item>
+        <item>@string/flash_torch</item>
+    </array>
+    <string name="flash_auto">auto</string>
+    <string name="flash_off">off</string>
+    <string name="flash_on">on</string>
+    <string name="flash_torch">torch</string>
     <!--for menu setting end-->
 
 </resources>
