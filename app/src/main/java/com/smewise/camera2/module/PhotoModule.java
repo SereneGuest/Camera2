@@ -1,5 +1,6 @@
 package com.smewise.camera2.module;
 
+import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
@@ -122,9 +123,10 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener 
     }
 
     @Override
-    public void onFileSaved(Uri uri, String path) {
+    public void onFileSaved(Uri uri, String path, Bitmap thumbnail) {
         mUI.setUIClickable(true);
-        mUI.setImgBitmap(appContext, mainHandler);
+        mUI.setThumbnail(thumbnail);
+        MediaFunc.setCurrentUri(uri);
         Log.d(TAG, "uri:" + uri.toString());
     }
 

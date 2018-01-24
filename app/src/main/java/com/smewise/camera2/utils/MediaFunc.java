@@ -27,7 +27,7 @@ public class MediaFunc {
     public static final int MEDIA_TYPE_YUV = 3;
     public static final String SAVE_PATH = "Camera2";
 
-    public static Uri uri = null;
+    private static Uri mCurrentUri = null;
 
     public static File getOutputMediaFile(int type, String tag) {
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
@@ -74,8 +74,8 @@ public class MediaFunc {
         if (cursor != null && cursor.moveToFirst()) {
             long thumbNailsId = cursor.getLong(cursor.getColumnIndex("_ID"));
             //generate uri
-            uri = Uri.parse("content://media/external/images/media/");
-            uri = ContentUris.withAppendedId(uri, thumbNailsId);
+            mCurrentUri = Uri.parse("content://media/external/images/media/");
+            mCurrentUri = ContentUris.withAppendedId(mCurrentUri, thumbNailsId);
             bitmap = MediaStore.Images.Thumbnails.getThumbnail(cr,
                     thumbNailsId, MediaStore.Images.Thumbnails.MICRO_KIND, null);
         }
@@ -96,8 +96,8 @@ public class MediaFunc {
         if (cursor != null && cursor.moveToFirst()) {
             long thumbNailsId = cursor.getLong(cursor.getColumnIndex("_ID"));
             //generate uri
-            uri = Uri.parse("content://media/external/video/media/");
-            uri = ContentUris.withAppendedId(uri, thumbNailsId);
+            mCurrentUri = Uri.parse("content://media/external/video/media/");
+            mCurrentUri = ContentUris.withAppendedId(mCurrentUri, thumbNailsId);
             bitmap = MediaStore.Video.Thumbnails.getThumbnail(cr,
                     thumbNailsId, MediaStore.Video.Thumbnails.MICRO_KIND, null);
         }
@@ -120,16 +120,24 @@ public class MediaFunc {
         }
     }
 
+    public static void setCurrentUri(Uri uri) {
+        mCurrentUri = uri;
+    }
+
     public static void goToGallery(Context context) {
+        if (mCurrentUri == null) {
+            Log.e(TAG, "uri is null");
+            return;
+        }
         try {
             Intent intent = new Intent(Intent.ACTION_MAIN).setClassName(
                     "com.android.gallery3d", "com.android.gallery3d.app.GalleryActivity");
             intent.setAction(Intent.ACTION_VIEW);
             //intent.setDataAndType(uri,"image/*");
-            intent.setData(uri);
+            intent.setData(mCurrentUri);
             context.startActivity(intent);
         } catch (Exception e) {
-            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            Intent intent = new Intent(Intent.ACTION_VIEW, mCurrentUri);
             context.startActivity(intent);
         }
     }

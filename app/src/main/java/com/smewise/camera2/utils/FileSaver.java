@@ -1,11 +1,15 @@
 package com.smewise.camera2.utils;
 
 import android.content.ContentResolver;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.location.Location;
 import android.media.Image;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.smewise.camera2.Config;
@@ -33,7 +37,7 @@ public class FileSaver {
     private List<ImageInfo> imageInfos = new LinkedList<>();
 
     public interface FileListener {
-        void onFileSaved(Uri uri, String path);
+        void onFileSaved(Uri uri, String path, @Nullable Bitmap thumbnail);
     }
 
     private class ImageInfo {
@@ -122,6 +126,7 @@ public class FileSaver {
     }
 
     private void startSaveProcess(final ImageInfo info) {
+        final Bitmap thumbnail = getThumbnail(info);
         Storage.writeFile(info.imgPath, info.imgData);
         final Uri uri = Storage.addImageToDB(mResolver, info.imgTitle, info.imgDate,
                 info.imgLocation, info.imgOrientation, info.imgData.length, info.imgPath,
@@ -130,10 +135,22 @@ public class FileSaver {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    mListener.onFileSaved(uri, info.imgPath);
+                    mListener.onFileSaved(uri, info.imgPath, thumbnail);
                 }
             });
         }
+    }
+
+    private Bitmap getThumbnail(ImageInfo info) {
+        if (JPEG.equals(info.imgMimeType)) {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = 12;
+            return BitmapFactory.decodeByteArray(
+                    info.imgData, 0, info.imgData.length, options);
+        } else {
+            return null;
+        }
+
     }
 
     public void release() {

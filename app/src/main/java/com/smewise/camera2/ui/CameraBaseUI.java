@@ -6,6 +6,7 @@ import android.graphics.Point;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CaptureRequest;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -135,7 +136,7 @@ public abstract class CameraBaseUI implements GestureTextureView.GestureListener
         return mBottomContainer;
     }
 
-    public void setImgBitmap(final Context context, final Handler handler) {
+    private void setImgBitmap(final Context context, final Handler handler) {
         new Thread() {
             @Override
             public void run() {
@@ -154,6 +155,13 @@ public abstract class CameraBaseUI implements GestureTextureView.GestureListener
                 });
             }
         }.start();
+    }
+
+    public void setThumbnail(Bitmap bitmap) {
+        if (bitmap != null) {
+            mThumbnail.setImageBitmap(bitmap);
+            mThumbnail.setEnabled(true);
+        }
     }
 
     public void setCoverView(CoverView coverView) {

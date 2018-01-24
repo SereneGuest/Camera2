@@ -1,6 +1,7 @@
 package com.smewise.camera2.module;
 
 
+import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
@@ -136,9 +137,10 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
     }
 
     @Override
-    public void onFileSaved(Uri uri, String path) {
+    public void onFileSaved(Uri uri, String path, Bitmap thumbnail) {
         mUI.setUIClickable(true);
-        mUI.setImgBitmap(appContext, mainHandler);
+        mUI.setThumbnail(thumbnail);
+        MediaFunc.setCurrentUri(uri);
     }
 
     private void takePicture() {
