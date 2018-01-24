@@ -21,7 +21,7 @@ import com.smewise.camera2.utils.CameraThread;
  */
 
 public class Camera2Manager implements CameraController {
-    private final String TAG = Config.TAG_PREFIX + "Camera2Manager";
+    private final String TAG = Config.getTag(Camera2Manager.class);
     private static Camera2Manager mManager;
     private Event mEvent;
     private CameraManager mCameraManager;

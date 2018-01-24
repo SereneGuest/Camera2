@@ -20,7 +20,7 @@ import java.lang.ref.WeakReference;
 
 public class FocusOverlayManager {
 
-    private static final String TAG = Config.TAG_PREFIX + "FocusManager";
+    private static final String TAG = Config.getTag(FocusOverlayManager.class);
 
     private FocusView mFocusView;
     private MainHandler mHandler;

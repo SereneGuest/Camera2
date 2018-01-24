@@ -22,6 +22,10 @@ public class CameraSubMenu extends CameraBaseMenu{
         recycleView.setAdapter(mAdapter);
     }
 
+    public void setItemClickListener(Listener listener) {
+        mAdapter.setMenuListener(listener);
+    }
+
     public void notifyDataSetChange(CameraPreference preference) {
         mAdapter.updateDataSet(preference);
     }

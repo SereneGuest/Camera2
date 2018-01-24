@@ -21,7 +21,7 @@ import java.util.List;
 
 public class FileSaver {
 
-    private static final String TAG = Config.TAG_PREFIX + "FileSaver";
+    private static final String TAG = Config.getTag(FileSaver.class);
 
     private final String JPEG = "image/jpeg";
     private final String YUV = "image/yuv";
@@ -59,8 +59,9 @@ public class FileSaver {
         mListener = listener;
     }
 
-    public void saveFile(int width, int height, int orientation, byte[] data, String tag) {
-        File file = MediaFunc.getOutputMediaFile(getSaveType(), tag);
+    public void saveFile(int width, int height, int orientation, byte[] data, String tag,
+            int format) {
+        File file = MediaFunc.getOutputMediaFile(getSaveType(format), tag);
         ImageInfo info = new ImageInfo();
         info.imgData = data;
         if (orientation == 0 || orientation == 180) {
@@ -74,14 +75,14 @@ public class FileSaver {
         info.imgDate = System.currentTimeMillis();
         info.imgPath = file.getPath();
         info.imgTitle = file.getName();
-        info.imgMimeType = getMimeType();
+        info.imgMimeType = getMimeType(format);
         imageInfos.add(info);
 
         mSaveThread.notifyDirty();
     }
 
-    public void saveFile(Image image, int orientation, String tag) {
-        File file = MediaFunc.getOutputMediaFile(getSaveType(), tag);
+    public void saveFile(Image image, int orientation, String tag, int format) {
+        File file = MediaFunc.getOutputMediaFile(getSaveType(format), tag);
         ImageInfo info = new ImageInfo();
         if (orientation == 0 || orientation == 180) {
             info.imgWidth = image.getHeight();
@@ -94,7 +95,7 @@ public class FileSaver {
         info.imgDate = System.currentTimeMillis();
         info.imgPath = file.getPath();
         info.imgTitle = file.getName();
-        info.imgMimeType = getMimeType();
+        info.imgMimeType = getMimeType(format);
         ByteBuffer buffer = image.getPlanes()[0].getBuffer();
         info.imgData = new byte[buffer.remaining()];
         buffer.get(info.imgData);
@@ -104,16 +105,16 @@ public class FileSaver {
         mSaveThread.notifyDirty();
     }
 
-    private int getSaveType() {
-        if (Config.IMAGE_FORMAT == ImageFormat.JPEG) {
+    private int getSaveType(int format) {
+        if (format == ImageFormat.JPEG) {
             return MediaFunc.MEDIA_TYPE_IMAGE;
         } else {
             return MediaFunc.MEDIA_TYPE_YUV;
         }
     }
 
-    private String getMimeType() {
-        if (Config.IMAGE_FORMAT == ImageFormat.JPEG) {
+    private String getMimeType(int format) {
+        if (format == ImageFormat.JPEG) {
             return JPEG;
         } else {
             return YUV;

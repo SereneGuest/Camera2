@@ -31,7 +31,7 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
     private SessionManager mSessionManager;
     private FocusOverlayManager mFocusManager;
 
-    private static final String TAG = Config.TAG_PREFIX + "AdvanceModule";
+    private static final String TAG = Config.getTag(ProfessionalModule.class);
 
     @Override
     protected void init() {
@@ -75,7 +75,8 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
 
         @Override
         public void onMainData(byte[] data, int width, int height) {
-            fileSaver.saveFile(width, height, getToolKit().getOrientation(), data, "CAMERA");
+            fileSaver.saveFile(width, height, getToolKit().getOrientation(), data, "CAMERA",
+                    getSettingManager().getPicFormat(CameraSettings.KEY_PICTURE_FORMAT));
             mSessionManager.restartPreviewAfterShot();
         }
 

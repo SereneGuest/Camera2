@@ -22,7 +22,7 @@ import java.util.Comparator;
 
 public class CameraUtil {
 
-    private static final String TAG = Config.TAG_PREFIX + "CameraUtil";
+    private static final String TAG = Config.getTag(CameraUtil.class);
 
     public static double RATIO_4X3 = 1.333333333;
     public static double RATIO_16X9 = 1.777777778;

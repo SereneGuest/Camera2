@@ -15,7 +15,7 @@ import com.smewise.camera2.R;
  */
 
 public class CameraPreference {
-    private static final String TAG = Config.TAG_PREFIX + "CameraPref";
+    private static final String TAG = Config.getTag(CameraPreference.class);
     private String mKey;
     private String mTitle;
     private int mIcon;
@@ -35,7 +35,6 @@ public class CameraPreference {
                 a.getResourceId(R.styleable.CameraPreference_entryIcons, 0));
         mDefaultValue = a.getString(R.styleable.CameraPreference_defaultValue);
         a.recycle();
-        dump();
     }
 
     public String getKey() {

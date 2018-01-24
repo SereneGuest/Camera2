@@ -1,9 +1,11 @@
 package com.smewise.camera2.ui;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 
+import com.smewise.camera2.Config;
 import com.smewise.camera2.utils.XmlInflater;
 
 /**
@@ -12,6 +14,7 @@ import com.smewise.camera2.utils.XmlInflater;
 
 public class CameraMenu extends CameraBaseMenu{
 
+    public static final String TAG = Config.getTag(CameraMenu.class);
     private CameraSubMenu mSubMenu;
     private Context mContext;
     private View mShowView;
@@ -29,6 +32,7 @@ public class CameraMenu extends CameraBaseMenu{
         public void onMenuItemClick(View view, String key, CameraPreference preference) {
             if (mSubMenu == null) {
                 mSubMenu = new CameraSubMenu(mContext, preference);
+                mSubMenu.setItemClickListener(mMenuListener);
             } else {
                 mSubMenu.notifyDataSetChange(preference);
             }
@@ -37,7 +41,7 @@ public class CameraMenu extends CameraBaseMenu{
 
         @Override
         public void onSubMenuItemClick(String key, String value) {
-
+            Log.d(TAG, "sub menu click key:" + key + " value:" + value);
         }
     };
 

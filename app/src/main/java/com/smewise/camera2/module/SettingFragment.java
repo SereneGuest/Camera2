@@ -27,7 +27,7 @@ import com.smewise.camera2.utils.CameraUtil;
 
 public class SettingFragment extends PreferenceFragment {
 
-    private static final String TAG = Config.TAG_PREFIX + "SettingFragment";
+    private static final String TAG = Config.getTag(SettingFragment.class);
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

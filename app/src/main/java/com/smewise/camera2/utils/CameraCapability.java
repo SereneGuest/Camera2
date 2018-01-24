@@ -13,7 +13,7 @@ import com.smewise.camera2.manager.Camera2Manager;
 
 public class CameraCapability {
 
-    private static final String TAG = Config.TAG_PREFIX + " CamCapability";
+    private static final String TAG = Config.getTag(CameraCapability.class);
 
     private CameraCharacteristics mMainParam;
     private CameraCharacteristics mAuxParam;

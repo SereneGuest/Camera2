@@ -27,7 +27,7 @@ import com.smewise.camera2.utils.MediaFunc;
  */
 public class DualCameraModule extends CameraModule implements FileSaver.FileListener {
 
-    private static final String TAG = Config.TAG_PREFIX + "DualModule";
+    private static final String TAG = Config.getTag(DualCameraModule.class);
 
     private SurfaceTexture mainSurfaceTexture;
     private SurfaceTexture auxSurfaceTexture;
@@ -85,7 +85,8 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
         @Override
         public void onMainData(byte[] data, int width, int height) {
             Log.e(TAG, "main data complete");
-            fileSaver.saveFile(width, height, getToolKit().getOrientation(), data, "MAIN");
+            fileSaver.saveFile(width, height, getToolKit().getOrientation(), data, "MAIN",
+                    getSettingManager().getPicFormat(CameraSettings.KEY_MAIN_PICTURE_FORMAT));
             isMainComeBack = true;
             enableUiAfterShot();
         }
@@ -93,7 +94,8 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
         @Override
         public void onAuxData(byte[] data, int width, int height) {
             Log.e(TAG, "aux data complete");
-            fileSaver.saveFile(width, height, getToolKit().getOrientation(), data, "AUX");
+            fileSaver.saveFile(width, height, getToolKit().getOrientation(), data, "AUX",
+                    getSettingManager().getPicFormat(CameraSettings.KEY_AUX_PICTURE_FORMAT));
             isAuxComeBack = true;
             enableUiAfterShot();
         }

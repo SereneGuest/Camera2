@@ -34,7 +34,7 @@ import java.util.List;
 
 public class SessionManager {
 
-    private final String TAG = Config.TAG_PREFIX + "SessionMgr";
+    private final String TAG = Config.getTag(SessionManager.class);
 
     public interface Callback {
         void onMainData(byte[] data, int width, int height);

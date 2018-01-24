@@ -14,7 +14,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 
 public class CameraThread extends Thread {
-    private static final String TAG = Config.TAG_PREFIX + "CameraThread";
+    private static final String TAG = Config.getTag(CameraThread.class);
     public static final String OPEN_CAMERA = "open camera";
     public static final String CLOSE_CAMERA = "close camera";
     private volatile boolean mActive = true;

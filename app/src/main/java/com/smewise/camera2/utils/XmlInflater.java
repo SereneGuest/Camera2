@@ -23,7 +23,7 @@ import java.lang.reflect.InvocationTargetException;
  */
 
 public class XmlInflater {
-    private static final String TAG = Config.TAG_PREFIX + "XmlInflater";
+    private static final String TAG = Config.getTag(XmlInflater.class);
 
     private static final String PACKAGE_NAME = CameraPreference.class.getPackage().getName();
     private static final Class<?>[] CTOR_SIGNATURE =

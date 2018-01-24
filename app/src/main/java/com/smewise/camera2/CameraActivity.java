@@ -3,6 +3,7 @@ package com.smewise.camera2;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -22,7 +23,7 @@ import com.smewise.camera2.utils.Permission;
 
 public class CameraActivity extends AppCompatActivity {
 
-    private static final String TAG = Config.TAG_PREFIX + "CameraActivity";
+    private static final String TAG = Config.getTag(CameraActivity.class);
     private CameraToolKit mToolKit;
     private ModuleManager mModuleManager;
     private AppBaseUI mBaseUI;
@@ -44,6 +45,7 @@ public class CameraActivity extends AppCompatActivity {
         if (SETTING_ACTION.equals(getIntent().getAction())) {
             mOpenSettingFromShortcut = true;
         }
+        new Intent(this, CameraActivity.class);
     }
 
     private void setWindowFlag() {

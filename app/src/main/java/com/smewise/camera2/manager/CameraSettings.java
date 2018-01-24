@@ -20,7 +20,7 @@ import com.smewise.camera2.utils.CameraUtil;
  */
 
 public class CameraSettings {
-    private final String TAG = Config.TAG_PREFIX + "CameraSetting";
+    private final String TAG = Config.getTag(CameraSettings.class);
 
     public static final String KEY_PICTURE_SIZE = "pref_picture_size";
     public static final String KEY_PREVIEW_SIZE = "pref_preview_size";
@@ -57,7 +57,7 @@ public class CameraSettings {
         return Integer.parseInt(format);
     }
 
-    private int getPicFormatFormKey(String picSize) {
+    private int getPicFormatForKey(String picSize) {
         String formatKey;
         switch (picSize) {
             case KEY_PICTURE_SIZE:
@@ -85,7 +85,7 @@ public class CameraSettings {
         String picStr = mSharedPreference.getString(key, Config.NULL_VALUE);
         if (Config.NULL_VALUE.equals(picStr)) {
             // preference not set, use default value
-            return CameraUtil.getPictureSize(map, Config.DEFAULT_RATIO, getPicFormatFormKey(key));
+            return CameraUtil.getPictureSize(map, Config.DEFAULT_RATIO, getPicFormatForKey(key));
         } else {
             String[] size = picStr.split(CameraUtil.SPLIT_TAG);
             return new Size(Integer.parseInt(size[0]), Integer.parseInt(size[1]));

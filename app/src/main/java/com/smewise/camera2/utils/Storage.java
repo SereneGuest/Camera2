@@ -17,7 +17,7 @@ import java.io.FileOutputStream;
  */
 
 public class Storage {
-    private static final String TAG = Config.TAG_PREFIX + "Storage";
+    private static final String TAG = Config.getTag(Storage.class);
 
     public static void writeFile(String path, byte[] data) {
         FileOutputStream out = null;

@@ -1,6 +1,7 @@
 package com.smewise.camera2.ui;
 
 import android.content.Context;
+import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,10 +20,15 @@ public class SubMenuListAdapter extends RecyclerView.Adapter<SubMenuListAdapter.
 
     private CameraPreference mPref;
     private Context mContext;
+    private CameraBaseMenu.Listener mListener;
 
     public SubMenuListAdapter(Context context, CameraPreference pref) {
         mContext = context;
         mPref = pref;
+    }
+
+    public void setMenuListener(CameraBaseMenu.Listener listener) {
+        mListener = listener;
     }
 
     public void updateDataSet(CameraPreference pref) {
@@ -38,7 +44,7 @@ public class SubMenuListAdapter extends RecyclerView.Adapter<SubMenuListAdapter.
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
+    public void onBindViewHolder(MyViewHolder holder, final int position) {
         holder.itemText.setText(mPref.getEntries()[position]);
         if (mPref.getEntryIcons() != null) {
             holder.itemIcon.setBackgroundResource(mPref.getEntryIcons()[position]);
@@ -46,6 +52,15 @@ public class SubMenuListAdapter extends RecyclerView.Adapter<SubMenuListAdapter.
         } else {
             holder.itemIcon.setVisibility(View.GONE);
         }
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mListener != null) {
+                    mListener.onSubMenuItemClick(mPref.getKey(),
+                            mPref.getEntryValues()[position].toString());
+                }
+            }
+        });
     }
 
     @Override

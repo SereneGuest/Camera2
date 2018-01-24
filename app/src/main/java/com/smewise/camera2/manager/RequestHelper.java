@@ -18,7 +18,7 @@ import java.util.List;
  */
 
 public class RequestHelper {
-    private static final String TAG = Config.TAG_PREFIX + "RequestHelper";
+    private static final String TAG = Config.getTag(RequestHelper.class);
     private Handler mHandler;
     private CameraCapability mCapability;
 

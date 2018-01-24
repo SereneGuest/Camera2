@@ -21,7 +21,7 @@ import com.smewise.camera2.utils.FileSaver;
  */
 public abstract class CameraModule {
 
-    private static final String TAG = Config.TAG_PREFIX + "CameraModule";
+    private static final String TAG = Config.getTag(CameraModule.class);
 
     Handler mainHandler;
     FileSaver fileSaver;

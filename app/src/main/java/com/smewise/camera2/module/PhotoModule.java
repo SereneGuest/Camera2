@@ -31,7 +31,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener 
     private SessionManager mSessionManager;
     private FocusOverlayManager mFocusManager;
 
-    private static final String TAG = Config.TAG_PREFIX + "PhotoModule";
+    private static final String TAG = Config.getTag(PhotoModule.class);
 
     @Override
     protected void init() {
@@ -80,7 +80,8 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener 
 
         @Override
         public void onMainData(byte[] data, int width, int height) {
-            fileSaver.saveFile(width, height, getToolKit().getOrientation(), data, "CAMERA");
+            fileSaver.saveFile(width, height, getToolKit().getOrientation(), data, "CAMERA",
+                    getSettingManager().getPicFormat(CameraSettings.KEY_PICTURE_FORMAT));
             mSessionManager.restartPreviewAfterShot();
         }
 
