@@ -4,16 +4,18 @@
     android:orientation="vertical"
     android:layout_width="wrap_content"
     android:minWidth="@dimen/options_min_width"
-    android:layout_height="@dimen/options_item_height"
+    android:minHeight="@dimen/options_item_height"
+    android:layout_height="wrap_content"
     android:padding="@dimen/options_layout_margin"
     android:gravity="center"
     android:background="?android:attr/selectableItemBackgroundBorderless">
-    <Button
+    <ImageView
         android:id="@+id/item_icon"
         android:layout_width="@dimen/options_img_size"
         android:layout_height="@dimen/options_img_size"
+        android:layout_marginTop="@dimen/options_text_margin"
         android:scaleType="centerInside"
-        android:background="@mipmap/flashlight_auto"
+        android:background="@drawable/setting_icon_bg_normal"
         android:clickable="false"
         android:layout_gravity="center"/>
     <TextView

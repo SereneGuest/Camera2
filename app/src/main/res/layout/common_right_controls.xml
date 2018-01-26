@@ -13,6 +13,6 @@
         android:background="@drawable/button_bg"
         android:layout_margin="@dimen/default_controls_margin"
         android:scaleType="centerInside"
-        android:src="@mipmap/ic_more"/>
+        android:src="@drawable/ic_vector_more"/>
 
 </LinearLayout>

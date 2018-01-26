@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.smewise.camera2.R;
@@ -47,7 +48,7 @@ public class SubMenuListAdapter extends RecyclerView.Adapter<SubMenuListAdapter.
     public void onBindViewHolder(MyViewHolder holder, final int position) {
         holder.itemText.setText(mPref.getEntries()[position]);
         if (mPref.getEntryIcons() != null) {
-            holder.itemIcon.setBackgroundResource(mPref.getEntryIcons()[position]);
+            holder.itemIcon.setImageResource(mPref.getEntryIcons()[position]);
             holder.itemIcon.setVisibility(View.VISIBLE);
         } else {
             holder.itemIcon.setVisibility(View.GONE);
@@ -69,11 +70,11 @@ public class SubMenuListAdapter extends RecyclerView.Adapter<SubMenuListAdapter.
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder {
-        Button itemIcon;
+        ImageView itemIcon;
         TextView itemText;
         MyViewHolder(View itemView) {
             super(itemView);
-            itemIcon = (Button) itemView.findViewById(R.id.item_icon);
+            itemIcon = (ImageView) itemView.findViewById(R.id.item_icon);
             itemText = (TextView) itemView.findViewById(R.id.item_text);
         }
     }

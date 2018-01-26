@@ -36,7 +36,7 @@
     <dimen name="setting_text_size">16sp</dimen>
 
     <dimen name="options_item_height">60dp</dimen>
-    <dimen name="options_img_size">30dp</dimen>
+    <dimen name="options_img_size">35dp</dimen>
     <dimen name="options_text_size">13sp</dimen>
     <dimen name="options_text_margin">5dp</dimen>
     <dimen name="options_button_text_size">15sp</dimen>

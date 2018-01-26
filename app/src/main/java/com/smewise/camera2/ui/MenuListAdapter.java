@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.smewise.camera2.R;
@@ -40,7 +41,7 @@ public class MenuListAdapter extends RecyclerView.Adapter<MenuListAdapter.MyView
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
         holder.itemText.setText(mGroup.get(position).getTitle());
-        holder.itemIcon.setBackgroundResource(mGroup.get(position).getIcon());
+        holder.itemIcon.setImageResource(mGroup.get(position).getIcon());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -58,11 +59,11 @@ public class MenuListAdapter extends RecyclerView.Adapter<MenuListAdapter.MyView
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder {
-        Button itemIcon;
+        ImageView itemIcon;
         TextView itemText;
         MyViewHolder(View itemView) {
             super(itemView);
-            itemIcon = (Button) itemView.findViewById(R.id.item_icon);
+            itemIcon = (ImageView) itemView.findViewById(R.id.item_icon);
             itemText = (TextView) itemView.findViewById(R.id.item_text);
         }
     }

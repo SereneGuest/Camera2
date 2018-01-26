@@ -30,7 +30,7 @@
         android:layout_marginStart="@dimen/bottom_control_margin"
         android:contentDescription="@string/app_name"
         android:scaleType="center"
-        android:src="@mipmap/ic_settings_normal" />
+        android:src="@drawable/ic_vector_settings" />
 
 
 </LinearLayout>
