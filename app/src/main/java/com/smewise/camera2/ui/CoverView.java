@@ -46,7 +46,8 @@ public class CoverView extends LinearLayout implements ViewTreeObserver.OnGlobal
 
     public void setMode(int index) {
         if (mCoverIcon != null) {
-            mCoverIcon.setImageResource(mModuleSrc[index]);
+            //TODO can show some tips
+            mCoverIcon.setImageResource(R.drawable.ic_switch_module);
         }
     }
 

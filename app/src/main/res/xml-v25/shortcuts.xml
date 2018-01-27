@@ -3,7 +3,7 @@
     <shortcut
         android:shortcutId="settings"
         android:enabled="true"
-        android:icon="@mipmap/cover_icon_photo"
+        android:icon="@mipmap/ic_shortcut_icon"
         android:shortcutShortLabel="@string/settings_camera"
         android:shortcutLongLabel="@string/settings_msg"
         android:shortcutDisabledMessage="@string/settings_disable">

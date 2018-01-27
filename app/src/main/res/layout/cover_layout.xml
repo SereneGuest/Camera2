@@ -15,6 +15,6 @@
         android:id="@+id/cover_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@mipmap/cover_icon_photo"/>
+        android:src="@drawable/ic_switch_module"/>
 
 </com.smewise.camera2.ui.CoverView>
