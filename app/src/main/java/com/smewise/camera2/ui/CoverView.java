@@ -24,11 +24,6 @@ public class CoverView extends LinearLayout implements ViewTreeObserver.OnGlobal
     private Animator mShowAnimator;
     private Animator mHideAnimator;
     private boolean mIsAnimatorEnd = true;
-    private int[] mModuleSrc = new int[]{
-            R.mipmap.cover_icon_photo,
-            R.mipmap.cover_icon_dual,
-            R.mipmap.cover_icon_photo,
-    };
 
     public CoverView(Context context) {
         this(context, null);
