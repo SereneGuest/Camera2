@@ -11,9 +11,11 @@
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
+        android:logo="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
         android:supportsRtl="true"
+        android:resizeableActivity="false"
         android:theme="@style/AppThemeDefault">
         <activity
             android:name="com.smewise.camera2.CameraActivity"
