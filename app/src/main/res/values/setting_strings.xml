@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--for setting start-->
+    <string name="setting_camera_id">Camera id</string>
+    <string name="setting_main_camera_id">Main camera id</string>
+    <string name="setting_aux_camera_id">Aux camera id</string>
+    <string name="setting_camera_id_0">Open Camera 0</string>
+    <string name="setting_camera_id_1">Open Camera 1</string>
+    <string name="setting_camera_id_2">Open Camera 2</string>
+    <string name="setting_camera_id_3">Open Camera 3</string>
+    <string name="setting_camera_value_0">0</string>
+    <string name="setting_camera_value_1">1</string>
+    <string name="setting_camera_value_2">2</string>
+    <string name="setting_camera_value_3">3</string>
+    <string-array name="setting_camera_id_entries">
+        <item>@string/setting_camera_id_0</item>
+        <item>@string/setting_camera_id_1</item>
+        <item>@string/setting_camera_id_2</item>
+        <item>@string/setting_camera_id_3</item>
+    </string-array>
+    <string-array name="setting_camera_id_entries_value">
+        <item>@string/setting_camera_value_0</item>
+        <item>@string/setting_camera_value_1</item>
+        <item>@string/setting_camera_value_2</item>
+        <item>@string/setting_camera_value_3</item>
+    </string-array>
+
+    <string name="setting_picture_size">Picture size</string>
+    <string name="setting_picture_format">Picture format</string>
+    <string name="setting_preview_size">Preview size</string>
+
+    <string name="setting_restart_preview">Restart preview after take picture </string>
+    <!--for setting end-->
+
+    <!--for menu setting start-->
+    <string name="menu_switch_camera">Switch</string>
+    <string name="menu_flash_title">Flash</string>
+    <array name="menu_flash_icon">
+        <item>@drawable/ic_vector_flash_auto</item>
+        <item>@drawable/ic_vector_flash_off</item>
+        <item>@drawable/ic_vector_flash_on</item>
+        <item>@drawable/ic_vector_flash_torch</item>
+    </array>
+    <array name="menu_flash_entries">
+        <item>@string/flash_auto</item>
+        <item>@string/flash_off</item>
+        <item>@string/flash_on</item>
+        <item>@string/flash_torch</item>
+    </array>
+    <string name="flash_auto">auto</string>
+    <string name="flash_off">off</string>
+    <string name="flash_on">on</string>
+    <string name="flash_torch">torch</string>
+    <!--for menu setting end-->
+</resources>
