@@ -4,6 +4,7 @@
         android:shortcutId="settings"
         android:enabled="true"
         android:icon="@mipmap/ic_shortcut_icon"
+        android:roundIcon="@mipmap/ic_shortcut_icon_round"
         android:shortcutShortLabel="@string/settings_camera"
         android:shortcutLongLabel="@string/settings_msg"
         android:shortcutDisabledMessage="@string/settings_disable">
