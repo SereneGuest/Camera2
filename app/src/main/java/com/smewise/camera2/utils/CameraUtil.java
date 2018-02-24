@@ -72,12 +72,11 @@ public class CameraUtil {
         return sizeStr;
     }
 
-    public static Size getPreviewSize(StreamConfigurationMap map, double ratio) {
+    public static Size getPreviewSize(StreamConfigurationMap map, Point displaySize) {
         Size[] supportSize = map.getOutputSizes(SurfaceTexture.class);
         sortCamera2Size(supportSize);
         for (Size size : supportSize) {
-            double tmp = size.getWidth() / (double)size.getHeight() - ratio;
-            if (Math.abs(tmp) < ASPECT_TOLERANCE) {
+            if (size.getHeight() == displaySize.x && size.getWidth() == displaySize.x * 4 / 3) {
                 return size;
             }
         }
@@ -131,6 +130,14 @@ public class CameraUtil {
 
     public static int getBottomBarHeight(int screenWidth) {
         return (int) (screenWidth * (RATIO_16X9 - RATIO_4X3));
+    }
+
+    public static String getDefaultPreviewSizeStr(Context context) {
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context
+                .WINDOW_SERVICE);
+        Point realPoint = new Point();
+        windowManager.getDefaultDisplay().getRealSize(realPoint);
+        return (realPoint.x * 4 / 3) + SPLIT_TAG + realPoint.x;
     }
 
     public static String[][] getOutputFormat(int[] supportFormat) {

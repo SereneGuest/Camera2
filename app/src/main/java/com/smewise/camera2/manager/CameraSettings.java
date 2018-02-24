@@ -3,11 +3,13 @@ package com.smewise.camera2.manager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.ImageFormat;
+import android.graphics.Point;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.Size;
+import android.view.WindowManager;
 
 import com.smewise.camera2.Config;
 import com.smewise.camera2.R;
@@ -37,10 +39,14 @@ public class CameraSettings {
     public static final String KEY_RESTART_PREVIEW = "pref_restart_preview";
 
     private SharedPreferences mSharedPreference;
+    private Point mRealDisplaySize = new Point();
 
     public CameraSettings(Context context) {
         PreferenceManager.setDefaultValues(context, R.xml.camera_setting, false);
         mSharedPreference = PreferenceManager.getDefaultSharedPreferences(context);
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context
+                .WINDOW_SERVICE);
+        windowManager.getDefaultDisplay().getRealSize(mRealDisplaySize);
     }
 
     public String getCameraId(String key) {
@@ -96,7 +102,7 @@ public class CameraSettings {
         String preStr = mSharedPreference.getString(key, Config.NULL_VALUE);
         if (Config.NULL_VALUE.equals(preStr)) {
             // preference not set, use default value
-            return CameraUtil.getPreviewSize(map, Config.DEFAULT_RATIO);
+            return CameraUtil.getPreviewSize(map, mRealDisplaySize);
         } else {
             String[] size = preStr.split(CameraUtil.SPLIT_TAG);
             return new Size(Integer.parseInt(size[0]), Integer.parseInt(size[1]));

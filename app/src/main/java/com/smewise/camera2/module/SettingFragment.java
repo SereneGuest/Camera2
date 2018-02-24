@@ -103,8 +103,12 @@ public class SettingFragment extends PreferenceFragment {
         listPreference.setEntries(size);
         listPreference.setEntryValues(size);
         if (listPreference.getValue() == null) {
-            //first init set default value
-            listPreference.setValueIndex(0);
+            // set default preview 4:3 less than screen size
+            if (key.contains("preview_size")) {
+                listPreference.setValueIndex(getDefaultIndexForPreviewSize(size));
+            } else {
+                listPreference.setValueIndex(0);
+            }
         } else {
             // value exist, check whether value in size list
             int index = 0;
@@ -119,6 +123,15 @@ public class SettingFragment extends PreferenceFragment {
         }
         listPreference.setSummary(listPreference.getValue());
         Log.d(TAG, key + "--" + listPreference.getValue());
+    }
+
+    private int getDefaultIndexForPreviewSize(String[] size) {
+        for (int i = 0; i<size.length;i++) {
+            if (size[i].equals(CameraUtil.getDefaultPreviewSizeStr(getActivity()))) {
+                return i;
+            }
+        }
+        return 0;
     }
 
     @Override
