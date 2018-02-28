@@ -1,6 +1,7 @@
 package com.smewise.camera2;
 
 import android.graphics.ImageFormat;
+import android.util.Size;
 
 import com.smewise.camera2.utils.CameraUtil;
 
@@ -9,6 +10,7 @@ import com.smewise.camera2.utils.CameraUtil;
  */
 
 public class Config {
+    // some default config, not actually
     public static final String MAIN_ID = "0";
     public static final String AUX_ID = "2";
     private static final String TAG_PREFIX = "wenzhe/";
@@ -20,5 +22,9 @@ public class Config {
 
     public static String getTag(Class<?> cls) {
         return TAG_PREFIX + cls.getSimpleName();
+    }
+
+    public static boolean ratioMatched(Size size) {
+        return size.getWidth() * 3 == size.getHeight() * 4;
     }
 }

@@ -210,7 +210,7 @@ public class SessionManager {
             picKey = CameraSettings.KEY_AUX_PICTURE_SIZE;
             preKey = CameraSettings.KEY_AUX_PREVIEW_SIZE;
             formatKey = CameraSettings.KEY_AUX_PICTURE_FORMAT;
-        } else if (id.endsWith(mMainId) && isDualCamera()) {
+        } else if (id.equals(mMainId) && isDualCamera()) {
             // dual camera, main
             picKey = CameraSettings.KEY_MAIN_PICTURE_SIZE;
             preKey = CameraSettings.KEY_MAIN_PREVIEW_SIZE;

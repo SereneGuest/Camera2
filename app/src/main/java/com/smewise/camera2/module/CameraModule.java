@@ -4,6 +4,7 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.smewise.camera2.Config;
@@ -14,7 +15,6 @@ import com.smewise.camera2.ui.CameraTab;
 import com.smewise.camera2.ui.CoverView;
 import com.smewise.camera2.utils.CameraThread;
 import com.smewise.camera2.utils.FileSaver;
-
 
 /**
  * Created by wenzhe on 16-3-9.
@@ -65,6 +65,15 @@ public abstract class CameraModule {
     public abstract void start();
 
     public abstract void stop();
+
+    protected void addModuleView(View view) {
+        if (rootView.getChildAt(0) != view) {
+            if (rootView.getChildCount() > 0) {
+                rootView.removeAllViews();
+            }
+            rootView.addView(view);
+        }
+    }
 
     void setNewModule(int index) {
         getToolKit().getBaseUI().changeModule(index);

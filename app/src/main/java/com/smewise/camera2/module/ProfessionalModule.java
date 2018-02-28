@@ -55,7 +55,7 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
         }
         // when module changed , need update listener
         fileSaver.setFileListener(this);
-        rootView.addView(mUI.getRootView());
+        addModuleView(mUI.getRootView());
 
         isModulePause = false;
         isFirstPreviewLoaded = false;
@@ -107,8 +107,6 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
         Camera2Manager.getManager().releaseCamera(getCameraThread());
         isCameraOpened = false;
         isFirstPreviewLoaded = false;
-        // remove ui
-        rootView.removeAllViews();
         Log.d(TAG, "stop module");
     }
 

@@ -45,7 +45,6 @@ public class CameraActivity extends AppCompatActivity {
         if (SETTING_ACTION.equals(getIntent().getAction())) {
             mOpenSettingFromShortcut = true;
         }
-        new Intent(this, CameraActivity.class);
     }
 
     private void setWindowFlag() {

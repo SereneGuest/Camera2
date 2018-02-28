@@ -39,12 +39,36 @@ public class CameraUtil {
         Arrays.sort(sizes, comparator);
     }
 
-    public static Size getPictureSize(StreamConfigurationMap map, double ratio, int format) {
+    /**
+     * get default picture size from support picture size list
+     * @param map specific stream configuration map used for get supported picture size
+     * @param format used for get supported picture size list from map
+     * @return largest 4:3 picture size or largest size in supported list
+     */
+    public static Size getDefaultPictureSize(StreamConfigurationMap map, int format) {
         Size[] supportSize = map.getOutputSizes(format);
         sortCamera2Size(supportSize);
         for (Size size : supportSize) {
-            double tmp = size.getWidth() / (double)size.getHeight() - ratio;
-            if (Math.abs(tmp) < ASPECT_TOLERANCE) {
+            if (Config.ratioMatched(size)) {
+                return size;
+            }
+        }
+        return supportSize[0];
+    }
+
+    /**
+     * get default preview size from supported preview size list
+     * @param map specific stream configuration map used for get supported preview size
+     * @param displaySize devices screen size
+     * @return preview size equals or less than screen size
+     */
+    public static Size getDefaultPreviewSize(StreamConfigurationMap map, Point displaySize) {
+        Size[] supportSize = map.getOutputSizes(SurfaceTexture.class);
+        sortCamera2Size(supportSize);
+        for (Size size : supportSize) {
+            if (!Config.ratioMatched(size)) {continue;}
+            if ((size.getHeight() == displaySize.x)
+                    || (size.getWidth() <= displaySize.y && size.getHeight() <= displaySize.x)) {
                 return size;
             }
         }
@@ -70,17 +94,6 @@ public class CameraUtil {
             sizeStr[i] = supportSize[i].getWidth() + SPLIT_TAG + supportSize[i].getHeight();
         }
         return sizeStr;
-    }
-
-    public static Size getPreviewSize(StreamConfigurationMap map, Point displaySize) {
-        Size[] supportSize = map.getOutputSizes(SurfaceTexture.class);
-        sortCamera2Size(supportSize);
-        for (Size size : supportSize) {
-            if (size.getHeight() == displaySize.x && size.getWidth() == displaySize.x * 4 / 3) {
-                return size;
-            }
-        }
-        return supportSize[0];
     }
 
     public static Size getPreviewUiSize(Context context, Size previewSize) {
@@ -132,12 +145,21 @@ public class CameraUtil {
         return (int) (screenWidth * (RATIO_16X9 - RATIO_4X3));
     }
 
-    public static String getDefaultPreviewSizeStr(Context context) {
+    public static int getDefaultPreviewSizeIndex(Context context, Size[] supportSize) {
         WindowManager windowManager = (WindowManager) context.getSystemService(Context
                 .WINDOW_SERVICE);
         Point realPoint = new Point();
         windowManager.getDefaultDisplay().getRealSize(realPoint);
-        return (realPoint.x * 4 / 3) + SPLIT_TAG + realPoint.x;
+        for (int i = 0; i < supportSize.length; i++) {
+            if (!Config.ratioMatched(supportSize[i])) {
+                continue;
+            }
+            if ((supportSize[i].getHeight() == realPoint.x) || (supportSize[i].getWidth()
+                    <= realPoint.y && supportSize[i].getHeight() <= realPoint.x)) {
+                return i;
+            }
+        }
+        return 0;
     }
 
     public static String[][] getOutputFormat(int[] supportFormat) {

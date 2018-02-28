@@ -2,6 +2,7 @@ package com.smewise.camera2.module;
 
 import android.content.SharedPreferences;
 import android.graphics.ImageFormat;
+import android.graphics.Point;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -11,6 +12,7 @@ import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,10 +72,10 @@ public class SettingFragment extends PreferenceFragment {
         int currentFormat = setPictureFormat(map, picFormatKey);
         // get picture size info
         String[] picSize = CameraUtil.getPictureSizeList(map, currentFormat);
-        setCameraSizeInfo(picSizeKey, picSize);
+        setCameraPicSizeInfo(picSizeKey, currentFormat, picSize, map);
         // get preview size info
         String[] preSize = CameraUtil.getPreviewSizeList(map);
-        setCameraSizeInfo(preSizeKey, preSize);
+        setCameraPreSizeInfo(preSizeKey, preSize, map);
     }
 
     private int setPictureFormat(StreamConfigurationMap map, String key) {
@@ -98,36 +100,47 @@ public class SettingFragment extends PreferenceFragment {
         return Integer.parseInt(picFormatPref.getValue());
     }
 
-    private void setCameraSizeInfo(String key, String[] size) {
+    private void setCameraPreSizeInfo(String key, String[] size, StreamConfigurationMap map) {
         ListPreference listPreference = (ListPreference) findPreference(key);
         listPreference.setEntries(size);
         listPreference.setEntryValues(size);
         if (listPreference.getValue() == null) {
-            // set default preview 4:3 less than screen size
-            if (key.contains("preview_size")) {
-                listPreference.setValueIndex(getDefaultIndexForPreviewSize(size));
-            } else {
-                listPreference.setValueIndex(0);
-            }
+            // set default preview size less
+            Point point = new Point();
+            getActivity().getWindowManager().getDefaultDisplay().getRealSize(point);
+            Size preSize = CameraUtil.getDefaultPreviewSize(map, point);
+            String preStr = preSize.getWidth() + CameraUtil.SPLIT_TAG + preSize.getHeight();
+            listPreference.setValueIndex(findIndexByValue(preStr, size));
         } else {
             // value exist, check whether value in size list
-            int index = 0;
             String value = listPreference.getValue();
-            for (int i = 0; i < size.length; i++) {
-                if (value.equals(size[i])) {
-                    index = i;
-                    break;
-                }
-            }
-            listPreference.setValueIndex(index);
+            listPreference.setValueIndex(findIndexByValue(value,size));
         }
         listPreference.setSummary(listPreference.getValue());
         Log.d(TAG, key + "--" + listPreference.getValue());
     }
 
-    private int getDefaultIndexForPreviewSize(String[] size) {
-        for (int i = 0; i<size.length;i++) {
-            if (size[i].equals(CameraUtil.getDefaultPreviewSizeStr(getActivity()))) {
+    private void setCameraPicSizeInfo(String picKey, int format, String[] size,
+                                   StreamConfigurationMap map) {
+        ListPreference listPreference = (ListPreference) findPreference(picKey);
+        listPreference.setEntries(size);
+        listPreference.setEntryValues(size);
+        if (listPreference.getValue() == null) {
+            // set default preview size less
+            Size picSize = CameraUtil.getDefaultPictureSize(map, format);
+            String picStr = picSize.getWidth() + CameraUtil.SPLIT_TAG + picSize.getHeight();
+            listPreference.setValueIndex(findIndexByValue(picStr, size));
+        } else {
+            // value exist, check whether value in size list
+            listPreference.setValueIndex(findIndexByValue(listPreference.getValue(), size));
+        }
+        listPreference.setSummary(listPreference.getValue());
+        Log.d(TAG, picKey + "--" + listPreference.getValue());
+    }
+
+    private int findIndexByValue(String value, String[] lists) {
+        for (int i = 0; i < lists.length; i++) {
+            if (value.equals(lists[i])) {
                 return i;
             }
         }

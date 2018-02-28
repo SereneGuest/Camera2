@@ -60,7 +60,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener 
 
         // when module changed , need update listener
         fileSaver.setFileListener(this);
-        rootView.addView(mUI.getRootView());
+        addModuleView(mUI.getRootView());
 
         isModulePause = false;
         isFirstPreviewLoaded = false;
@@ -112,8 +112,6 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener 
         Camera2Manager.getManager().releaseCamera(getCameraThread());
         isCameraOpened = false;
         isFirstPreviewLoaded = false;
-        // remove view
-        rootView.removeAllViews();
         Log.d(TAG, "stop module");
     }
 

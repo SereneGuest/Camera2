@@ -63,9 +63,9 @@ public class CameraSettings {
         return Integer.parseInt(format);
     }
 
-    private int getPicFormatForKey(String picSize) {
+    private int getPicFormatForKey(String key) {
         String formatKey;
-        switch (picSize) {
+        switch (key) {
             case KEY_PICTURE_SIZE:
                 formatKey = KEY_PICTURE_FORMAT;
                 break;
@@ -91,7 +91,7 @@ public class CameraSettings {
         String picStr = mSharedPreference.getString(key, Config.NULL_VALUE);
         if (Config.NULL_VALUE.equals(picStr)) {
             // preference not set, use default value
-            return CameraUtil.getPictureSize(map, Config.DEFAULT_RATIO, getPicFormatForKey(key));
+            return CameraUtil.getDefaultPictureSize(map, getPicFormatForKey(key));
         } else {
             String[] size = picStr.split(CameraUtil.SPLIT_TAG);
             return new Size(Integer.parseInt(size[0]), Integer.parseInt(size[1]));
@@ -102,7 +102,7 @@ public class CameraSettings {
         String preStr = mSharedPreference.getString(key, Config.NULL_VALUE);
         if (Config.NULL_VALUE.equals(preStr)) {
             // preference not set, use default value
-            return CameraUtil.getPreviewSize(map, mRealDisplaySize);
+            return CameraUtil.getDefaultPreviewSize(map, mRealDisplaySize);
         } else {
             String[] size = preStr.split(CameraUtil.SPLIT_TAG);
             return new Size(Integer.parseInt(size[0]), Integer.parseInt(size[1]));

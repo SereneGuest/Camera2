@@ -62,7 +62,7 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
         }
         // when module changed , need update listener
         fileSaver.setFileListener(this);
-        rootView.addView(mUI.getRootView());
+        addModuleView(mUI.getRootView());
 
         isFirstPreviewLoaded = false;
         isModulePause = false;
@@ -131,8 +131,6 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
         Camera2Manager.getManager().releaseCamera(getCameraThread());
         isCameraOpened = false;
         isFirstPreviewLoaded = false;
-        // remove ui
-        rootView.removeAllViews();
         Log.d(TAG, "stop module");
     }
 
