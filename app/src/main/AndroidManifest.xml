@@ -16,6 +16,7 @@
         android:largeHeap="true"
         android:supportsRtl="true"
         android:resizeableActivity="false"
+        android:name=".CameraApp"
         android:theme="@style/AppThemeDefault">
         <activity
             android:name="com.smewise.camera2.CameraActivity"
