@@ -20,13 +20,12 @@ import com.smewise.camera2.utils.CameraThread;
  * Created by wenzhe on 3/17/17.
  */
 
-public class Camera2Manager implements CameraController {
+public class Camera2Manager {
     private final String TAG = Config.getTag(Camera2Manager.class);
     private static Camera2Manager mManager;
     private Event mEvent;
     private CameraManager mCameraManager;
     private Handler mMainHandler;
-    private CameraThread.CameraJob mJob;
     //camera devices
     private CameraDevice mDevice;
     private CameraDevice mAuxDevice;
@@ -38,26 +37,11 @@ public class Camera2Manager implements CameraController {
         void onCameraOpen(CameraDevice device);
     }
 
-    public static Camera2Manager getManager() {
+    public static synchronized Camera2Manager getManager() {
         if (mManager == null) {
             mManager = new Camera2Manager();
         }
         return mManager;
-    }
-
-    private Camera2Manager() {
-        mJob = new CameraThread.CameraJob();
-    }
-
-    /* this method will run in CameraThread*/
-    @Override
-    public void openCamera() {
-        openCamera2();
-    }
-
-    @Override
-    public void closeCamera() {
-        closeDevice();
     }
 
     public void setDualCameraMode(boolean dualCameraMode) {
@@ -143,16 +127,19 @@ public class Camera2Manager implements CameraController {
     }
 
     public void openCamera(Context context, Event event, Handler mainHandler,
-            CameraThread cameraThread) {
+                           CameraThread cameraThread) {
         mEvent = event;
         mMainHandler = mainHandler;
         if (mCameraManager == null) {
             mCameraManager = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
         }
         if (Config.CLOSE_CAMERA_ASYNC) {
-            mJob.jobCallback = this;
-            mJob.jobType = CameraThread.OPEN_CAMERA;
-            cameraThread.addCameraJob(mJob);
+            cameraThread.post(new Runnable() {
+                @Override
+                public void run() {
+                    openCamera2();
+                }
+            });
             cameraThread.notifyJob();
         } else {
             openCamera2();
@@ -161,10 +148,12 @@ public class Camera2Manager implements CameraController {
 
     public void releaseCamera(CameraThread cameraThread) {
         if (Config.CLOSE_CAMERA_ASYNC) {
-            mJob.jobCallback = this;
-            mJob.jobType = CameraThread.CLOSE_CAMERA;
-            cameraThread.addCameraJob(mJob);
-            cameraThread.notifyJob();
+            cameraThread.post(new Runnable() {
+                @Override
+                public void run() {
+                    closeDevice();
+                }
+            });
         } else {
             closeDevice();
         }
@@ -184,7 +173,7 @@ public class Camera2Manager implements CameraController {
     private CameraDevice.StateCallback stateCallback = new CameraDevice.StateCallback() {
         @Override
         public void onOpened(@NonNull CameraDevice camera) {
-                Log.d(TAG, "device opened");
+            Log.d(TAG, "device opened");
             if (mCameraId.equals(camera.getId())) {
                 mDevice = camera;
             } else {

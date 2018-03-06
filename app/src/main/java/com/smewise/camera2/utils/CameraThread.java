@@ -4,7 +4,6 @@ import android.os.Process;
 import android.util.Log;
 
 import com.smewise.camera2.Config;
-import com.smewise.camera2.manager.CameraController;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -15,16 +14,15 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class CameraThread extends Thread {
     private static final String TAG = Config.getTag(CameraThread.class);
-    public static final String OPEN_CAMERA = "open camera";
-    public static final String CLOSE_CAMERA = "close camera";
+
     private volatile boolean mActive = true;
-    private LinkedBlockingQueue<CameraJob> mQueue;
+    private LinkedBlockingQueue<Runnable> mQueue;
 
     public CameraThread() {
         mQueue = new LinkedBlockingQueue<>();
     }
 
-    public void addCameraJob(CameraJob job) {
+    public void post(Runnable job) {
         if (!mQueue.offer(job)) {
             Log.e(TAG, "failed to add job");
         }
@@ -41,14 +39,8 @@ public class CameraThread extends Thread {
                     break;
                 }
             } else {
-                CameraJob job = mQueue.poll();
-                if (job != null) {
-                    if (OPEN_CAMERA.equals(job.jobType)) {
-                        job.jobCallback.openCamera();
-                    } else {
-                        job.jobCallback.closeCamera();
-                    }
-                }
+                Runnable job = mQueue.poll();
+                job.run();
             }
         }
         // loop end
@@ -70,11 +62,6 @@ public class CameraThread extends Thread {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-    }
-
-    public static class CameraJob {
-        public String jobType;
-        public CameraController jobCallback;
     }
 
 }

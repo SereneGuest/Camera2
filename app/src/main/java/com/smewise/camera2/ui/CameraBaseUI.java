@@ -97,9 +97,8 @@ public abstract class CameraBaseUI implements GestureTextureView.GestureListener
 
     void updateUiSize(int width, int height) {
         //update preview ui size
-        boolean is4x3 = Math.abs(height / (double) width - CameraUtil.RATIO_4X3) < CameraUtil
-                .ASPECT_TOLERANCE;
-        boolean is18x9 = (mDisplaySize.y + mVirtualKeyHeight) / (double) mDisplaySize.x > 1.8;
+        boolean is4x3 = width * 4 == height * 3;
+        boolean is18x9 = (mDisplaySize.y + mVirtualKeyHeight) * 9 == mDisplaySize.x * 18;
         RelativeLayout.LayoutParams preParams = new RelativeLayout.LayoutParams(width, height);
         RelativeLayout.LayoutParams bottomBarParams =
                 (RelativeLayout.LayoutParams) mBottomContainer.getLayoutParams();
