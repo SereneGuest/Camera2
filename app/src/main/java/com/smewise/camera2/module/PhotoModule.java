@@ -63,7 +63,6 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener 
         addModuleView(mUI.getRootView());
 
         isModulePause = false;
-        isFirstPreviewLoaded = false;
         Log.d(TAG, "start module");
     }
 
@@ -75,14 +74,26 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener 
                 mSessionManager.createPreviewSession(mSurfaceTexture, null, mCallback);
             }
         }
+
+        @Override
+        public void onCameraClosed() {
+            if (mUI != null) {
+                mUI.resetFrameCount();
+            }
+        }
     };
 
     private SessionManager.Callback mCallback = new SessionManager.Callback() {
 
         @Override
-        public void onMainData(byte[] data, int width, int height) {
-            fileSaver.saveFile(width, height, getToolKit().getOrientation(), data, "CAMERA",
-                    getSettingManager().getPicFormat(CameraSettings.KEY_PICTURE_FORMAT));
+        public void onMainData(final byte[] data, final int width, final int height) {
+            getCameraThread().post(new Runnable() {
+                @Override
+                public void run() {
+                    fileSaver.saveFile(width, height, getToolKit().getOrientation(), data, "CAMERA",
+                            getSettingManager().getPicFormat(CameraSettings.KEY_PICTURE_FORMAT));
+                }
+            });
             mSessionManager.restartPreviewAfterShot();
         }
 
@@ -92,9 +103,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener 
         }
 
         @Override
-        public void onRequestComplete() {
-            hideCoverView();
-        }
+        public void onRequestComplete() {}
 
         @Override
         public void onViewChange(int width, int height) {
@@ -105,13 +114,13 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener 
 
     @Override
     public void stop() {
+        showCoverView();
         isModulePause = true;
         mFocusManager.removeDelayMessage();
         mFocusManager.hideFocusUI();
         mSessionManager.release();
         Camera2Manager.getManager().releaseCamera(getCameraThread());
         isCameraOpened = false;
-        isFirstPreviewLoaded = false;
         Log.d(TAG, "stop module");
     }
 
@@ -177,6 +186,9 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener 
                     setNewModule((Integer) value);
                     break;
                 case CameraBaseUI.ACTION_SWITCH_CAMERA:
+                    break;
+                case CameraBaseUI.ACTION_PREVIEW_READY:
+                    hideCoverView();
                     break;
                 default:
                     break;

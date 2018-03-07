@@ -16,8 +16,6 @@ public class Config {
     private static final String TAG_PREFIX = "wenzhe/";
     public static final float AUX_PREVIEW_SCALE = 0.3F;
     public static final int IMAGE_FORMAT = ImageFormat.JPEG;
-    public static final boolean CLOSE_CAMERA_ASYNC = true;
-    public static final double DEFAULT_RATIO = CameraUtil.RATIO_4X3;
     public static final String NULL_VALUE = "SharedPreference No Value";
 
     public static String getTag(Class<?> cls) {

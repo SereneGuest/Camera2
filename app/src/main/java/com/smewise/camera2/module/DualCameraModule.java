@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
-import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CaptureRequest;
 import android.net.Uri;
 import android.util.Log;
@@ -63,8 +62,6 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
         // when module changed , need update listener
         fileSaver.setFileListener(this);
         addModuleView(mUI.getRootView());
-
-        isFirstPreviewLoaded = false;
         isModulePause = false;
         Log.d(TAG, "start module");
     }
@@ -78,33 +75,48 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
                         mainSurfaceTexture, auxSurfaceTexture, mCallback);
             }
         }
+
+        @Override
+        public void onCameraClosed() {
+            if (mUI != null) {
+                mUI.resetFrameCount();
+            }
+        }
     };
 
     private boolean isMainComeBack = false;
     private boolean isAuxComeBack = false;
     private SessionManager.Callback mCallback = new SessionManager.Callback() {
         @Override
-        public void onMainData(byte[] data, int width, int height) {
+        public void onMainData(final byte[] data, final int width, final int height) {
             Log.e(TAG, "main data complete");
-            fileSaver.saveFile(width, height, getToolKit().getOrientation(), data, "MAIN",
-                    getSettingManager().getPicFormat(CameraSettings.KEY_MAIN_PICTURE_FORMAT));
+            getCameraThread().post(new Runnable() {
+                @Override
+                public void run() {
+                    fileSaver.saveFile(width, height, getToolKit().getOrientation(), data, "MAIN",
+                            getSettingManager().getPicFormat(CameraSettings.KEY_MAIN_PICTURE_FORMAT));
+                }
+            });
             isMainComeBack = true;
             enableUiAfterShot();
         }
 
         @Override
-        public void onAuxData(byte[] data, int width, int height) {
+        public void onAuxData(final byte[] data, final int width, final int height) {
             Log.e(TAG, "aux data complete");
-            fileSaver.saveFile(width, height, getToolKit().getOrientation(), data, "AUX",
-                    getSettingManager().getPicFormat(CameraSettings.KEY_AUX_PICTURE_FORMAT));
+            getCameraThread().post(new Runnable() {
+                @Override
+                public void run() {
+                    fileSaver.saveFile(width, height, getToolKit().getOrientation(), data, "AUX",
+                            getSettingManager().getPicFormat(CameraSettings.KEY_AUX_PICTURE_FORMAT));
+                }
+            });
             isAuxComeBack = true;
             enableUiAfterShot();
         }
 
         @Override
-        public void onRequestComplete() {
-            hideCoverView();
-        }
+        public void onRequestComplete() {}
 
         @Override
         public void onViewChange(int width, int height) {
@@ -124,13 +136,13 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
 
     @Override
     public void stop() {
+        showCoverView();
         isModulePause = true;
         mFocusManager.hideFocusUI();
         mFocusManager.removeDelayMessage();
         sessionManager.release();
         Camera2Manager.getManager().releaseCamera(getCameraThread());
         isCameraOpened = false;
-        isFirstPreviewLoaded = false;
         Log.d(TAG, "stop module");
     }
 
@@ -198,6 +210,9 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
                     setNewModule((Integer) value);
                     break;
                 case CameraBaseUI.ACTION_SWITCH_CAMERA:
+                    break;
+                case CameraBaseUI.ACTION_PREVIEW_READY:
+                    hideCoverView();
                     break;
                 default:
                     break;

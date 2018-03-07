@@ -33,30 +33,26 @@ public class FileSaver {
     private ContentResolver mResolver;
     private FileListener mListener;
     private Handler mHandler;
-    private SaveThread mSaveThread;
-    private List<ImageInfo> imageInfos = new LinkedList<>();
 
     public interface FileListener {
         void onFileSaved(Uri uri, String path, @Nullable Bitmap thumbnail);
     }
 
     private class ImageInfo {
-        public byte[] imgData;
-        public int imgWidth;
-        public int imgHeight;
-        public int imgOrientation;
-        public long imgDate;
-        public Location imgLocation = null;
-        public String imgTitle;
-        public String imgPath;
-        public String imgMimeType;
+        byte[] imgData;
+        int imgWidth;
+        int imgHeight;
+        int imgOrientation;
+        long imgDate;
+        Location imgLocation;
+        String imgTitle;
+        String imgPath;
+        String imgMimeType;
     }
 
     public FileSaver(ContentResolver resolver, Handler handler) {
         mHandler = handler;
         mResolver = resolver;
-        mSaveThread = new SaveThread();
-        mSaveThread.start();
     }
 
     public void setFileListener(FileListener listener) {
@@ -80,9 +76,7 @@ public class FileSaver {
         info.imgPath = file.getPath();
         info.imgTitle = file.getName();
         info.imgMimeType = getMimeType(format);
-        imageInfos.add(info);
-
-        mSaveThread.notifyDirty();
+        startSaveProcess(info);
     }
 
     public void saveFile(Image image, int orientation, String tag, int format) {
@@ -104,9 +98,7 @@ public class FileSaver {
         info.imgData = new byte[buffer.remaining()];
         buffer.get(info.imgData);
         image.close();
-        imageInfos.add(info);
-
-        mSaveThread.notifyDirty();
+        startSaveProcess(info);
     }
 
     private int getSaveType(int format) {
@@ -154,58 +146,6 @@ public class FileSaver {
     }
 
     public void release() {
-        if (mSaveThread != null) {
-            mSaveThread.terminate();
-            try {
-                mSaveThread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            mSaveThread = null;
-        }
-        imageInfos.clear();
+        mListener = null;
     }
-
-    private class SaveThread extends Thread {
-        private volatile boolean mIsActive = true;
-        private volatile boolean mDirty = false;
-
-        @Override
-        public void run() {
-            super.run();
-            while (mIsActive) {
-                synchronized (this) {
-                    if (mIsActive && !mDirty) {
-                        Log.d(TAG, "save thread wait");
-                        try {
-                            wait();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        continue;
-                    }
-                }
-                //save file
-                if (imageInfos.isEmpty()) {
-                    Log.d(TAG, " list empty");
-                    mDirty = false;
-                } else {
-                    Log.d(TAG, " save file");
-                    startSaveProcess(imageInfos.get(0));
-                    imageInfos.remove(0);
-                }
-            }
-        }
-
-        public synchronized void notifyDirty() {
-            mDirty = true;
-            notifyAll();
-        }
-
-        public synchronized void terminate() {
-            mIsActive = false;
-            notifyAll();
-        }
-    }
-
 }

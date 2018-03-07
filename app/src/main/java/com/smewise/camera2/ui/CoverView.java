@@ -6,11 +6,9 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.view.ViewAnimationUtils;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.smewise.camera2.R;
 
@@ -21,9 +19,7 @@ import com.smewise.camera2.R;
 public class CoverView extends LinearLayout implements ViewTreeObserver.OnGlobalLayoutListener {
 
     private ImageView mCoverIcon;
-    private Animator mShowAnimator;
     private Animator mHideAnimator;
-    private boolean mIsAnimatorEnd = true;
 
     public CoverView(Context context) {
         this(context, null);
@@ -46,42 +42,22 @@ public class CoverView extends LinearLayout implements ViewTreeObserver.OnGlobal
         }
     }
 
-    private Animator createAnimation(boolean isShow) {
-        Animator animator;
-        if (isShow) {
-            animator = ViewAnimationUtils.createCircularReveal(
-                    this, getWidth() / 2, getHeight() / 2, 0, getHeight() / 2);
-        } else {
-            animator = ViewAnimationUtils.createCircularReveal(
-                    this, getWidth() / 2, getHeight() / 2, getHeight() / 2, 0);
-        }
-        animator.setDuration(600);
-        return animator;
-    }
-
-    private Animator createAlphaAnimation() {
+    private Animator createAlphaAnimation(float start, float end) {
         ObjectAnimator animator = new ObjectAnimator();
         animator.setTarget(this);
         animator.setPropertyName("alpha");
-        animator.setFloatValues(0, 1.0f);
-        animator.setDuration(300);
+        animator.setFloatValues(start, end);
+        animator.setDuration(500);
         return animator;
     }
 
-    public void showCoverWithAnimation() {
-        if (!mShowAnimator.isRunning()) {
-            mShowAnimator.start();
-            setVisibility(VISIBLE);
-        }
-    }
     public void showCover() {
+        setAlpha(1.0f);
         setVisibility(VISIBLE);
     }
 
-
     public void hideCoverWithAnimation() {
-        if (mIsAnimatorEnd && !mHideAnimator.isStarted()) {
-            mIsAnimatorEnd = false;
+        if (!mHideAnimator.isRunning() && !mHideAnimator.isStarted()) {
             mHideAnimator.start();
         }
     }
@@ -89,14 +65,13 @@ public class CoverView extends LinearLayout implements ViewTreeObserver.OnGlobal
     @Override
     public void onGlobalLayout() {
         mCoverIcon = (ImageView) this.findViewById(R.id.cover_icon);
-        mShowAnimator = createAlphaAnimation();
-        mHideAnimator = createAnimation(false);
+        mHideAnimator = createAlphaAnimation(1.0f, 0f);
         mHideAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
                 CoverView.this.setVisibility(GONE);
-                mIsAnimatorEnd = true;
+                CoverView.this.clearAnimation();
             }
         });
     }

@@ -3,6 +3,9 @@ package com.smewise.camera2.ui;
 import android.content.Context;
 import android.support.design.widget.TabLayout;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
+import android.view.View;
+
 import com.smewise.camera2.R;
 
 import java.util.ArrayList;

@@ -40,19 +40,13 @@ public class AppBaseUI implements TabLayout.OnTabSelectedListener {
     }
 
     public void changeModule(int index) {
-        /* call setSelected() will trigger onTabSelected()
-         * so remove listener before call */
-        mCameraTab.removeOnTabSelectedListener(this);
         mCameraTab.setSelected(index);
-        mController.changeModule(index);
-        mCameraTab.addOnTabSelectedListener(this);
     }
 
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
         if (tab.getPosition() != ModuleManager.getCurrentIndex()) {
             mCoverView.setMode(tab.getPosition());
-            getCoverView().showCoverWithAnimation();
             mController.changeModule(tab.getPosition());
         }
     }

@@ -68,7 +68,12 @@ public class ProfessionalUI extends CameraBaseUI implements TextureView.SurfaceT
 
     @Override
     public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-
+        // preview frame is ready when receive second frame
+        if (frameCount == 2) {return;}
+        frameCount++;
+        if (frameCount == 2) {
+            uiEvent.onAction(ACTION_PREVIEW_READY, null);
+        }
     }
 
     public void setTextureUIPreviewSize(int w, int h) {

@@ -81,7 +81,12 @@ public class DualCameraUI extends CameraBaseUI implements GestureTextureView.Ges
 
         @Override
         public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-
+            // preview frame is ready when receive second frame
+            if (frameCount == 2) {return;}
+            frameCount++;
+            if (frameCount == 2) {
+                uiEvent.onAction(ACTION_PREVIEW_READY, null);
+            }
         }
     };
     private TextureView.SurfaceTextureListener mAuxListener = new TextureView

@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.smewise.camera2.manager.Camera2Manager;
 import com.smewise.camera2.manager.CameraSettings;
 import com.smewise.camera2.module.CameraModule;
 import com.smewise.camera2.manager.CameraToolKit;
@@ -86,6 +87,7 @@ public class CameraActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         mToolKit.destroy();
+        Camera2Manager.getManager().destroy();
     }
 
     private void startModule() {
@@ -140,7 +142,6 @@ public class CameraActivity extends AppCompatActivity {
                 stopModule();
             }
             mIsSettingShow = true;
-            mBaseUI.getCoverView().showCover();
         }
 
         @Override

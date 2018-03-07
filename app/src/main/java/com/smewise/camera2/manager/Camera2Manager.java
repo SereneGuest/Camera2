@@ -25,7 +25,6 @@ public class Camera2Manager {
     private static Camera2Manager mManager;
     private Event mEvent;
     private CameraManager mCameraManager;
-    private Handler mMainHandler;
     //camera devices
     private CameraDevice mDevice;
     private CameraDevice mAuxDevice;
@@ -35,6 +34,8 @@ public class Camera2Manager {
 
     public interface Event {
         void onCameraOpen(CameraDevice device);
+
+        void onCameraClosed();
     }
 
     public static synchronized Camera2Manager getManager() {
@@ -126,37 +127,28 @@ public class Camera2Manager {
         return null;
     }
 
-    public void openCamera(Context context, Event event, Handler mainHandler,
+    public void openCamera(Context context, Event event, final Handler mainHandler,
                            CameraThread cameraThread) {
         mEvent = event;
-        mMainHandler = mainHandler;
         if (mCameraManager == null) {
             mCameraManager = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
         }
-        if (Config.CLOSE_CAMERA_ASYNC) {
-            cameraThread.post(new Runnable() {
-                @Override
-                public void run() {
-                    openCamera2();
-                }
-            });
-            cameraThread.notifyJob();
-        } else {
-            openCamera2();
-        }
+        cameraThread.post(new Runnable() {
+            @Override
+            public void run() {
+                openCamera2(mainHandler);
+            }
+        });
     }
 
     public void releaseCamera(CameraThread cameraThread) {
-        if (Config.CLOSE_CAMERA_ASYNC) {
-            cameraThread.post(new Runnable() {
-                @Override
-                public void run() {
-                    closeDevice();
-                }
-            });
-        } else {
-            closeDevice();
-        }
+        cameraThread.post(new Runnable() {
+            @Override
+            public void run() {
+                closeDevice();
+            }
+        });
+
     }
 
     private void closeDevice() {
@@ -168,6 +160,7 @@ public class Camera2Manager {
             mAuxDevice.close();
             mAuxDevice = null;
         }
+        mEvent.onCameraClosed();
     }
 
     private CameraDevice.StateCallback stateCallback = new CameraDevice.StateCallback() {
@@ -202,15 +195,19 @@ public class Camera2Manager {
     };
 
     @SuppressLint("MissingPermission")
-    private void openCamera2() {
+    private void openCamera2(Handler handler) {
         // no need to check permission, because we check permission in onStart() every time
         try {
-            mCameraManager.openCamera(mCameraId, stateCallback, mMainHandler);
+            mCameraManager.openCamera(mCameraId, stateCallback, handler);
             if (mIsDualCamera) {
-                mCameraManager.openCamera(mAuxCameraId, stateCallback, mMainHandler);
+                mCameraManager.openCamera(mAuxCameraId, stateCallback, handler);
             }
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
+    }
+
+    public void destroy() {
+        mEvent = null;
     }
 }

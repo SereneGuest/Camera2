@@ -28,6 +28,7 @@ public abstract class CameraBaseUI implements GestureTextureView.GestureListener
     private int mVirtualKeyHeight;
     private int mTopBarHeight;
     CameraUiEvent uiEvent;
+    int frameCount = 0;
     //bottom controls
     private ShutterButton mShutter;
     private ImageButton mSetting;
@@ -40,6 +41,7 @@ public abstract class CameraBaseUI implements GestureTextureView.GestureListener
     public static final String ACTION_CLICK = "camera.action.click";
     public static final String ACTION_CHANGE_MODULE = "camera.action.change.module";
     public static final String ACTION_SWITCH_CAMERA = "camera.action.switch.camera";
+    public static final String ACTION_PREVIEW_READY = "camera.action.preview.ready";
 
 
     public interface CameraUiEvent {
@@ -161,6 +163,10 @@ public abstract class CameraBaseUI implements GestureTextureView.GestureListener
             mThumbnail.setImageBitmap(bitmap);
             mThumbnail.setEnabled(true);
         }
+    }
+
+    public void resetFrameCount() {
+        frameCount = 0;
     }
 
     public void setCoverView(CoverView coverView) {

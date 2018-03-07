@@ -26,6 +26,7 @@ public class CameraThread extends Thread {
         if (!mQueue.offer(job)) {
             Log.e(TAG, "failed to add job");
         }
+        this.notifyJob();
     }
 
     @Override

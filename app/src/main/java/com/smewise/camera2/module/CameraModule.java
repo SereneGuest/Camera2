@@ -3,7 +3,6 @@ package com.smewise.camera2.module;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 
@@ -28,7 +27,6 @@ public abstract class CameraModule {
     //flag for status
     boolean isSurfaceAvailable = false;
     boolean isCameraOpened = false;
-    boolean isFirstPreviewLoaded = false;
     boolean isModulePause = true;
 
     RelativeLayout rootView;
@@ -100,11 +98,11 @@ public abstract class CameraModule {
     }
 
     protected void hideCoverView() {
-        if (!isFirstPreviewLoaded) {
-            Log.d(TAG, "hide cover view");
-            getCoverView().hideCoverWithAnimation();
-            isFirstPreviewLoaded = true;
-        }
+        getCoverView().hideCoverWithAnimation();
+    }
+
+    protected void showCoverView() {
+        getCoverView().showCover();
     }
 
     protected void runOnUiThread(Runnable runnable) {

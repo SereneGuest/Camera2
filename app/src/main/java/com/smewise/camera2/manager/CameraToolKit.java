@@ -39,11 +39,11 @@ public class CameraToolKit {
     }
 
     public void destroy() {
-        disableOrientationListener();
-        stopCameraThread();
         if (mFileSaver != null) {
             mFileSaver.release();
         }
+        disableOrientationListener();
+        stopCameraThread();
     }
 
     public FileSaver getFileSaver() {
