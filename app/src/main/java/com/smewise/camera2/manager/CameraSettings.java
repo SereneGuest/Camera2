@@ -16,6 +16,8 @@ import com.smewise.camera2.R;
 import com.smewise.camera2.ui.CameraMenu;
 import com.smewise.camera2.utils.CameraUtil;
 
+import java.util.ArrayList;
+
 
 /**
  * Created by wenzhe on 12/16/16.
@@ -38,7 +40,16 @@ public class CameraSettings {
     public static final String KEY_AUX_PICTURE_FORMAT = "pref_aux_picture_format";
     public static final String KEY_RESTART_PREVIEW = "pref_restart_preview";
 
+    public static final ArrayList<String> SPEC_KEY = new ArrayList<>(5);
+
+    static {
+        SPEC_KEY.add(KEY_PICTURE_SIZE);
+        SPEC_KEY.add(KEY_PREVIEW_SIZE);
+        SPEC_KEY.add(KEY_PICTURE_FORMAT);
+    }
+
     private SharedPreferences mSharedPreference;
+    private Context mContext;
     private Point mRealDisplaySize = new Point();
 
     public CameraSettings(Context context) {
@@ -47,6 +58,42 @@ public class CameraSettings {
         WindowManager windowManager = (WindowManager) context.getSystemService(Context
                 .WINDOW_SERVICE);
         windowManager.getDefaultDisplay().getRealSize(mRealDisplaySize);
+        mContext = context;
+    }
+
+    /**
+     * get related shared preference by camera id
+     * @param cameraId valid camera id
+     * @return related SharedPreference from the camera id
+     */
+    public SharedPreferences getSharedPrefById(String cameraId) {
+        return mContext.getSharedPreferences(getSharedPrefName(cameraId), Context.MODE_PRIVATE);
+    }
+
+    public String getValueFromPref(String cameraId, String key, String defaultValue) {
+        SharedPreferences preferences;
+        if (!SPEC_KEY.contains(key)) {
+            preferences = mSharedPreference;
+        } else {
+            preferences = getSharedPrefById(cameraId);
+        }
+        return preferences.getString(key, defaultValue);
+    }
+
+    public boolean setPrefValueById(String cameraId, String key, String value) {
+        SharedPreferences preferences;
+        if (!SPEC_KEY.contains(key)) {
+            preferences = mSharedPreference;
+        } else {
+            preferences = getSharedPrefById(cameraId);
+        }
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(key, value);
+        return preferences.edit().commit();
+    }
+
+    private String getSharedPrefName(String cameraId) {
+        return mContext.getPackageName() + "_camera_" + cameraId;
     }
 
     public String getCameraId(String key) {
@@ -58,48 +105,27 @@ public class CameraSettings {
         return mSharedPreference.getString(key, defaultValue);
     }
 
-    public int getPicFormat(String key) {
-        String format = mSharedPreference.getString(key, String.valueOf(Config.IMAGE_FORMAT));
-        return Integer.parseInt(format);
-    }
-
-    private int getPicFormatForKey(String key) {
-        String formatKey;
-        switch (key) {
-            case KEY_PICTURE_SIZE:
-                formatKey = KEY_PICTURE_FORMAT;
-                break;
-            case KEY_MAIN_PICTURE_SIZE:
-                formatKey = KEY_MAIN_PICTURE_FORMAT;
-                break;
-            case KEY_AUX_PICTURE_SIZE:
-                formatKey = KEY_AUX_PICTURE_FORMAT;
-                break;
-            default:
-                formatKey = KEY_PICTURE_FORMAT;
-                break;
-        }
-        String format = mSharedPreference.getString(formatKey, String.valueOf(Config.IMAGE_FORMAT));
-        return Integer.parseInt(format);
+    public int getPicFormat(String id, String key) {
+        return Integer.parseInt(getValueFromPref(id, key, String.valueOf(Config.IMAGE_FORMAT)));
     }
 
     public boolean needStartPreview() {
         return mSharedPreference.getBoolean(KEY_RESTART_PREVIEW, true);
     }
 
-    public Size getPictureSize(String key, StreamConfigurationMap map) {
-        String picStr = mSharedPreference.getString(key, Config.NULL_VALUE);
+    public Size getPictureSize(String id, String key, StreamConfigurationMap map, int format) {
+        String picStr = getValueFromPref(id, key, Config.NULL_VALUE);
         if (Config.NULL_VALUE.equals(picStr)) {
             // preference not set, use default value
-            return CameraUtil.getDefaultPictureSize(map, getPicFormatForKey(key));
+            return CameraUtil.getDefaultPictureSize(map, format);
         } else {
             String[] size = picStr.split(CameraUtil.SPLIT_TAG);
             return new Size(Integer.parseInt(size[0]), Integer.parseInt(size[1]));
         }
     }
 
-    public Size getPreviewSize(String key, StreamConfigurationMap map) {
-        String preStr = mSharedPreference.getString(key, Config.NULL_VALUE);
+    public Size getPreviewSize(String id, String key, StreamConfigurationMap map) {
+        String preStr = getValueFromPref(id, key, Config.NULL_VALUE);
         if (Config.NULL_VALUE.equals(preStr)) {
             // preference not set, use default value
             return CameraUtil.getDefaultPreviewSize(map, mRealDisplaySize);

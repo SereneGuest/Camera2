@@ -93,8 +93,10 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
             getCameraThread().post(new Runnable() {
                 @Override
                 public void run() {
-                    fileSaver.saveFile(width, height, getToolKit().getOrientation(), data, "MAIN",
-                            getSettingManager().getPicFormat(CameraSettings.KEY_MAIN_PICTURE_FORMAT));
+                    int format = getSettingManager().getPicFormat(Camera2Manager.getManager()
+                            .getCameraId(), CameraSettings.KEY_MAIN_PICTURE_FORMAT);
+                    fileSaver.saveFile(width, height, getToolKit().getOrientation(), data,
+                            "MAIN", format);
                 }
             });
             isMainComeBack = true;
@@ -107,8 +109,10 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
             getCameraThread().post(new Runnable() {
                 @Override
                 public void run() {
-                    fileSaver.saveFile(width, height, getToolKit().getOrientation(), data, "AUX",
-                            getSettingManager().getPicFormat(CameraSettings.KEY_AUX_PICTURE_FORMAT));
+                    int format = getSettingManager().getPicFormat(Camera2Manager.getManager()
+                            .getCameraId(), CameraSettings.KEY_AUX_PICTURE_FORMAT);
+                    fileSaver.saveFile(width, height, getToolKit().getOrientation(), data,
+                            "AUX", format);
                 }
             });
             isAuxComeBack = true;

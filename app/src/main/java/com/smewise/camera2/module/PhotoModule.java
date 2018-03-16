@@ -90,8 +90,10 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener 
             getCameraThread().post(new Runnable() {
                 @Override
                 public void run() {
-                    fileSaver.saveFile(width, height, getToolKit().getOrientation(), data, "CAMERA",
-                            getSettingManager().getPicFormat(CameraSettings.KEY_PICTURE_FORMAT));
+                    int format = getSettingManager().getPicFormat(Camera2Manager.getManager()
+                            .getCameraId(), CameraSettings.KEY_PICTURE_FORMAT);
+                    fileSaver.saveFile(width, height, getToolKit().getOrientation(),
+                            data, "CAMERA", format);
                 }
             });
             mSessionManager.restartPreviewAfterShot();

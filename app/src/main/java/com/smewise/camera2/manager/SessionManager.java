@@ -216,11 +216,11 @@ public class SessionManager {
             preKey = CameraSettings.KEY_MAIN_PREVIEW_SIZE;
             formatKey = CameraSettings.KEY_MAIN_PICTURE_FORMAT;
         }
-        Size previewSize = mSettings.getPreviewSize(preKey, map);
+        int format = mSettings.getPicFormat(id, formatKey);
+        Size previewSize = mSettings.getPreviewSize(id, preKey, map);
         texture.setDefaultBufferSize(previewSize.getWidth(), previewSize.getHeight());
-        Size pictureSize = mSettings.getPictureSize(picKey, map);
+        Size pictureSize = mSettings.getPictureSize(id, picKey, map, format);
         Surface surface = new Surface(texture);
-        int format = mSettings.getPicFormat(formatKey);
         if (id.equals(mMainId)) {
             Log.d(TAG, " main surface config");
             mainImageReader = ImageReader.newInstance(pictureSize.getWidth(),
