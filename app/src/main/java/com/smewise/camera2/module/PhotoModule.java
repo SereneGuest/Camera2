@@ -15,6 +15,7 @@ import com.smewise.camera2.manager.Camera2Manager;
 import com.smewise.camera2.manager.CameraSettings;
 import com.smewise.camera2.manager.FocusOverlayManager;
 import com.smewise.camera2.manager.SessionManager;
+import com.smewise.camera2.ui.CameraBaseMenu;
 import com.smewise.camera2.ui.CameraBaseUI;
 import com.smewise.camera2.ui.PhotoUI;
 import com.smewise.camera2.utils.FileSaver;
@@ -23,7 +24,8 @@ import com.smewise.camera2.utils.MediaFunc;
 /**
  * Created by wenzhe on 16-3-8.
  */
-public class PhotoModule extends CameraModule implements FileSaver.FileListener {
+public class PhotoModule extends CameraModule implements FileSaver.FileListener,
+        CameraBaseMenu.OnMenuClickListener {
 
     private SurfaceTexture mSurfaceTexture;
 
@@ -40,7 +42,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener 
         mUI.setCoverView(getCoverView());
         mFocusManager = new FocusOverlayManager(mUI.getFocusView(), mainHandler.getLooper());
         mFocusManager.setListener(mCameraUiEvent);
-        setCameraMenu(R.xml.menu_preference);
+        setCameraMenu(R.xml.menu_preference, this);
     }
 
     @Override
@@ -116,6 +118,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener 
 
     @Override
     public void stop() {
+        cameraMenu.close();
         showCoverView();
         isModulePause = true;
         mFocusManager.removeDelayMessage();
@@ -131,6 +134,12 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener 
         mSessionManager.sendCaptureRequest(getToolKit().getOrientation());
     }
 
+    /**
+     * FileSaver.FileListener
+     * @param uri image file uri
+     * @param path image file path
+     * @param thumbnail image thumbnail
+     */
     @Override
     public void onFileSaved(Uri uri, String path, Bitmap thumbnail) {
         mUI.setUIClickable(true);
@@ -211,6 +220,27 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener 
                 break;
             case R.id.camera_menu:
                 cameraMenu.show(mUI.getBottomView(), 0, mUI.getBottomView().getHeight());
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * CameraBaseMenu.OnMenuClickListener
+     * @param key clicked menu key
+     * @param value clicked menu value
+     */
+    @Override
+    public void onMenuClick(String key, String value) {
+        switch (key) {
+            case CameraSettings.KEY_SWITCH_CAMERA:
+                if(!Camera2Manager.getManager().getCameraId().equals(value)
+                        && getSettingManager()
+                        .setCameraIdPref(CameraSettings.KEY_CAMERA_ID, value)) {
+                    this.stop();
+                    this.start();
+                }
                 break;
             default:
                 break;

@@ -39,8 +39,9 @@ public class CameraSettings {
     public static final String KEY_MAIN_PICTURE_FORMAT = "pref_main_picture_format";
     public static final String KEY_AUX_PICTURE_FORMAT = "pref_aux_picture_format";
     public static final String KEY_RESTART_PREVIEW = "pref_restart_preview";
+    public static final String KEY_SWITCH_CAMERA = "pref_switch_camera";
 
-    public static final ArrayList<String> SPEC_KEY = new ArrayList<>(5);
+    private static final ArrayList<String> SPEC_KEY = new ArrayList<>(5);
 
     static {
         SPEC_KEY.add(KEY_PICTURE_SIZE);
@@ -89,7 +90,7 @@ public class CameraSettings {
         }
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(key, value);
-        return preferences.edit().commit();
+        return editor.commit();
     }
 
     private String getSharedPrefName(String cameraId) {
@@ -101,12 +102,22 @@ public class CameraSettings {
         return mSharedPreference.getString(key, defaultValue);
     }
 
+    public boolean setCameraIdPref(String key, String idValue) {
+        SharedPreferences.Editor editor = mSharedPreference.edit();
+        editor.putString(key, idValue);
+        return editor.commit();
+    }
+
     public String getCameraId(String key, String defaultValue) {
         return mSharedPreference.getString(key, defaultValue);
     }
 
     public int getPicFormat(String id, String key) {
-        return Integer.parseInt(getValueFromPref(id, key, String.valueOf(Config.IMAGE_FORMAT)));
+        return Integer.parseInt(getValueFromPref(id, key, Config.IMAGE_FORMAT));
+    }
+
+    public String getPicFormatStr(String id, String key) {
+        return getValueFromPref(id, key, Config.IMAGE_FORMAT);
     }
 
     public boolean needStartPreview() {
@@ -124,6 +135,17 @@ public class CameraSettings {
         }
     }
 
+    public String getPictureSizeStr(String id, String key, StreamConfigurationMap map, int format) {
+        String picStr = getValueFromPref(id, key, Config.NULL_VALUE);
+        if (Config.NULL_VALUE.equals(picStr)) {
+            // preference not set, use default value
+            Size size = CameraUtil.getDefaultPictureSize(map, format);
+            return size.getWidth() + CameraUtil.SPLIT_TAG + size.getHeight();
+        } else {
+            return picStr;
+        }
+    }
+
     public Size getPreviewSize(String id, String key, StreamConfigurationMap map) {
         String preStr = getValueFromPref(id, key, Config.NULL_VALUE);
         if (Config.NULL_VALUE.equals(preStr)) {
@@ -132,6 +154,17 @@ public class CameraSettings {
         } else {
             String[] size = preStr.split(CameraUtil.SPLIT_TAG);
             return new Size(Integer.parseInt(size[0]), Integer.parseInt(size[1]));
+        }
+    }
+
+    public String getPreviewSizeStr(String id, String key, StreamConfigurationMap map) {
+        String preStr = getValueFromPref(id, key, Config.NULL_VALUE);
+        if (Config.NULL_VALUE.equals(preStr)) {
+            // preference not set, use default value
+            Size size = CameraUtil.getDefaultPreviewSize(map, mRealDisplaySize);
+            return size.getWidth() + CameraUtil.SPLIT_TAG + size.getHeight();
+        } else {
+            return preStr;
         }
     }
 

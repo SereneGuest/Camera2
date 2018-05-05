@@ -150,7 +150,11 @@ public class CameraActivity extends AppCompatActivity {
         }
     };
 
-    public void initCameraModule() {
+    public CameraModule.Controller getController() {
+        return mController;
+    }
+
+    private void initCameraModule() {
         if (mModuleManager.getCurrentModule() == null) {
             Log.d(TAG, "init module");
             CameraModule cameraModule = mModuleManager.getNewModule();

@@ -26,6 +26,10 @@ public abstract class CameraBaseMenu {
         void onSubMenuItemClick(String key, String value);
     }
 
+    public interface OnMenuClickListener {
+        void onMenuClick(String key, String value);
+    }
+
     protected CameraBaseMenu(Context context) {
         // init recycler view
         View rootView = LayoutInflater.from(context).inflate(R.layout.pop_up_layout, null);
@@ -45,4 +49,10 @@ public abstract class CameraBaseMenu {
     }
 
     public abstract void show(View view, int xOffset, int yOffset);
+
+    public void close() {
+        if (popWindow.isShowing()) {
+            popWindow.dismiss();
+        }
+    }
 }

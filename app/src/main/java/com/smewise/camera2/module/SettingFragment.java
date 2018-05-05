@@ -1,8 +1,6 @@
 package com.smewise.camera2.module;
 
 import android.content.SharedPreferences;
-import android.graphics.ImageFormat;
-import android.graphics.Point;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -12,11 +10,11 @@ import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.smewise.camera2.CameraActivity;
 import com.smewise.camera2.Config;
 import com.smewise.camera2.R;
 import com.smewise.camera2.manager.Camera2Manager;
@@ -39,6 +37,10 @@ public class SettingFragment extends PreferenceFragment {
         initPreference();
         PreferenceManager.getDefaultSharedPreferences(getActivity())
                 .registerOnSharedPreferenceChangeListener(mPreferenceChangeListener);
+    }
+
+    private CameraSettings getSettingMgr() {
+        return ((CameraActivity) getActivity()).getController().getSettingManager();
     }
 
     private void initPreference() {
@@ -65,75 +67,62 @@ public class SettingFragment extends PreferenceFragment {
             camIdPref.setValueIndex(idList.length - 1);
         }
         camIdPref.setSummary(camIdPref.getValue());
-        Log.d(TAG, "camera id:" + cameraId);
         StreamConfigurationMap map = Camera2Manager.getManager().getConfigMap(getActivity(),
                 camIdPref.getValue());
         // get picture format info
-        int currentFormat = setPictureFormat(map, picFormatKey);
+        int currentFormat = setPictureFormat(camIdPref.getValue(), map, picFormatKey);
         // get picture size info
         String[] picSize = CameraUtil.getPictureSizeList(map, currentFormat);
-        setCameraPicSizeInfo(picSizeKey, currentFormat, picSize, map);
+        setCameraPicSizeInfo(camIdPref.getValue(), picSizeKey, currentFormat, picSize, map);
         // get preview size info
         String[] preSize = CameraUtil.getPreviewSizeList(map);
-        setCameraPreSizeInfo(preSizeKey, preSize, map);
+        setCameraPreSizeInfo(camIdPref.getValue(), preSizeKey, preSize, map);
     }
 
-    private int setPictureFormat(StreamConfigurationMap map, String key) {
+    private int setPictureFormat(String cameraId, StreamConfigurationMap map, String key) {
         ListPreference picFormatPref = (ListPreference) findPreference(key);
         int[] supportFormat = map.getOutputFormats();
         // get support format display string and value string
         String[][] supportFormatStr = CameraUtil.getOutputFormat(supportFormat);
         picFormatPref.setEntries(supportFormatStr[0]);
         picFormatPref.setEntryValues(supportFormatStr[1]);
-        int index = 0;
         // if no value , set JPEG for default
-        String currentValue = picFormatPref.getValue();
-        int desireValue = currentValue == null ? ImageFormat.JPEG : Integer.parseInt(currentValue);
-        for (int i = 0; i < supportFormat.length; i++) {
-            if (supportFormat[i] == desireValue) {
-                index = i;
-                break;
-            }
-        }
+        String currentValue = getSettingMgr().getPicFormatStr(cameraId, key);
+        int index = findIndexByValue(currentValue, supportFormatStr[1]);
+        // if currentValue not in support list (may occur when camera id change)
+        // use value of support list [0], and set value to shared preference
+        getSettingMgr().setPrefValueById(cameraId, key, supportFormatStr[1][index]);
         picFormatPref.setValueIndex(index);
         picFormatPref.setSummary(picFormatPref.getValue());
-        return Integer.parseInt(picFormatPref.getValue());
+        return supportFormat[index];
     }
 
-    private void setCameraPreSizeInfo(String key, String[] size, StreamConfigurationMap map) {
+    private void setCameraPreSizeInfo(String cameraId, String key, String[] size,
+                                      StreamConfigurationMap map) {
         ListPreference listPreference = (ListPreference) findPreference(key);
         listPreference.setEntries(size);
         listPreference.setEntryValues(size);
-        if (listPreference.getValue() == null) {
-            // set default preview size less
-            Point point = new Point();
-            getActivity().getWindowManager().getDefaultDisplay().getRealSize(point);
-            Size preSize = CameraUtil.getDefaultPreviewSize(map, point);
-            String preStr = preSize.getWidth() + CameraUtil.SPLIT_TAG + preSize.getHeight();
-            listPreference.setValueIndex(findIndexByValue(preStr, size));
-        } else {
-            // value exist, check whether value in size list
-            String value = listPreference.getValue();
-            listPreference.setValueIndex(findIndexByValue(value,size));
-        }
+        String currentPreSize = getSettingMgr().getPreviewSizeStr(cameraId, key, map);
+        int index = findIndexByValue(currentPreSize, size);
+        // if currentValue not in support list (may occur when camera id change)
+        // use value of support list [0], and set value to shared preference
+        getSettingMgr().setPrefValueById(cameraId, key, size[index]);
+        listPreference.setValueIndex(index);
         listPreference.setSummary(listPreference.getValue());
         Log.d(TAG, key + "--" + listPreference.getValue());
     }
 
-    private void setCameraPicSizeInfo(String picKey, int format, String[] size,
+    private void setCameraPicSizeInfo(String cameraId, String picKey, int format, String[] size,
                                    StreamConfigurationMap map) {
         ListPreference listPreference = (ListPreference) findPreference(picKey);
         listPreference.setEntries(size);
         listPreference.setEntryValues(size);
-        if (listPreference.getValue() == null) {
-            // set default preview size less
-            Size picSize = CameraUtil.getDefaultPictureSize(map, format);
-            String picStr = picSize.getWidth() + CameraUtil.SPLIT_TAG + picSize.getHeight();
-            listPreference.setValueIndex(findIndexByValue(picStr, size));
-        } else {
-            // value exist, check whether value in size list
-            listPreference.setValueIndex(findIndexByValue(listPreference.getValue(), size));
-        }
+        String currentPicSize = getSettingMgr().getPictureSizeStr(cameraId, picKey, map, format);
+        int index = findIndexByValue(currentPicSize, size);
+        // if currentValue not in support list (may occur when camera id change)
+        // use value of support list [0], and set value to shared preference
+        getSettingMgr().setPrefValueById(cameraId, picKey, size[index]);
+        listPreference.setValueIndex(index);
         listPreference.setSummary(listPreference.getValue());
         Log.d(TAG, picKey + "--" + listPreference.getValue());
     }
@@ -173,7 +162,13 @@ public class SettingFragment extends PreferenceFragment {
             Preference preference = findPreference(key);
             switch (key) {
                 case CameraSettings.KEY_CAMERA_ID:
+                    initCameraInfo(CameraSettings.KEY_CAMERA_ID,
+                            CameraSettings.KEY_PICTURE_SIZE,
+                            CameraSettings.KEY_PREVIEW_SIZE,
+                            CameraSettings.KEY_PICTURE_FORMAT);
+                    break;
                 case CameraSettings.KEY_PICTURE_FORMAT:
+                    updateSizeValue(key, preference);
                     initCameraInfo(CameraSettings.KEY_CAMERA_ID,
                             CameraSettings.KEY_PICTURE_SIZE,
                             CameraSettings.KEY_PREVIEW_SIZE,
@@ -196,12 +191,23 @@ public class SettingFragment extends PreferenceFragment {
                 case CameraSettings.KEY_RESTART_PREVIEW:
                     // no need to set summary
                     break;
+                case CameraSettings.KEY_PREVIEW_SIZE:
+                case CameraSettings.KEY_PICTURE_SIZE:
+                    updateSizeValue(key, preference);
+                    break;
                 default:
                     preference.setSummary(sharedPreferences.getString(key, "null"));
                     break;
             }
         }
     };
+
+    private void updateSizeValue(String key, Preference preference) {
+        ListPreference listPref = (ListPreference) preference;
+        ListPreference idPref = (ListPreference) findPreference(CameraSettings.KEY_CAMERA_ID);
+        getSettingMgr().setPrefValueById(idPref.getValue(), key, listPref.getValue());
+        listPref.setSummary(listPref.getValue());
+    }
 
     @Override
     public void onDestroy() {

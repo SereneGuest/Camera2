@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.PopupWindow;
 
 import com.smewise.camera2.Config;
 import com.smewise.camera2.utils.XmlInflater;
@@ -12,19 +13,23 @@ import com.smewise.camera2.utils.XmlInflater;
  * Created by wenzhe on 11/27/17.
  */
 
-public class CameraMenu extends CameraBaseMenu{
+public class CameraMenu extends CameraBaseMenu implements PopupWindow.OnDismissListener {
 
     public static final String TAG = Config.getTag(CameraMenu.class);
     private CameraSubMenu mSubMenu;
     private Context mContext;
     private View mShowView;
-    public CameraMenu(Context context, int resId) {
+    private OnMenuClickListener mMenuClickListener;
+
+    public CameraMenu(Context context, int resId, OnMenuClickListener listener) {
         super(context);
         mContext = context;
         XmlInflater xmlInflater = new XmlInflater(context);
         MenuListAdapter adapter = new MenuListAdapter(context, xmlInflater.inflate(resId));
         adapter.setMenuListener(mMenuListener);
         recycleView.setAdapter(adapter);
+        popWindow.setOnDismissListener(this);
+        mMenuClickListener = listener;
     }
 
     private Listener mMenuListener = new Listener() {
@@ -42,12 +47,24 @@ public class CameraMenu extends CameraBaseMenu{
         @Override
         public void onSubMenuItemClick(String key, String value) {
             Log.d(TAG, "sub menu click key:" + key + " value:" + value);
+            if (mMenuClickListener != null) {
+                mMenuClickListener.onMenuClick(key, value);
+            }
         }
     };
 
     @Override
     public void show(View view, int xOffset, int yOffset) {
-        mShowView = view;
-        popWindow.showAtLocation(view, Gravity.BOTTOM | Gravity.CENTER, xOffset, yOffset);
+        if(!popWindow.isShowing()) {
+            mShowView = view;
+            popWindow.showAtLocation(view, Gravity.BOTTOM | Gravity.CENTER, xOffset, yOffset);
+        }
+    }
+
+    @Override
+    public void onDismiss() {
+        if (mSubMenu != null) {
+            mSubMenu.close();
+        }
     }
 }

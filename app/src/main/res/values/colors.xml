@@ -28,6 +28,7 @@
     <color name="setting_catalog_bg">#f5f5f5</color>
 
     <color name="options_text_color">#ffffff</color>
+    <color name="options_highlight_color">@color/colorAccent</color>
     <color name="pop_window_bg">#bd1d1d1d</color>
 
     <color name="icon_tint">#ffffff</color>

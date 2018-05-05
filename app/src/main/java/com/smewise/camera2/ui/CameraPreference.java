@@ -8,6 +8,8 @@ import android.util.Log;
 
 import com.smewise.camera2.Config;
 import com.smewise.camera2.R;
+import com.smewise.camera2.manager.Camera2Manager;
+import com.smewise.camera2.manager.CameraSettings;
 
 
 /**
@@ -23,6 +25,7 @@ public class CameraPreference {
     private CharSequence[] mEntryValues;
     private int[] mEntryIcons;
     private String mDefaultValue;
+    private int mHighLightIdx = -1;
 
     public CameraPreference(Context context, AttributeSet attrs) {
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CameraPreference);
@@ -35,6 +38,26 @@ public class CameraPreference {
                 a.getResourceId(R.styleable.CameraPreference_entryIcons, 0));
         mDefaultValue = a.getString(R.styleable.CameraPreference_defaultValue);
         a.recycle();
+    }
+
+    public void dynamicUpdateValue(Context context) {
+        switch (mKey) {
+            case CameraSettings.KEY_SWITCH_CAMERA:
+                updateCameraIdList(context);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void updateCameraIdList(Context context) {
+        mEntryValues = Camera2Manager.getManager().getCameraIdList(context);
+        mEntries = mEntryValues;
+        for (int i = 0; i < mEntryValues.length; i++) {
+            if (Camera2Manager.getManager().getCameraId().equals(mEntryValues[i])) {
+                mHighLightIdx = i;
+            }
+        }
     }
 
     public String getKey() {
@@ -59,6 +82,10 @@ public class CameraPreference {
 
     public int[] getEntryIcons() {
         return mEntryIcons;
+    }
+
+    public int getHighLightIdx() {
+        return mHighLightIdx;
     }
 
     private int[] getIds(Resources res, int iconsRes) {

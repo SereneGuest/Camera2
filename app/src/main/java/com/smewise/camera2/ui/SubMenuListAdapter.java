@@ -22,10 +22,15 @@ public class SubMenuListAdapter extends RecyclerView.Adapter<SubMenuListAdapter.
     private CameraPreference mPref;
     private Context mContext;
     private CameraBaseMenu.Listener mListener;
+    private int mTextColor;
+    private int mHightlightColor;
 
     public SubMenuListAdapter(Context context, CameraPreference pref) {
         mContext = context;
         mPref = pref;
+        mPref.dynamicUpdateValue(context);
+        mTextColor = context.getColor(R.color.options_text_color);
+        mHightlightColor = context.getColor(R.color.options_highlight_color);
     }
 
     public void setMenuListener(CameraBaseMenu.Listener listener) {
@@ -34,6 +39,7 @@ public class SubMenuListAdapter extends RecyclerView.Adapter<SubMenuListAdapter.
 
     public void updateDataSet(CameraPreference pref) {
         mPref = pref;
+        mPref.dynamicUpdateValue(mContext);
         notifyDataSetChanged();
     }
 
@@ -47,6 +53,11 @@ public class SubMenuListAdapter extends RecyclerView.Adapter<SubMenuListAdapter.
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
         holder.itemText.setText(mPref.getEntries()[position]);
+        if (position == mPref.getHighLightIdx()) {
+            holder.itemText.setTextColor(mHightlightColor);
+        }else {
+            holder.itemText.setTextColor(mTextColor);
+        }
         if (mPref.getEntryIcons() != null) {
             holder.itemIcon.setImageResource(mPref.getEntryIcons()[position]);
             holder.itemIcon.setVisibility(View.VISIBLE);
