@@ -44,7 +44,7 @@ public class RequestHelper {
             builder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO);
             builder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_IDLE);
             session.setRepeatingRequest(builder.build(), captureCallback, mHandler);
-        } catch (CameraAccessException e) {
+        } catch (CameraAccessException | IllegalStateException e) {
             e.printStackTrace();
         }
     }
@@ -56,7 +56,7 @@ public class RequestHelper {
         builder.set(CaptureRequest.CONTROL_AF_MODE, afMode);
         try {
             session.setRepeatingRequest(builder.build(), captureCallback, mHandler);
-        } catch (CameraAccessException e) {
+        } catch (CameraAccessException | IllegalStateException e) {
             e.printStackTrace();
         }
     }
@@ -84,14 +84,14 @@ public class RequestHelper {
         // repeating for af ae region
         try {
             session.setRepeatingRequest(builder.build(), captureCallback, mHandler);
-        } catch (CameraAccessException e) {
+        } catch (CameraAccessException | IllegalStateException e) {
             e.printStackTrace();
         }
         // capture for af trigger
         builder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_START);
         try {
             session.capture(builder.build(), captureCallback, mHandler);
-        } catch (CameraAccessException e) {
+        } catch (CameraAccessException | IllegalStateException e) {
             e.printStackTrace();
         }
     }
@@ -103,7 +103,7 @@ public class RequestHelper {
         builder.set(CaptureRequest.CONTROL_AF_MODE, afMode);
         try {
             session.setRepeatingRequest(builder.build(), captureCallback, mHandler);
-        } catch (CameraAccessException e) {
+        } catch (CameraAccessException | IllegalStateException e) {
             e.printStackTrace();
         }
     }
@@ -113,7 +113,7 @@ public class RequestHelper {
         try {
             builder.set(CaptureRequest.JPEG_ORIENTATION, rotation);
             session.capture(builder.build(), captureCallback, mHandler);
-        } catch (CameraAccessException e) {
+        } catch (CameraAccessException | IllegalStateException e) {
             e.printStackTrace();
         }
     }
@@ -131,7 +131,7 @@ public class RequestHelper {
             builder.set(CaptureRequest.LENS_FOCUS_DISTANCE,
                     captureRequest.get(CaptureRequest.LENS_FOCUS_DISTANCE));
             session.capture(builder.build(), null, mHandler);
-        } catch (CameraAccessException e) {
+        } catch (CameraAccessException | IllegalStateException e) {
             e.printStackTrace();
         }
     }
@@ -151,7 +151,7 @@ public class RequestHelper {
         }
         try {
             session.setRepeatingRequest(builder.build(), captureCallback, null);
-        } catch (CameraAccessException e) {
+        } catch (CameraAccessException | IllegalStateException e) {
             e.printStackTrace();
         }
     }

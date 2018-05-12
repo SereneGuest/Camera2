@@ -21,6 +21,7 @@
         <item>@string/mode_dual_camera</item>
         <item>@string/mode_professional</item>
     </string-array>
+    <string name="un_named">UnNamed</string>
 
     <string name="settings_msg">Settings</string>
     <string name="settings_camera">Camera settings</string>

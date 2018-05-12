@@ -7,6 +7,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.smewise.camera2.R;
+import com.smewise.camera2.manager.ModuleManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +17,6 @@ import java.util.List;
  */
 
 public class CameraTab extends TabLayout {
-
-    private List<Tab> mTabs = new ArrayList<>();
 
     public CameraTab(Context context) {
         this(context, null);
@@ -34,18 +33,26 @@ public class CameraTab extends TabLayout {
 
     private void initTab() {
         String[] strings = getResources().getStringArray(R.array.module_list);
-        if (strings.length > 2) {
+        int moduleCount = ModuleManager.getModuleCount();
+        if (moduleCount > 2) {
             setTabMode(MODE_SCROLLABLE);
         }
-        for (String s : strings) {
-            Tab tab = newTab().setText(s);
+        for (int i = 0; i < moduleCount; i++) {
+            String str;
+            if(i >= strings.length) {
+                str = getResources().getString(R.string.un_named);
+            } else {
+                str = strings[i];
+            }
+            Tab tab = newTab().setText(str);
             addTab(tab);
-            mTabs.add(tab);
         }
     }
 
     public void setSelected(int index) {
-        mTabs.get(index).select();
+        if (getTabAt(index) != null) {
+            getTabAt(index).select();
+        }
     }
 
 }

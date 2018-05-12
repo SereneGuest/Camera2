@@ -235,15 +235,18 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
     public void onMenuClick(String key, String value) {
         switch (key) {
             case CameraSettings.KEY_SWITCH_CAMERA:
-                if(!Camera2Manager.getManager().getCameraId().equals(value)
-                        && getSettingManager()
-                        .setCameraIdPref(CameraSettings.KEY_CAMERA_ID, value)) {
-                    this.stop();
-                    this.start();
-                }
+                switchCamera(value);
                 break;
             default:
                 break;
+        }
+    }
+
+    private void switchCamera(String cameraId) {
+        if(!Camera2Manager.getManager().getCameraId().equals(cameraId)
+                && getSettingManager().setCameraIdPref(CameraSettings.KEY_CAMERA_ID, cameraId)) {
+            this.stop();
+            this.start();
         }
     }
 }

@@ -102,7 +102,7 @@ public class SessionManager {
                     .getCameraDevice(isMain).createCaptureRequest(type);
             builder.addTarget(surface);
             return builder;
-        } catch (CameraAccessException e) {
+        } catch (CameraAccessException | IllegalStateException e) {
             e.printStackTrace();
         }
         return null;
@@ -182,7 +182,7 @@ public class SessionManager {
             getManager().getCameraDevice(true).createCaptureSession(
                     setOutputSize(mMainId, mMainTexture),
                     mainStateCallback, mainHandler);
-        } catch (CameraAccessException e) {
+        } catch (CameraAccessException | IllegalStateException e) {
             e.printStackTrace();
         }
         if (!isDualCamera()) {return;}
@@ -191,7 +191,7 @@ public class SessionManager {
             getManager().getCameraDevice(false).createCaptureSession(
                     setOutputSize(mAuxId, mAuxTexture),
                     auxStateCallback, mainHandler);
-        } catch (CameraAccessException e) {
+        } catch (CameraAccessException | IllegalStateException e) {
             e.printStackTrace();
         }
     }
