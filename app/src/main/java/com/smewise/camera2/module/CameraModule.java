@@ -1,6 +1,5 @@
 package com.smewise.camera2.module;
 
-import android.app.FragmentManager;
 import android.content.Context;
 import android.os.Handler;
 import android.view.View;
@@ -9,6 +8,7 @@ import android.widget.RelativeLayout;
 import com.smewise.camera2.Config;
 import com.smewise.camera2.manager.CameraSettings;
 import com.smewise.camera2.manager.CameraToolKit;
+import com.smewise.camera2.manager.Controller;
 import com.smewise.camera2.ui.CameraBaseMenu;
 import com.smewise.camera2.ui.CameraMenu;
 import com.smewise.camera2.ui.CameraTab;
@@ -33,29 +33,18 @@ public abstract class CameraModule {
     RelativeLayout rootView;
     CameraMenu cameraMenu;
 
-    public interface Controller {
-        void changeModule(int module);
-
-        CameraToolKit getToolKit();
-
-        FragmentManager getFragmentManager();
-
-        void showSetting(boolean stopModule);
-
-        CameraSettings getSettingManager();
-    }
-
     private Controller mController;
     Context appContext;
 
     public void init(Context context, Controller controller) {
-        // no need re init
-        if(rootView != null) {return;}
+        // just need init once
+        if(mController != null) {return;}
         appContext = context;
         mController = controller;
         mainHandler = getToolKit().getMainHandler();
         fileSaver = getToolKit().getFileSaver();
-        rootView = getToolKit().getBaseUI().getRootView();
+        rootView = controller.getBaseUI().getRootView();
+        // call subclass init()
         init();
     }
 
@@ -75,7 +64,7 @@ public abstract class CameraModule {
     }
 
     void setNewModule(int index) {
-        getToolKit().getBaseUI().changeModule(index);
+        mController.getBaseUI().changeModule(index);
     }
 
     CameraToolKit getToolKit() {
@@ -83,11 +72,11 @@ public abstract class CameraModule {
     }
 
     CoverView getCoverView() {
-        return getToolKit().getCoverView();
+        return mController.getBaseUI().getCoverView();
     }
 
     protected CameraTab getTabView() {
-        return getToolKit().getTabView();
+        return mController.getBaseUI().getCameraTab();
     }
 
     protected CameraSettings getSettingManager() {
@@ -98,20 +87,12 @@ public abstract class CameraModule {
         return getToolKit().getCameraThread();
     }
 
-    protected void hideCoverView() {
-        getCoverView().hideCoverWithAnimation();
-    }
-
-    protected void showCoverView() {
-        getCoverView().showCover();
-    }
-
     protected void runOnUiThread(Runnable runnable) {
         getToolKit().getMainHandler().post(runnable);
     }
 
-    void showSetting() {
-        mController.showSetting(true);
+    void showSetting(boolean stopModule) {
+        mController.showSetting(stopModule);
     }
 
     void setCameraMenu(int resId, CameraBaseMenu.OnMenuClickListener listener) {

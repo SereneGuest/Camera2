@@ -13,7 +13,6 @@ import android.view.WindowManager;
 
 import com.smewise.camera2.Config;
 import com.smewise.camera2.R;
-import com.smewise.camera2.ui.CameraMenu;
 import com.smewise.camera2.utils.CameraUtil;
 
 import java.util.ArrayList;

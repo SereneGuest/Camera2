@@ -7,9 +7,6 @@ import android.os.Looper;
 import android.view.OrientationEventListener;
 
 import com.smewise.camera2.module.SettingFragment;
-import com.smewise.camera2.ui.AppBaseUI;
-import com.smewise.camera2.ui.CameraTab;
-import com.smewise.camera2.ui.CoverView;
 import com.smewise.camera2.utils.CameraThread;
 import com.smewise.camera2.utils.FileSaver;
 
@@ -25,24 +22,21 @@ public class CameraToolKit {
     private MyOrientationListener mOrientationListener;
     private FileSaver mFileSaver;
     private int mRotation = 0;
-    private AppBaseUI mBaseUI;
     private SettingFragment mSettingFragment;
 
-    public CameraToolKit(Context context, AppBaseUI appBaseUI) {
+    public CameraToolKit(Context context) {
         mContext = context;
         mMainHandler = new Handler(Looper.getMainLooper());
         mFileSaver = new FileSaver(mContext.getContentResolver(), mMainHandler);
-        mBaseUI = appBaseUI;
         setOrientationListener();
         startCameraThread();
-        mSettingFragment = new SettingFragment();
     }
 
     public void destroy() {
         if (mFileSaver != null) {
             mFileSaver.release();
         }
-        disableOrientationListener();
+        mOrientationListener.disable();
         stopCameraThread();
     }
 
@@ -58,23 +52,14 @@ public class CameraToolKit {
         return mMainHandler;
     }
 
-    public AppBaseUI getBaseUI() {
-        return mBaseUI;
-    }
-
-    public CoverView getCoverView() {
-        return mBaseUI.getCoverView();
-    }
-
-    public CameraTab getTabView() {
-        return mBaseUI.getCameraTab();
-    }
-
     public CameraThread getCameraThread() {
         return mCameraThread;
     }
 
     public SettingFragment getSettingFragment() {
+        if (mSettingFragment == null) {
+            mSettingFragment = new SettingFragment();
+        }
         return mSettingFragment;
     }
 
@@ -86,9 +71,7 @@ public class CameraToolKit {
 
         @Override
         public void onOrientationChanged(int orientation) {
-            if (((orientation + 45) / 90 * 90)!= mRotation) {
-                mRotation = (orientation + 45) / 90 * 90;
-            }
+            mRotation = (orientation + 45) / 90 * 90;
         }
     }
 
@@ -99,10 +82,6 @@ public class CameraToolKit {
         } else {
             mOrientationListener.disable();
         }
-    }
-
-    private void disableOrientationListener() {
-        mOrientationListener.disable();
     }
 
     private void startCameraThread() {

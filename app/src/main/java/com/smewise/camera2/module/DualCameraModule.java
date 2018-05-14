@@ -141,7 +141,7 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
 
     @Override
     public void stop() {
-        showCoverView();
+        getCoverView().showCover();
         isModulePause = true;
         mFocusManager.hideFocusUI();
         mFocusManager.removeDelayMessage();
@@ -233,7 +233,7 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
                 case CameraBaseUI.ACTION_SWITCH_CAMERA:
                     break;
                 case CameraBaseUI.ACTION_PREVIEW_READY:
-                    hideCoverView();
+                    getCoverView().hideCoverWithAnimation();
                     break;
                 default:
                     break;
@@ -247,7 +247,7 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
                 takePicture();
                 break;
             case R.id.btn_setting:
-                showSetting();
+                showSetting(true);
                 break;
             case R.id.thumbnail:
                 MediaFunc.goToGallery(appContext);

@@ -5,7 +5,7 @@ import android.support.design.widget.TabLayout;
 import android.widget.RelativeLayout;
 
 import com.smewise.camera2.R;
-import com.smewise.camera2.module.CameraModule;
+import com.smewise.camera2.manager.Controller;
 import com.smewise.camera2.manager.ModuleManager;
 
 /**
@@ -15,16 +15,16 @@ import com.smewise.camera2.manager.ModuleManager;
 public class AppBaseUI implements TabLayout.OnTabSelectedListener {
     private CoverView mCoverView;
     private CameraTab mCameraTab;
-    private CameraModule.Controller mController;
+    private Controller mController;
     private RelativeLayout mRootView;
 
-    public AppBaseUI(Activity activity, CameraModule.Controller controller) {
+    public AppBaseUI(Activity activity, Controller controller) {
         mController = controller;
-        mCoverView = (CoverView) activity.findViewById(R.id.cover_view);
-        mCameraTab = (CameraTab) activity.findViewById(R.id.tab_view);
+        mCoverView = activity.findViewById(R.id.cover_view);
+        mCameraTab = activity.findViewById(R.id.tab_view);
         mCameraTab.setSelected(ModuleManager.getCurrentIndex());
         mCameraTab.addOnTabSelectedListener(this);
-        mRootView = (RelativeLayout) activity.findViewById(R.id.container);
+        mRootView = activity.findViewById(R.id.container);
     }
 
     public RelativeLayout getRootView() {

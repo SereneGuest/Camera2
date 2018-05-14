@@ -3,7 +3,6 @@ package com.smewise.camera2;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,6 +14,7 @@ import android.view.WindowManager;
 
 import com.smewise.camera2.manager.Camera2Manager;
 import com.smewise.camera2.manager.CameraSettings;
+import com.smewise.camera2.manager.Controller;
 import com.smewise.camera2.module.CameraModule;
 import com.smewise.camera2.manager.CameraToolKit;
 import com.smewise.camera2.manager.ModuleManager;
@@ -41,7 +41,7 @@ public class CameraActivity extends AppCompatActivity {
         setWindowFlag();
         setContentView(R.layout.main_layout);
         mBaseUI = new AppBaseUI(this, mController);
-        mToolKit = new CameraToolKit(getApplicationContext(), mBaseUI);
+        mToolKit = new CameraToolKit(getApplicationContext());
         mSettings = new CameraSettings(getApplicationContext());
         if (SETTING_ACTION.equals(getIntent().getAction())) {
             mOpenSettingFromShortcut = true;
@@ -112,7 +112,7 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
-    private CameraModule.Controller mController = new CameraModule.Controller() {
+    private Controller mController = new Controller() {
         @Override
         public void changeModule(int index) {
             if (mModuleManager.needChangeModule(index)) {
@@ -148,9 +148,14 @@ public class CameraActivity extends AppCompatActivity {
         public CameraSettings getSettingManager() {
             return mSettings;
         }
+
+        @Override
+        public AppBaseUI getBaseUI() {
+            return mBaseUI;
+        }
     };
 
-    public CameraModule.Controller getController() {
+    public Controller getController() {
         return mController;
     }
 

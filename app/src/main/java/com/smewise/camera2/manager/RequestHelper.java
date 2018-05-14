@@ -10,8 +10,6 @@ import android.util.Log;
 import com.smewise.camera2.Config;
 import com.smewise.camera2.utils.CameraCapability;
 
-import java.util.List;
-
 
 /**
  * Created by wenzhe on 1/18/17.

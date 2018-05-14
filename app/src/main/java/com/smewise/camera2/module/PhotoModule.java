@@ -120,7 +120,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
     @Override
     public void stop() {
         cameraMenu.close();
-        showCoverView();
+        getCoverView().showCover();
         isModulePause = true;
         mFocusManager.removeDelayMessage();
         mFocusManager.hideFocusUI();
@@ -210,7 +210,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
                 case CameraBaseUI.ACTION_SWITCH_CAMERA:
                     break;
                 case CameraBaseUI.ACTION_PREVIEW_READY:
-                    hideCoverView();
+                    getCoverView().hideCoverWithAnimation();
                     break;
                 default:
                     break;
@@ -224,7 +224,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
                 takePicture();
                 break;
             case R.id.btn_setting:
-                showSetting();
+                showSetting(true);
                 break;
             case R.id.thumbnail:
                 MediaFunc.goToGallery(appContext);
