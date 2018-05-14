@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.smewise.camera2.CameraActivity;
 import com.smewise.camera2.Config;
@@ -141,6 +142,13 @@ public class SettingFragment extends PreferenceFragment {
             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.setting_list, null);
         View bottomBar = view.findViewById(R.id.bottom_bar);
+        ImageView menuBack = view.findViewById(R.id.iv_menu_back);
+        menuBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((CameraActivity) getActivity()).removeSettingFragment();
+            }
+        });
         bottomBar.getLayoutParams().height = CameraUtil.getVirtualKeyHeight(getActivity());
         return view;
     }

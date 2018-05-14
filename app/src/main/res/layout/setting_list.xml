@@ -3,16 +3,27 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical">
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:text="@string/settings_msg"
-        android:gravity="center_vertical"
-        android:textSize="@dimen/setting_title_size"
-        android:paddingStart="@dimen/setting_padding"
-        android:textColor="@android:color/background_light"
-        android:layout_height="@dimen/setting_bar_height"
-        android:background="@color/colorPrimary"
-        android:elevation="5dp" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/colorPrimary">
+        <ImageView
+            android:id="@+id/iv_menu_back"
+            android:layout_width="@dimen/setting_bar_height"
+            android:layout_height="@dimen/setting_bar_height"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_setting_back"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:text="@string/settings_msg"
+            android:gravity="center_vertical"
+            android:textSize="@dimen/setting_title_size"
+            android:paddingStart="@dimen/setting_padding"
+            android:textColor="@android:color/background_light"
+            android:layout_height="@dimen/setting_bar_height"
+            android:elevation="5dp" />
+    </LinearLayout>
     <ListView
         android:id="@android:id/list"
         android:layout_width="match_parent"

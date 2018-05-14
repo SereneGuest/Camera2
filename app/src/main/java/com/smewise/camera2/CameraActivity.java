@@ -188,7 +188,7 @@ public class CameraActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    private void removeSettingFragment() {
+    public void removeSettingFragment() {
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.remove(mToolKit.getSettingFragment());
         transaction.commit();

@@ -8,6 +8,7 @@ import android.hardware.camera2.CaptureRequest;
 import android.net.Uri;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.smewise.camera2.Config;
 import com.smewise.camera2.R;
@@ -146,6 +147,16 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
         mUI.setThumbnail(thumbnail);
         MediaFunc.setCurrentUri(uri);
         Log.d(TAG, "uri:" + uri.toString());
+    }
+
+    /**
+     * callback for file save error
+     * @param msg error msg
+     */
+    @Override
+    public void onFileSaveError(String msg) {
+        Toast.makeText(appContext,msg, Toast.LENGTH_LONG).show();
+        mUI.setUIClickable(true);
     }
 
     private CameraBaseUI.CameraUiEvent mCameraUiEvent = new CameraBaseUI.CameraUiEvent() {

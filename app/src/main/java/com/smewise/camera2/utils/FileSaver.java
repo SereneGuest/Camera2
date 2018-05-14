@@ -36,6 +36,8 @@ public class FileSaver {
 
     public interface FileListener {
         void onFileSaved(Uri uri, String path, @Nullable Bitmap thumbnail);
+
+        void onFileSaveError(String msg);
     }
 
     private class ImageInfo {
@@ -62,6 +64,15 @@ public class FileSaver {
     public void saveFile(int width, int height, int orientation, byte[] data, String tag,
             int format) {
         File file = MediaFunc.getOutputMediaFile(getSaveType(format), tag);
+        if (file == null) {
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mListener.onFileSaveError("can not create file or directory");
+                }
+            });
+            return;
+        }
         ImageInfo info = new ImageInfo();
         info.imgData = data;
         if (orientation == 0 || orientation == 180) {
