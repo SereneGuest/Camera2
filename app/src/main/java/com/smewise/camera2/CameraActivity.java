@@ -30,7 +30,6 @@ public class CameraActivity extends AppCompatActivity {
     private AppBaseUI mBaseUI;
     private CameraSettings mSettings;
     private boolean mIsSettingShow = false;
-    private boolean mOpenSettingFromShortcut = false;
 
     public static final String SETTING_ACTION = "com.smewise.camera2.setting";
 
@@ -43,9 +42,10 @@ public class CameraActivity extends AppCompatActivity {
         mBaseUI = new AppBaseUI(this, mController);
         mToolKit = new CameraToolKit(getApplicationContext());
         mSettings = new CameraSettings(getApplicationContext());
-        if (SETTING_ACTION.equals(getIntent().getAction())) {
-            mOpenSettingFromShortcut = true;
-        }
+    }
+
+    private boolean isSettingShortcut() {
+        return SETTING_ACTION.equals(getIntent().getAction());
     }
 
     private void setWindowFlag() {
@@ -64,23 +64,36 @@ public class CameraActivity extends AppCompatActivity {
         if (Permission.checkPermission(this)) {
             initCameraModule();
         }
+        if (isSettingShortcut()) {
+            showSettingFragment(false);
+            getIntent().setAction(null);
+        } else if (mModuleManager.getCurrentModule() != null && !mIsSettingShow) {
+            mModuleManager.getCurrentModule().startModule();
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        startModule();
+        if (mModuleManager.getCurrentModule() != null && !mIsSettingShow) {
+            mModuleManager.getCurrentModule().resumeModule();
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        stopModule();
+        if (mModuleManager.getCurrentModule() != null) {
+            mModuleManager.getCurrentModule().pauseModule();
+        }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        if (mModuleManager.getCurrentModule() != null) {
+            mModuleManager.getCurrentModule().stopModule();
+        }
     }
 
     @Override
@@ -90,36 +103,16 @@ public class CameraActivity extends AppCompatActivity {
         Camera2Manager.getManager().destroy();
     }
 
-    private void startModule() {
-        // use shortcut open setting
-        if (mOpenSettingFromShortcut) {
-            mOpenSettingFromShortcut = false;
-            mController.showSetting(false);
-            return;
-        }
-        // if setting ui is show, ignore life circle
-        if (mModuleManager.getCurrentModule() != null
-                && !mIsSettingShow) {
-            mModuleManager.getCurrentModule().start();
-        }
-    }
-
-    private void stopModule() {
-        // if setting ui is show, ignore life circle
-        if (mModuleManager.getCurrentModule() != null
-                && !mIsSettingShow) {
-            mModuleManager.getCurrentModule().stop();
-        }
-    }
-
     private Controller mController = new Controller() {
         @Override
         public void changeModule(int index) {
             if (mModuleManager.needChangeModule(index)) {
-                mModuleManager.getCurrentModule().stop();
+                mModuleManager.getCurrentModule().pauseModule();
+                mModuleManager.getCurrentModule().stopModule();
                 CameraModule module = mModuleManager.getNewModule();
                 module.init(getApplicationContext(), this);
-                module.start();
+                module.startModule();
+                module.resumeModule();
             }
         }
 
@@ -135,13 +128,7 @@ public class CameraActivity extends AppCompatActivity {
 
         @Override
         public void showSetting(boolean stopModule) {
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
-            transaction.replace(R.id.setting_container, getToolKit().getSettingFragment());
-            transaction.commit();
-            if (stopModule) {
-                stopModule();
-            }
-            mIsSettingShow = true;
+            showSettingFragment(stopModule);
         }
 
         @Override
@@ -171,16 +158,19 @@ public class CameraActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(
             int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case Permission.REQUEST_CODE:
-                for (int grantResult : grantResults) {
-                    if (grantResult != PackageManager.PERMISSION_GRANTED) {
-                        Permission.showPermissionDenyDialog(CameraActivity.this);
-                        return;
-                    }
+        if (requestCode == Permission.REQUEST_CODE) {
+            for (int grantResult : grantResults) {
+                if (grantResult != PackageManager.PERMISSION_GRANTED) {
+                    Permission.showPermissionDenyDialog(CameraActivity.this);
+                    return;
                 }
-                initCameraModule();
-                break;
+            }
+            initCameraModule();
+            // after granted permission, onResume() will call,
+            // so we need start module before onResume()
+            if (!isSettingShortcut() && !mIsSettingShow) {
+                mModuleManager.getCurrentModule().startModule();
+            }
         }
     }
 
@@ -197,7 +187,23 @@ public class CameraActivity extends AppCompatActivity {
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.remove(mToolKit.getSettingFragment());
         transaction.commit();
+        if (mModuleManager.getCurrentModule() != null) {
+            mModuleManager.getCurrentModule().startModule();
+            mModuleManager.getCurrentModule().resumeModule();
+        }
         mIsSettingShow = false;
-        startModule();
+    }
+
+    public void showSettingFragment(boolean stopModule) {
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.setting_container, mToolKit.getSettingFragment());
+        transaction.commit();
+        if (mModuleManager.getCurrentModule() != null) {
+            mModuleManager.getCurrentModule().pauseModule();
+            if (stopModule) {
+                mModuleManager.getCurrentModule().stopModule();
+            }
+        }
+        mIsSettingShow = true;
     }
 }

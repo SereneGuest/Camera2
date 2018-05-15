@@ -2,6 +2,7 @@ package com.smewise.camera2.module;
 
 import android.content.Context;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 
@@ -25,10 +26,10 @@ public abstract class CameraModule {
 
     Handler mainHandler;
     FileSaver fileSaver;
+    private int mCameraState = Controller.CAMERA_STATE_STOP;
     //flag for status
     boolean isSurfaceAvailable = false;
     boolean isCameraOpened = false;
-    boolean isModulePause = true;
 
     RelativeLayout rootView;
     CameraMenu cameraMenu;
@@ -48,11 +49,51 @@ public abstract class CameraModule {
         init();
     }
 
+    public void startModule() {
+        if (mCameraState != Controller.CAMERA_STATE_STOP) {
+            // startModule() operation is valid only in CAMERA_STATE_STOP
+            return;
+        }
+        setCameraState(Controller.CAMERA_STATE_PAUSE);
+        start();
+    }
+
+    public void stopModule() {
+        if (mCameraState != Controller.CAMERA_STATE_PAUSE) {
+            // stopModule() operation is valid only in CAMERA_STATE_PAUSE
+            return;
+        }
+        setCameraState(Controller.CAMERA_STATE_STOP);
+        stop();
+    }
+
+    public void pauseModule() {
+        if (mCameraState != Controller.CAMERA_STATE_RUNNING) {
+            // pauseModule() operation is valid only in CAMERA_STATE_RUNNING
+            return;
+        }
+        setCameraState(Controller.CAMERA_STATE_PAUSE);
+        pause();
+    }
+
+    public void resumeModule() {
+        if (mCameraState != Controller.CAMERA_STATE_PAUSE) {
+            // resumeModule() operation is valid only in CAMERA_STATE_PAUSE
+            return;
+        }
+        setCameraState(Controller.CAMERA_STATE_RUNNING);
+        resume();
+    }
+
     protected abstract void init();
 
-    public abstract void start();
+    protected abstract void start();
 
-    public abstract void stop();
+    protected abstract void stop();
+
+    protected abstract void pause();
+
+    protected abstract void resume();
 
     protected void addModuleView(View view) {
         if (rootView.getChildAt(0) != view) {
@@ -61,6 +102,15 @@ public abstract class CameraModule {
             }
             rootView.addView(view);
         }
+    }
+
+    private void setCameraState(int state) {
+        mCameraState = state;
+        Log.d(TAG, "camera state:" + mCameraState);
+    }
+
+    protected int getCameraState() {
+        return mCameraState;
     }
 
     void setNewModule(int index) {

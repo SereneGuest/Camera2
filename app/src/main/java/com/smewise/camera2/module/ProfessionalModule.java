@@ -14,6 +14,7 @@ import com.smewise.camera2.Config;
 import com.smewise.camera2.R;
 import com.smewise.camera2.manager.Camera2Manager;
 import com.smewise.camera2.manager.CameraSettings;
+import com.smewise.camera2.manager.Controller;
 import com.smewise.camera2.manager.FocusOverlayManager;
 import com.smewise.camera2.manager.SessionManager;
 import com.smewise.camera2.ui.CameraBaseUI;
@@ -57,10 +58,14 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
         // when module changed , need update listener
         fileSaver.setFileListener(this);
         addModuleView(mUI.getRootView());
-
-        isModulePause = false;
         Log.d(TAG, "start module");
     }
+
+    @Override
+    public void resume() {
+
+    }
+
 
     private Camera2Manager.Event cameraEvent = new Camera2Manager.Event() {
         @Override
@@ -113,7 +118,6 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
     @Override
     public void stop() {
         getCoverView().showCover();
-        isModulePause = true;
         mFocusManager.removeDelayMessage();
         mFocusManager.hideFocusUI();
         mSessionManager.release();
@@ -125,6 +129,11 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
     private void takePicture() {
         mUI.setUIClickable(false);
         mSessionManager.sendCaptureRequest(getToolKit().getOrientation());
+    }
+
+    @Override
+    public void pause() {
+
     }
 
     /**
@@ -177,7 +186,7 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
 
         @Override
         public void resetTouchToFocus() {
-            if (!isModulePause) {
+            if (getCameraState() == Controller.CAMERA_STATE_RUNNING) {
                 mSessionManager.sendControlFocusModeRequest(
                         CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
             }

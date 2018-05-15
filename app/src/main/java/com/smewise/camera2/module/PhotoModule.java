@@ -14,6 +14,7 @@ import com.smewise.camera2.Config;
 import com.smewise.camera2.R;
 import com.smewise.camera2.manager.Camera2Manager;
 import com.smewise.camera2.manager.CameraSettings;
+import com.smewise.camera2.manager.Controller;
 import com.smewise.camera2.manager.FocusOverlayManager;
 import com.smewise.camera2.manager.SessionManager;
 import com.smewise.camera2.ui.CameraBaseMenu;
@@ -64,9 +65,12 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
         // when module changed , need update listener
         fileSaver.setFileListener(this);
         addModuleView(mUI.getRootView());
-
-        isModulePause = false;
         Log.d(TAG, "start module");
+    }
+
+    @Override
+    public void resume() {
+
     }
 
     private Camera2Manager.Event cameraEvent = new Camera2Manager.Event() {
@@ -83,6 +87,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
             if (mUI != null) {
                 mUI.resetFrameCount();
             }
+            Log.d(TAG, "camera closed");
         }
     };
 
@@ -121,13 +126,17 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
     public void stop() {
         cameraMenu.close();
         getCoverView().showCover();
-        isModulePause = true;
         mFocusManager.removeDelayMessage();
         mFocusManager.hideFocusUI();
         mSessionManager.release();
         Camera2Manager.getManager().releaseCamera(getCameraThread());
         isCameraOpened = false;
         Log.d(TAG, "stop module");
+    }
+
+    @Override
+    public void pause() {
+
     }
 
     private void takePicture() {
@@ -187,7 +196,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
 
         @Override
         public void resetTouchToFocus() {
-            if (!isModulePause) {
+            if (getCameraState() == Controller.CAMERA_STATE_RUNNING) {
                 mSessionManager.sendControlFocusModeRequest(
                         CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
             }
