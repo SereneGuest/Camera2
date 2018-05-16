@@ -38,6 +38,7 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
     private SessionManager sessionManager;
 
     private FocusOverlayManager mFocusManager;
+    private int mPicCount = 0;
 
     @Override
     protected void init() {
@@ -75,8 +76,8 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
     private Camera2Manager.Event cameraEvent = new Camera2Manager.Event() {
         @Override
         public void onCameraOpen(CameraDevice device) {
-            isCameraOpened = true;
-            if (isSurfaceAvailable) {
+            enableState(Controller.CAMERA_STATE_OPENED);
+            if (stateEnabled(Controller.CAMERA_STATE_UI_READY)) {
                 sessionManager.createPreviewSession(
                         mainSurfaceTexture, auxSurfaceTexture, mCallback);
             }
@@ -84,44 +85,27 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
 
         @Override
         public void onCameraClosed() {
+            disableState(Controller.CAMERA_STATE_OPENED);
             if (mUI != null) {
                 mUI.resetFrameCount();
             }
         }
     };
 
-    private boolean isMainComeBack = false;
-    private boolean isAuxComeBack = false;
     private SessionManager.Callback mCallback = new SessionManager.Callback() {
         @Override
-        public void onMainData(final byte[] data, final int width, final int height) {
-            Log.e(TAG, "main data complete");
-            getCameraThread().post(new Runnable() {
-                @Override
-                public void run() {
-                    int format = getSettingManager().getPicFormat(Camera2Manager.getManager()
-                            .getCameraId(), CameraSettings.KEY_MAIN_PICTURE_FORMAT);
-                    fileSaver.saveFile(width, height, getToolKit().getOrientation(), data,
-                            "MAIN", format);
-                }
-            });
-            isMainComeBack = true;
+        public void onMainData(byte[] data, int width, int height) {
+            Log.d(TAG, "main data complete");
+            saveFile(data, width, height, CameraSettings.KEY_MAIN_PICTURE_FORMAT, "MAIN");
+            mPicCount++;
             enableUiAfterShot();
         }
 
         @Override
         public void onAuxData(final byte[] data, final int width, final int height) {
-            Log.e(TAG, "aux data complete");
-            getCameraThread().post(new Runnable() {
-                @Override
-                public void run() {
-                    int format = getSettingManager().getPicFormat(Camera2Manager.getManager()
-                            .getCameraId(), CameraSettings.KEY_AUX_PICTURE_FORMAT);
-                    fileSaver.saveFile(width, height, getToolKit().getOrientation(), data,
-                            "AUX", format);
-                }
-            });
-            isAuxComeBack = true;
+            Log.d(TAG, "aux data complete");
+            saveFile(data, width, height, CameraSettings.KEY_AUX_PICTURE_FORMAT, "AUX");
+            mPicCount++;
             enableUiAfterShot();
         }
 
@@ -136,10 +120,9 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
     };
 
     private void enableUiAfterShot() {
-        if (isMainComeBack && isAuxComeBack) {
+        if (mPicCount == 2) {
             mUI.setUIClickable(true);
-            isMainComeBack = false;
-            isAuxComeBack = false;
+            mPicCount = 0;
             sessionManager.restartPreviewAfterShot();
         }
     }
@@ -156,7 +139,6 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
         mFocusManager.removeDelayMessage();
         sessionManager.release();
         Camera2Manager.getManager().releaseCamera(getCameraThread());
-        isCameraOpened = false;
         Log.d(TAG, "stop module");
     }
 
@@ -168,9 +150,9 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
      */
     @Override
     public void onFileSaved(Uri uri, String path, Bitmap thumbnail) {
+        MediaFunc.setCurrentUri(uri);
         mUI.setUIClickable(true);
         mUI.setThumbnail(thumbnail);
-        MediaFunc.setCurrentUri(uri);
     }
 
     /**
@@ -195,15 +177,15 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
             Log.d(TAG, "onSurfaceTextureAvailable");
             mainSurfaceTexture = mainSurface;
             auxSurfaceTexture = auxSurface;
-            isSurfaceAvailable = true;
-            if (isCameraOpened) {
+            enableState(Controller.CAMERA_STATE_UI_READY);
+            if (stateEnabled(Controller.CAMERA_STATE_OPENED)) {
                 sessionManager.createPreviewSession(mainSurface, auxSurface, mCallback);
             }
         }
 
         @Override
         public void onPreviewUiDestroy() {
-            isSurfaceAvailable = false;
+            disableState(Controller.CAMERA_STATE_UI_READY);
             Log.d(TAG, "onSurfaceTextureDestroyed");
         }
 

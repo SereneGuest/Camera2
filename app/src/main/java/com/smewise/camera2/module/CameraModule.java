@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.smewise.camera2.Config;
+import com.smewise.camera2.manager.Camera2Manager;
 import com.smewise.camera2.manager.CameraSettings;
 import com.smewise.camera2.manager.CameraToolKit;
 import com.smewise.camera2.manager.Controller;
@@ -27,9 +28,6 @@ public abstract class CameraModule {
     Handler mainHandler;
     FileSaver fileSaver;
     private int mCameraState = Controller.CAMERA_MODULE_STOP;
-    //flag for status
-    boolean isSurfaceAvailable = false;
-    boolean isCameraOpened = false;
 
     RelativeLayout rootView;
     CameraMenu cameraMenu;
@@ -53,11 +51,11 @@ public abstract class CameraModule {
         return (param1 & param2) != 0;
     }
 
-    private void enableState(int state) {
+    void enableState(int state) {
         mCameraState = mCameraState | state;
     }
 
-    private void disableState(int state) {
+    void disableState(int state) {
         mCameraState = mCameraState & (~state);
     }
 
@@ -107,7 +105,7 @@ public abstract class CameraModule {
 
     protected abstract void resume();
 
-    protected void addModuleView(View view) {
+    void addModuleView(View view) {
         if (rootView.getChildAt(0) != view) {
             if (rootView.getChildCount() > 0) {
                 rootView.removeAllViews();
@@ -116,13 +114,16 @@ public abstract class CameraModule {
         }
     }
 
-    private void setCameraState(int state) {
-        mCameraState = state;
-        Log.d(TAG, "camera state:" + mCameraState);
-    }
-
-    protected int getCameraState() {
-        return mCameraState;
+    void saveFile(final byte[] data, final int width, final int height,
+                  final String formatKey, final String tag) {
+        getCameraThread().post(new Runnable() {
+            @Override
+            public void run() {
+                int format = getSettingManager()
+                        .getPicFormat(Camera2Manager.getManager().getCameraId(), formatKey);
+                fileSaver.saveFile(width, height, getToolKit().getOrientation(), data, tag, format);
+            }
+        });
     }
 
     void setNewModule(int index) {

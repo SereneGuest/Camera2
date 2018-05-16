@@ -70,14 +70,15 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
     private Camera2Manager.Event cameraEvent = new Camera2Manager.Event() {
         @Override
         public void onCameraOpen(CameraDevice device) {
-            isCameraOpened = true;
-            if (isSurfaceAvailable) {
+            enableState(Controller.CAMERA_STATE_OPENED);
+            if (stateEnabled(Controller.CAMERA_STATE_UI_READY)) {
                 mSessionManager.createPreviewSession(mSurfaceTexture, null, mCallback);
             }
         }
 
         @Override
         public void onCameraClosed() {
+            disableState(Controller.CAMERA_STATE_OPENED);
             if (mUI != null) {
                 mUI.resetFrameCount();
             }
@@ -87,16 +88,8 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
     private SessionManager.Callback mCallback = new SessionManager.Callback() {
 
         @Override
-        public void onMainData(final byte[] data, final int width, final int height) {
-            getCameraThread().post(new Runnable() {
-                @Override
-                public void run() {
-                    int format = getSettingManager().getPicFormat(Camera2Manager.getManager()
-                            .getCameraId(), CameraSettings.KEY_PICTURE_FORMAT);
-                    fileSaver.saveFile(width, height, getToolKit().getOrientation(),
-                            data, "CAMERA", format);
-                }
-            });
+        public void onMainData(byte[] data, int width, int height) {
+            saveFile(data, width, height, CameraSettings.KEY_PICTURE_FORMAT, "CAMERA");
             mSessionManager.restartPreviewAfterShot();
         }
 
@@ -122,7 +115,6 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
         mFocusManager.hideFocusUI();
         mSessionManager.release();
         Camera2Manager.getManager().releaseCamera(getCameraThread());
-        isCameraOpened = false;
         Log.d(TAG, "stop module");
     }
 
@@ -164,15 +156,15 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
         public void onPreviewUiReady(SurfaceTexture mainSurface, SurfaceTexture auxSurface) {
             Log.d(TAG, "onSurfaceTextureAvailable");
             mSurfaceTexture = mainSurface;
-            isSurfaceAvailable = true;
-            if (isCameraOpened) {
+            enableState(Controller.CAMERA_STATE_UI_READY);
+            if (stateEnabled(Controller.CAMERA_STATE_OPENED)) {
                 mSessionManager.createPreviewSession(mSurfaceTexture, null, mCallback);
             }
         }
 
         @Override
         public void onPreviewUiDestroy() {
-            isSurfaceAvailable = false;
+            disableState(Controller.CAMERA_STATE_UI_READY);
             Log.d(TAG, "onSurfaceTextureDestroyed");
         }
 
