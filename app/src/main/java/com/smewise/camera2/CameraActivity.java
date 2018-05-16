@@ -20,6 +20,7 @@ import com.smewise.camera2.manager.CameraToolKit;
 import com.smewise.camera2.manager.ModuleManager;
 import com.smewise.camera2.ui.AppBaseUI;
 import com.smewise.camera2.utils.Permission;
+import com.smewise.camera2.utils.PermissionDialog;
 
 
 public class CameraActivity extends AppCompatActivity {
@@ -161,7 +162,7 @@ public class CameraActivity extends AppCompatActivity {
         if (requestCode == Permission.REQUEST_CODE) {
             for (int grantResult : grantResults) {
                 if (grantResult != PackageManager.PERMISSION_GRANTED) {
-                    Permission.showPermissionDenyDialog(CameraActivity.this);
+                    showPermissionDenyDialog();
                     return;
                 }
             }
@@ -172,6 +173,11 @@ public class CameraActivity extends AppCompatActivity {
                 mModuleManager.getCurrentModule().startModule();
             }
         }
+    }
+
+    private void showPermissionDenyDialog() {
+        PermissionDialog dialog = new PermissionDialog();
+        dialog.show(getFragmentManager(), "PermissionDeny");
     }
 
     @Override

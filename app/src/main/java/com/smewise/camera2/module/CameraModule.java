@@ -26,7 +26,7 @@ public abstract class CameraModule {
 
     Handler mainHandler;
     FileSaver fileSaver;
-    private int mCameraState = Controller.CAMERA_STATE_STOP;
+    private int mCameraState = Controller.CAMERA_MODULE_STOP;
     //flag for status
     boolean isSurfaceAvailable = false;
     boolean isCameraOpened = false;
@@ -39,7 +39,7 @@ public abstract class CameraModule {
 
     public void init(Context context, Controller controller) {
         // just need init once
-        if(mController != null) {return;}
+        if (mController != null) { return; }
         appContext = context;
         mController = controller;
         mainHandler = getToolKit().getMainHandler();
@@ -49,40 +49,52 @@ public abstract class CameraModule {
         init();
     }
 
+    boolean isAndTrue(int param1, int param2) {
+        return (param1 & param2) != 0;
+    }
+
+    private void enableState(int state) {
+        mCameraState = mCameraState | state;
+    }
+
+    private void disableState(int state) {
+        mCameraState = mCameraState & (~state);
+    }
+
+    boolean stateEnabled(int state) {
+        return isAndTrue(mCameraState, state);
+    }
+
     public void startModule() {
-        if (mCameraState != Controller.CAMERA_STATE_STOP) {
-            // startModule() operation is valid only in CAMERA_STATE_STOP
-            return;
+        if (isAndTrue(mCameraState, Controller.CAMERA_MODULE_STOP)) {
+            disableState(Controller.CAMERA_MODULE_STOP);
+            enableState(Controller.CAMERA_MODULE_PAUSE);
+            start();
         }
-        setCameraState(Controller.CAMERA_STATE_PAUSE);
-        start();
     }
 
     public void stopModule() {
-        if (mCameraState != Controller.CAMERA_STATE_PAUSE) {
-            // stopModule() operation is valid only in CAMERA_STATE_PAUSE
-            return;
+        if (isAndTrue(mCameraState, Controller.CAMERA_MODULE_PAUSE)) {
+            disableState(Controller.CAMERA_MODULE_PAUSE);
+            enableState(Controller.CAMERA_MODULE_STOP);
+            stop();
         }
-        setCameraState(Controller.CAMERA_STATE_STOP);
-        stop();
     }
 
     public void pauseModule() {
-        if (mCameraState != Controller.CAMERA_STATE_RUNNING) {
-            // pauseModule() operation is valid only in CAMERA_STATE_RUNNING
-            return;
+        if (isAndTrue(mCameraState, Controller.CAMERA_MODULE_RUNNING)) {
+            disableState(Controller.CAMERA_MODULE_RUNNING);
+            enableState(Controller.CAMERA_MODULE_PAUSE);
+            pause();
         }
-        setCameraState(Controller.CAMERA_STATE_PAUSE);
-        pause();
     }
 
     public void resumeModule() {
-        if (mCameraState != Controller.CAMERA_STATE_PAUSE) {
-            // resumeModule() operation is valid only in CAMERA_STATE_PAUSE
-            return;
+        if (isAndTrue(mCameraState, Controller.CAMERA_MODULE_PAUSE)) {
+            disableState(Controller.CAMERA_MODULE_PAUSE);
+            enableState(Controller.CAMERA_MODULE_RUNNING);
+            resume();
         }
-        setCameraState(Controller.CAMERA_STATE_RUNNING);
-        resume();
     }
 
     protected abstract void init();

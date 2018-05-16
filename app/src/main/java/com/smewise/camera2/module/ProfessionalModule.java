@@ -186,7 +186,7 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
 
         @Override
         public void resetTouchToFocus() {
-            if (getCameraState() == Controller.CAMERA_STATE_RUNNING) {
+            if (stateEnabled(Controller.CAMERA_MODULE_RUNNING)) {
                 mSessionManager.sendControlFocusModeRequest(
                         CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
             }

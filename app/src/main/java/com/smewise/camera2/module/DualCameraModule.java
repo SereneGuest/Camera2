@@ -219,7 +219,7 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
 
         @Override
         public void resetTouchToFocus() {
-            if (getCameraState() == Controller.CAMERA_STATE_RUNNING) {
+            if (stateEnabled(Controller.CAMERA_MODULE_RUNNING)) {
                 sessionManager.sendControlFocusModeRequest(
                         CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
             }
