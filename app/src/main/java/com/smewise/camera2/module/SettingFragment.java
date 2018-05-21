@@ -18,8 +18,8 @@ import android.widget.ImageView;
 import com.smewise.camera2.CameraActivity;
 import com.smewise.camera2.Config;
 import com.smewise.camera2.R;
-import com.smewise.camera2.manager.Camera2Manager;
 import com.smewise.camera2.manager.CameraSettings;
+import com.smewise.camera2.manager.DeviceManager;
 import com.smewise.camera2.utils.CameraUtil;
 
 /**
@@ -60,7 +60,8 @@ public class SettingFragment extends PreferenceFragment {
         // get camera id info
         ListPreference camIdPref = (ListPreference) findPreference(idKey);
         String cameraId = camIdPref.getValue();
-        String[] idList = Camera2Manager.getManager().getCameraIdList(getActivity());
+        DeviceManager manager = new DeviceManager(getActivity());
+        String[] idList = manager.getCameraIdList();
         camIdPref.setEntries(idList);
         camIdPref.setEntryValues(idList);
         // aux camera not set default value in xml, set largest camera id
@@ -68,8 +69,7 @@ public class SettingFragment extends PreferenceFragment {
             camIdPref.setValueIndex(idList.length - 1);
         }
         camIdPref.setSummary(camIdPref.getValue());
-        StreamConfigurationMap map = Camera2Manager.getManager().getConfigMap(getActivity(),
-                camIdPref.getValue());
+        StreamConfigurationMap map = manager.getConfigMap(camIdPref.getValue());
         // get picture format info
         int currentFormat = setPictureFormat(camIdPref.getValue(), map, picFormatKey);
         // get picture size info

@@ -7,7 +7,6 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.smewise.camera2.Config;
-import com.smewise.camera2.manager.Camera2Manager;
 import com.smewise.camera2.manager.CameraSettings;
 import com.smewise.camera2.manager.CameraToolKit;
 import com.smewise.camera2.manager.Controller;
@@ -114,13 +113,12 @@ public abstract class CameraModule {
         }
     }
 
-    void saveFile(final byte[] data, final int width, final int height,
+    void saveFile(final byte[] data, final int width, final int height, final String cameraId,
                   final String formatKey, final String tag) {
         getCameraThread().post(new Runnable() {
             @Override
             public void run() {
-                int format = getSettingManager()
-                        .getPicFormat(Camera2Manager.getManager().getCameraId(), formatKey);
+                int format = getSettingManager().getPicFormat(cameraId, formatKey);
                 fileSaver.saveFile(width, height, getToolKit().getOrientation(), data, tag, format);
             }
         });

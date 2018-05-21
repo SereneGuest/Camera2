@@ -12,11 +12,13 @@ import android.widget.Toast;
 
 import com.smewise.camera2.Config;
 import com.smewise.camera2.R;
-import com.smewise.camera2.manager.Camera2Manager;
+import com.smewise.camera2.callback.RequestCallback;
+import com.smewise.camera2.manager.CameraSession;
 import com.smewise.camera2.manager.CameraSettings;
 import com.smewise.camera2.manager.Controller;
+import com.smewise.camera2.manager.DeviceManager;
 import com.smewise.camera2.manager.FocusOverlayManager;
-import com.smewise.camera2.manager.SessionManager;
+import com.smewise.camera2.manager.SingleDeviceManager;
 import com.smewise.camera2.ui.CameraBaseMenu;
 import com.smewise.camera2.ui.CameraBaseUI;
 import com.smewise.camera2.ui.PhotoUI;
@@ -30,10 +32,9 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
         CameraBaseMenu.OnMenuClickListener {
 
     private SurfaceTexture mSurfaceTexture;
-
     private PhotoUI mUI;
-
-    private SessionManager mSessionManager;
+    private CameraSession mSession;
+    private SingleDeviceManager mDeviceMgr;
     private FocusOverlayManager mFocusManager;
 
     private static final String TAG = Config.getTag(PhotoModule.class);
@@ -45,23 +46,18 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
         mFocusManager = new FocusOverlayManager(mUI.getFocusView(), mainHandler.getLooper());
         mFocusManager.setListener(mCameraUiEvent);
         setCameraMenu(R.xml.menu_preference, this);
+        mSession = new CameraSession(appContext, mainHandler, getSettingManager());
+        mDeviceMgr = new SingleDeviceManager(appContext, getCameraThread(), mCameraEvent);
     }
 
     @Override
     public void start() {
         String cameraId = getSettingManager().getCameraId(CameraSettings.KEY_CAMERA_ID);
-        Camera2Manager.getManager().setCameraId(cameraId, null);
-        Camera2Manager.getManager().setDualCameraMode(false);
-        Camera2Manager.getManager().openCamera(
-                appContext, cameraEvent, mainHandler, getCameraThread());
-        if (mSessionManager == null) {
-            mSessionManager = new SessionManager(appContext, mainHandler,
-                    mFocusManager, getSettingManager());
-        }
+        mDeviceMgr.setCameraId(cameraId);
+        mDeviceMgr.openCamera(mainHandler);
         //dump support info
-        CameraCharacteristics c = Camera2Manager.getManager().getCharacteristics();
+        CameraCharacteristics c = mDeviceMgr.getCharacteristics();
         getSettingManager().dumpSupportInfo(c);
-
         // when module changed , need update listener
         fileSaver.setFileListener(this);
         addModuleView(mUI.getRootView());
@@ -73,17 +69,21 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
 
     }
 
-    private Camera2Manager.Event cameraEvent = new Camera2Manager.Event() {
+    private DeviceManager.CameraEvent mCameraEvent = new DeviceManager.CameraEvent() {
         @Override
-        public void onCameraOpen(CameraDevice device) {
+        public void onDeviceOpened(CameraDevice device) {
+            super.onDeviceOpened(device);
+            Log.d(TAG, "camera opened");
+            mSession.setCameraDevice(device);
             enableState(Controller.CAMERA_STATE_OPENED);
             if (stateEnabled(Controller.CAMERA_STATE_UI_READY)) {
-                mSessionManager.createPreviewSession(mSurfaceTexture, null, mCallback);
+                mSession.createPreviewSession(mSurfaceTexture, mRequestCallback);
             }
         }
 
         @Override
-        public void onCameraClosed() {
+        public void onDeviceClosed() {
+            super.onDeviceClosed();
             disableState(Controller.CAMERA_STATE_OPENED);
             if (mUI != null) {
                 mUI.resetFrameCount();
@@ -92,26 +92,25 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
         }
     };
 
-    private SessionManager.Callback mCallback = new SessionManager.Callback() {
-
+    private RequestCallback mRequestCallback = new RequestCallback() {
         @Override
-        public void onMainData(byte[] data, int width, int height) {
-            saveFile(data, width, height, CameraSettings.KEY_PICTURE_FORMAT, "CAMERA");
-            mSessionManager.restartPreviewAfterShot();
+        public void onDataBack(byte[] data, int width, int height) {
+            super.onDataBack(data, width, height);
+            saveFile(data, width, height, mDeviceMgr.getCameraId(),
+                    CameraSettings.KEY_PICTURE_FORMAT, "CAMERA");
+            mSession.restartPreviewAfterShot();
         }
-
-        @Override
-        public void onAuxData(byte[] data, int width, int height) {
-
-        }
-
-        @Override
-        public void onRequestComplete() {}
 
         @Override
         public void onViewChange(int width, int height) {
+            super.onViewChange(width, height);
             mUI.setTextureUIPreviewSize(width, height);
             mFocusManager.setPreviewSize(width, height);
+        }
+
+        @Override
+        public void onAFStateChanged(int state) {
+            super.onAFStateChanged(state);
         }
     };
 
@@ -121,8 +120,8 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
         getCoverView().showCover();
         mFocusManager.removeDelayMessage();
         mFocusManager.hideFocusUI();
-        mSessionManager.release();
-        Camera2Manager.getManager().releaseCamera(getCameraThread());
+        mSession.release();
+        mDeviceMgr.releaseCamera();
         Log.d(TAG, "stop module");
     }
 
@@ -133,7 +132,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
 
     private void takePicture() {
         mUI.setUIClickable(false);
-        mSessionManager.sendCaptureRequest(getToolKit().getOrientation());
+        mSession.sendCaptureRequest(getToolKit().getOrientation());
     }
 
     /**
@@ -144,9 +143,9 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
      */
     @Override
     public void onFileSaved(Uri uri, String path, Bitmap thumbnail) {
+        MediaFunc.setCurrentUri(uri);
         mUI.setUIClickable(true);
         mUI.setThumbnail(thumbnail);
-        MediaFunc.setCurrentUri(uri);
         Log.d(TAG, "uri:" + uri.toString());
     }
 
@@ -168,7 +167,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
             mSurfaceTexture = mainSurface;
             enableState(Controller.CAMERA_STATE_UI_READY);
             if (stateEnabled(Controller.CAMERA_STATE_OPENED)) {
-                mSessionManager.createPreviewSession(mSurfaceTexture, null, mCallback);
+                mSession.createPreviewSession(mSurfaceTexture, mRequestCallback);
             }
         }
 
@@ -181,22 +180,22 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
         @Override
         public void onTouchToFocus(float x, float y) {
             mFocusManager.startFocus(x, y);
-            CameraCharacteristics c = Camera2Manager.getManager().getCharacteristics();
-            mSessionManager.sendControlAfAeRequest(
-                    mFocusManager.getFocusArea(c, true), mFocusManager.getFocusArea(c, false));
+            CameraCharacteristics c = mDeviceMgr.getCharacteristics();
+            mSession.sendControlAfAeRequest(mFocusManager.getFocusArea(c, true),
+                    mFocusManager.getFocusArea(c, false));
         }
 
         @Override
         public void resetTouchToFocus() {
             if (stateEnabled(Controller.CAMERA_MODULE_RUNNING)) {
-                mSessionManager.sendControlFocusModeRequest(
+                mSession.sendControlFocusModeRequest(
                         CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
             }
         }
 
         @Override
         public <T> void onSettingChange(CaptureRequest.Key<T> key, T value) {
-            mSessionManager.sendControlSettingRequest(key, value);
+            mSession.sendControlSettingRequest(key, value);
         }
 
         @Override
@@ -255,7 +254,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
     }
 
     private void switchCamera(String cameraId) {
-        if(!Camera2Manager.getManager().getCameraId().equals(cameraId)
+        if(!mDeviceMgr.getCameraId().equals(cameraId)
                 && getSettingManager().setCameraIdPref(CameraSettings.KEY_CAMERA_ID, cameraId)) {
             pauseModule();
             stopModule();

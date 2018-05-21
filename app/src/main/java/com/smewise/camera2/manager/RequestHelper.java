@@ -1,5 +1,6 @@
 package com.smewise.camera2.manager;
 
+import android.content.Context;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CaptureRequest;
@@ -20,12 +21,9 @@ public class RequestHelper {
     private Handler mHandler;
     private CameraCapability mCapability;
 
-    public RequestHelper(Handler backgroundHandler) {
-        mHandler = backgroundHandler;
-    }
-
-    public void setCameraCapability(CameraCapability capability) {
-        mCapability = capability;
+    public RequestHelper(Context context, Handler handler) {
+        mCapability = new CameraCapability(context);
+        mHandler = handler;
     }
 
     public void sendPreviewRequest(CaptureRequest.Builder builder,
@@ -106,7 +104,7 @@ public class RequestHelper {
         }
     }
 
-    public void sendCaptureRequest(CaptureRequest.Builder builder, int rotation ,
+    /*public void sendCaptureRequest(CaptureRequest.Builder builder, int rotation ,
             CameraCaptureSession session, CameraCaptureSession.CaptureCallback captureCallback) {
         try {
             builder.set(CaptureRequest.JPEG_ORIENTATION, rotation);
@@ -114,20 +112,22 @@ public class RequestHelper {
         } catch (CameraAccessException | IllegalStateException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     public void sendCaptureRequest(CaptureRequest.Builder builder, int rotation ,
                                    CameraCaptureSession session, CaptureRequest captureRequest) {
         try {
             builder.set(CaptureRequest.JPEG_ORIENTATION, rotation);
-            // use same ae af mode as preview
-            builder.set(CaptureRequest.CONTROL_AF_MODE,
-                    captureRequest.get(CaptureRequest.CONTROL_AF_MODE));
-            builder.set(CaptureRequest.CONTROL_AE_MODE,
-                    captureRequest.get(CaptureRequest.CONTROL_AE_MODE));
-            // if control focus distance, need set distance when capture
-            builder.set(CaptureRequest.LENS_FOCUS_DISTANCE,
-                    captureRequest.get(CaptureRequest.LENS_FOCUS_DISTANCE));
+            if (captureRequest != null) {
+                // use same ae af mode as preview
+                builder.set(CaptureRequest.CONTROL_AF_MODE,
+                        captureRequest.get(CaptureRequest.CONTROL_AF_MODE));
+                builder.set(CaptureRequest.CONTROL_AE_MODE,
+                        captureRequest.get(CaptureRequest.CONTROL_AE_MODE));
+                // if control focus distance, need set distance when capture
+                builder.set(CaptureRequest.LENS_FOCUS_DISTANCE,
+                        captureRequest.get(CaptureRequest.LENS_FOCUS_DISTANCE));
+            }
             session.capture(builder.build(), null, mHandler);
         } catch (CameraAccessException | IllegalStateException e) {
             e.printStackTrace();

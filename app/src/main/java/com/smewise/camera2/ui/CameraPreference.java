@@ -8,8 +8,8 @@ import android.util.Log;
 
 import com.smewise.camera2.Config;
 import com.smewise.camera2.R;
-import com.smewise.camera2.manager.Camera2Manager;
 import com.smewise.camera2.manager.CameraSettings;
+import com.smewise.camera2.manager.DeviceManager;
 
 
 /**
@@ -51,13 +51,9 @@ public class CameraPreference {
     }
 
     private void updateCameraIdList(Context context) {
-        mEntryValues = Camera2Manager.getManager().getCameraIdList(context);
+        DeviceManager manager = new DeviceManager(context);
+        mEntryValues = manager.getCameraIdList();
         mEntries = mEntryValues;
-        for (int i = 0; i < mEntryValues.length; i++) {
-            if (Camera2Manager.getManager().getCameraId().equals(mEntryValues[i])) {
-                mHighLightIdx = i;
-            }
-        }
     }
 
     public String getKey() {
