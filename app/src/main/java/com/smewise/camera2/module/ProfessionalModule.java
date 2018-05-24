@@ -58,11 +58,6 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
         Log.d(TAG, "start module");
     }
 
-    @Override
-    public void resume() {
-
-    }
-
     private DeviceManager.CameraEvent mCameraEvent = new DeviceManager.CameraEvent() {
         @Override
         public void onDeviceOpened(CameraDevice device) {
@@ -122,11 +117,6 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
     private void takePicture() {
         mUI.setUIClickable(false);
         mSession.sendCaptureRequest(getToolKit().getOrientation());
-    }
-
-    @Override
-    public void pause() {
-
     }
 
     /**

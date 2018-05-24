@@ -3,7 +3,6 @@ package com.smewise.camera2.module;
 import android.content.Context;
 import android.hardware.camera2.CaptureResult;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 
@@ -67,32 +66,16 @@ public abstract class CameraModule {
     public void startModule() {
         if (isAndTrue(mCameraState, Controller.CAMERA_MODULE_STOP)) {
             disableState(Controller.CAMERA_MODULE_STOP);
-            enableState(Controller.CAMERA_MODULE_PAUSE);
+            enableState(Controller.CAMERA_MODULE_RUNNING);
             start();
         }
     }
 
     public void stopModule() {
-        if (isAndTrue(mCameraState, Controller.CAMERA_MODULE_PAUSE)) {
-            disableState(Controller.CAMERA_MODULE_PAUSE);
-            enableState(Controller.CAMERA_MODULE_STOP);
-            stop();
-        }
-    }
-
-    public void pauseModule() {
         if (isAndTrue(mCameraState, Controller.CAMERA_MODULE_RUNNING)) {
             disableState(Controller.CAMERA_MODULE_RUNNING);
-            enableState(Controller.CAMERA_MODULE_PAUSE);
-            pause();
-        }
-    }
-
-    public void resumeModule() {
-        if (isAndTrue(mCameraState, Controller.CAMERA_MODULE_PAUSE)) {
-            disableState(Controller.CAMERA_MODULE_PAUSE);
-            enableState(Controller.CAMERA_MODULE_RUNNING);
-            resume();
+            enableState(Controller.CAMERA_MODULE_STOP);
+            stop();
         }
     }
 
@@ -101,10 +84,6 @@ public abstract class CameraModule {
     protected abstract void start();
 
     protected abstract void stop();
-
-    protected abstract void pause();
-
-    protected abstract void resume();
 
     void addModuleView(View view) {
         if (rootView.getChildAt(0) != view) {

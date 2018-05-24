@@ -64,11 +64,6 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
         Log.d(TAG, "start module");
     }
 
-    @Override
-    public void resume() {
-
-    }
-
     private DeviceManager.CameraEvent mCameraEvent = new DeviceManager.CameraEvent() {
         @Override
         public void onDeviceOpened(CameraDevice device) {
@@ -124,11 +119,6 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
         mSession.release();
         mDeviceMgr.releaseCamera();
         Log.d(TAG, "stop module");
-    }
-
-    @Override
-    public void pause() {
-
     }
 
     private void takePicture() {
@@ -255,12 +245,10 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
     }
 
     private void switchCamera(String cameraId) {
-        if(!mDeviceMgr.getCameraId().equals(cameraId)
-                && getSettingManager().setCameraIdPref(CameraSettings.KEY_CAMERA_ID, cameraId)) {
-            pauseModule();
+        if(!mDeviceMgr.getCameraId().equals(cameraId) && getSettingManager()
+                .setCameraIdPref(CameraSettings.KEY_CAMERA_ID, cameraId)) {
             stopModule();
             startModule();
-            resumeModule();
         }
     }
 }

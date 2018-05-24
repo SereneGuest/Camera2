@@ -64,36 +64,31 @@ public class CameraActivity extends AppCompatActivity {
         if (Permission.checkPermission(this)) {
             initCameraModule();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         if (isSettingShortcut()) {
             showSettingFragment(false);
             getIntent().setAction(null);
         } else if (mModuleManager.getCurrentModule() != null && !mIsSettingShow) {
             mModuleManager.getCurrentModule().startModule();
         }
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (mModuleManager.getCurrentModule() != null && !mIsSettingShow) {
-            mModuleManager.getCurrentModule().resumeModule();
-        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         if (mModuleManager.getCurrentModule() != null) {
-            mModuleManager.getCurrentModule().pauseModule();
+            mModuleManager.getCurrentModule().stopModule();
         }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        if (mModuleManager.getCurrentModule() != null) {
-            mModuleManager.getCurrentModule().stopModule();
-        }
     }
 
     @Override
@@ -106,12 +101,10 @@ public class CameraActivity extends AppCompatActivity {
         @Override
         public void changeModule(int index) {
             if (mModuleManager.needChangeModule(index)) {
-                mModuleManager.getCurrentModule().pauseModule();
                 mModuleManager.getCurrentModule().stopModule();
                 CameraModule module = mModuleManager.getNewModule();
                 module.init(getApplicationContext(), this);
                 module.startModule();
-                module.resumeModule();
             }
         }
 
@@ -165,11 +158,6 @@ public class CameraActivity extends AppCompatActivity {
                 }
             }
             initCameraModule();
-            // after granted permission, onResume() will call,
-            // so we need start module before onResume()
-            if (!isSettingShortcut() && !mIsSettingShow) {
-                mModuleManager.getCurrentModule().startModule();
-            }
         }
     }
 
@@ -193,7 +181,6 @@ public class CameraActivity extends AppCompatActivity {
         transaction.commit();
         if (mModuleManager.getCurrentModule() != null) {
             mModuleManager.getCurrentModule().startModule();
-            mModuleManager.getCurrentModule().resumeModule();
         }
         mIsSettingShow = false;
     }
@@ -203,7 +190,6 @@ public class CameraActivity extends AppCompatActivity {
         transaction.replace(R.id.setting_container, mToolKit.getSettingFragment());
         transaction.commit();
         if (mModuleManager.getCurrentModule() != null) {
-            mModuleManager.getCurrentModule().pauseModule();
             if (stopModule) {
                 mModuleManager.getCurrentModule().stopModule();
             }

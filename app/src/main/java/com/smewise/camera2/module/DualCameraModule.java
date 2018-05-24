@@ -67,11 +67,6 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
         Log.d(TAG, "start module");
     }
 
-    @Override
-    public void resume() {
-
-    }
-
     private DeviceManager.CameraEvent mCameraEvent = new DeviceManager.CameraEvent() {
         @Override
         public void onDeviceOpened(CameraDevice device) {
@@ -143,11 +138,6 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
             mSession.restartPreviewAfterShot();
             mAuxSession.restartPreviewAfterShot();
         }
-    }
-
-    @Override
-    public void pause() {
-
     }
 
     @Override
