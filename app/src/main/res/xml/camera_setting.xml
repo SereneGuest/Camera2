@@ -49,34 +49,10 @@
             android:defaultValue="@string/setting_camera_value_0"/>
         <ListPreference
             android:layout="@layout/list_pref_layout"
-            android:title="@string/setting_picture_format"
-            android:key="pref_main_picture_format"/>
-        <ListPreference
-            android:layout="@layout/list_pref_layout"
-            android:title="@string/setting_picture_size"
-            android:key="pref_main_picture_size"/>
-        <ListPreference
-            android:layout="@layout/list_pref_layout"
-            android:title="@string/setting_preview_size"
-            android:key="pref_main_preview_size"/>
-        <ListPreference
-            android:layout="@layout/list_pref_layout"
             android:title="@string/setting_aux_camera_id"
             android:key="pref_aux_camera_id"
             android:entries="@array/setting_camera_id_entries"
             android:entryValues="@array/setting_camera_id_entries_value"/>
-        <ListPreference
-            android:layout="@layout/list_pref_layout"
-            android:title="@string/setting_picture_format"
-            android:key="pref_aux_picture_format"/>
-        <ListPreference
-            android:layout="@layout/list_pref_layout"
-            android:title="@string/setting_picture_size"
-            android:key="pref_aux_picture_size"/>
-        <ListPreference
-            android:layout="@layout/list_pref_layout"
-            android:title="@string/setting_preview_size"
-            android:key="pref_aux_preview_size"/>
     </PreferenceCategory>
 
 

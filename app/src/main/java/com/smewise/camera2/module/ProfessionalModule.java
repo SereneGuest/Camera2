@@ -105,6 +105,7 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
         @Override
         public void onAFStateChanged(int state) {
             super.onAFStateChanged(state);
+            updateAFState(state, mFocusManager);
         }
     };
 

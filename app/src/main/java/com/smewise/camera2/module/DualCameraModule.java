@@ -122,6 +122,7 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
         @Override
         public void onAFStateChanged(int state) {
             super.onAFStateChanged(state);
+            updateAFState(state, mFocusManager);
         }
     };
 

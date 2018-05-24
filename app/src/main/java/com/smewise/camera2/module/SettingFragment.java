@@ -29,10 +29,12 @@ import com.smewise.camera2.utils.CameraUtil;
 public class SettingFragment extends PreferenceFragment {
 
     private static final String TAG = Config.getTag(SettingFragment.class);
+    private DeviceManager mManger;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mManger = new DeviceManager(getActivity());
         addPreferencesFromResource(R.xml.camera_setting);
         PreferenceManager.setDefaultValues(getActivity(), R.xml.camera_setting, false);
         initPreference();
@@ -49,27 +51,30 @@ public class SettingFragment extends PreferenceFragment {
         initCameraInfo(CameraSettings.KEY_CAMERA_ID, CameraSettings.KEY_PICTURE_SIZE,
                 CameraSettings.KEY_PREVIEW_SIZE, CameraSettings.KEY_PICTURE_FORMAT);
         // Dual Camera
-        initCameraInfo(CameraSettings.KEY_MAIN_CAMERA_ID, CameraSettings.KEY_MAIN_PICTURE_SIZE,
-                CameraSettings.KEY_MAIN_PREVIEW_SIZE, CameraSettings.KEY_MAIN_PICTURE_FORMAT);
-        initCameraInfo(CameraSettings.KEY_AUX_CAMERA_ID, CameraSettings.KEY_AUX_PICTURE_SIZE,
-                CameraSettings.KEY_AUX_PREVIEW_SIZE, CameraSettings.KEY_AUX_PICTURE_FORMAT);
+        String[] idList = mManger.getCameraIdList();
+        ListPreference mainIdPref = (ListPreference) findPreference(CameraSettings.KEY_MAIN_CAMERA_ID);
+        ListPreference auxIdPref = (ListPreference) findPreference(CameraSettings.KEY_AUX_CAMERA_ID);
+        mainIdPref.setEntries(idList);
+        mainIdPref.setEntryValues(idList);
+        auxIdPref.setEntries(idList);
+        auxIdPref.setEntryValues(idList);
+        // aux camera not set default value in xml, set largest camera id
+        if (auxIdPref.getValue() == null) {
+            auxIdPref.setValueIndex(idList.length - 1);
+        }
+        mainIdPref.setSummary(mainIdPref.getValue());
+        auxIdPref.setSummary(auxIdPref.getValue());
     }
 
     private void initCameraInfo(String idKey, String picSizeKey, String preSizeKey, String
             picFormatKey) {
         // get camera id info
         ListPreference camIdPref = (ListPreference) findPreference(idKey);
-        String cameraId = camIdPref.getValue();
-        DeviceManager manager = new DeviceManager(getActivity());
-        String[] idList = manager.getCameraIdList();
+        String[] idList = mManger.getCameraIdList();
         camIdPref.setEntries(idList);
         camIdPref.setEntryValues(idList);
-        // aux camera not set default value in xml, set largest camera id
-        if (cameraId == null) {
-            camIdPref.setValueIndex(idList.length - 1);
-        }
         camIdPref.setSummary(camIdPref.getValue());
-        StreamConfigurationMap map = manager.getConfigMap(camIdPref.getValue());
+        StreamConfigurationMap map = mManger.getConfigMap(camIdPref.getValue());
         // get picture format info
         int currentFormat = setPictureFormat(camIdPref.getValue(), map, picFormatKey);
         // get picture size info
@@ -181,20 +186,6 @@ public class SettingFragment extends PreferenceFragment {
                             CameraSettings.KEY_PICTURE_SIZE,
                             CameraSettings.KEY_PREVIEW_SIZE,
                             CameraSettings.KEY_PICTURE_FORMAT);
-                    break;
-                case CameraSettings.KEY_MAIN_CAMERA_ID:
-                case CameraSettings.KEY_MAIN_PICTURE_FORMAT:
-                    initCameraInfo(CameraSettings.KEY_MAIN_CAMERA_ID,
-                            CameraSettings.KEY_MAIN_PICTURE_SIZE,
-                            CameraSettings.KEY_MAIN_PREVIEW_SIZE,
-                            CameraSettings.KEY_MAIN_PICTURE_FORMAT);
-                    break;
-                case CameraSettings.KEY_AUX_CAMERA_ID:
-                case CameraSettings.KEY_AUX_PICTURE_FORMAT:
-                    initCameraInfo(CameraSettings.KEY_AUX_CAMERA_ID,
-                            CameraSettings.KEY_AUX_PICTURE_SIZE,
-                            CameraSettings.KEY_AUX_PREVIEW_SIZE,
-                            CameraSettings.KEY_AUX_PICTURE_FORMAT);
                     break;
                 case CameraSettings.KEY_RESTART_PREVIEW:
                     // no need to set summary

@@ -1,6 +1,7 @@
 package com.smewise.camera2.module;
 
 import android.content.Context;
+import android.hardware.camera2.CaptureResult;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
@@ -10,6 +11,7 @@ import com.smewise.camera2.Config;
 import com.smewise.camera2.manager.CameraSettings;
 import com.smewise.camera2.manager.CameraToolKit;
 import com.smewise.camera2.manager.Controller;
+import com.smewise.camera2.manager.FocusOverlayManager;
 import com.smewise.camera2.ui.CameraBaseMenu;
 import com.smewise.camera2.ui.CameraMenu;
 import com.smewise.camera2.ui.CameraTab;
@@ -158,6 +160,32 @@ public abstract class CameraModule {
 
     void setCameraMenu(int resId, CameraBaseMenu.OnMenuClickListener listener) {
         cameraMenu = new CameraMenu(appContext, resId, listener);
+    }
+
+    void updateAFState(int state, FocusOverlayManager overlayManager) {
+        switch (state) {
+            case CaptureResult.CONTROL_AF_STATE_ACTIVE_SCAN:
+                overlayManager.startFocus();
+                break;
+            case CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED:
+                overlayManager.focusSuccess();
+                break;
+            case CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED:
+                overlayManager.focusFailed();
+                break;
+            case CaptureResult.CONTROL_AF_STATE_PASSIVE_FOCUSED:
+                overlayManager.focusSuccess();
+                break;
+            case CaptureResult.CONTROL_AF_STATE_PASSIVE_SCAN:
+                overlayManager.autoFocus();
+                break;
+            case CaptureResult.CONTROL_AF_STATE_PASSIVE_UNFOCUSED:
+                overlayManager.focusFailed();
+                break;
+            case CaptureResult.CONTROL_AF_STATE_INACTIVE:
+                overlayManager.hideFocusUI();
+                break;
+        }
     }
 
 }

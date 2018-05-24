@@ -111,6 +111,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
         @Override
         public void onAFStateChanged(int state) {
             super.onAFStateChanged(state);
+            updateAFState(state, mFocusManager);
         }
     };
 
