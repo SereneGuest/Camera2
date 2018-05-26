@@ -7,6 +7,4 @@
 
     <include layout="@layout/parameter_layout"/>
 
-    <include layout="@layout/photo_bottom_controls" />
-
 </RelativeLayout>

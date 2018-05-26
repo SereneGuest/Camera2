@@ -1,6 +1,5 @@
 package com.smewise.camera2.callback;
 
-import android.hardware.camera2.CaptureResult;
 
 public abstract class RequestCallback {
     public void onDataBack(byte[] data, int width, int height) {

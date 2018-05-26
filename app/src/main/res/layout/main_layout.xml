@@ -1,20 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/root_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/app_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <RelativeLayout
-        android:id="@+id/container"
+        android:id="@+id/preview_root_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
     </RelativeLayout>
 
-    <include layout="@layout/top_controls"/>
+    <include layout="@layout/camera_menu_controls" />
+
+    <com.smewise.camera2.ui.CameraTab
+        android:id="@+id/tab_view"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/tab_layout_height"
+        android:layout_above="@+id/bottom_container"
+        android:orientation="horizontal"
+        android:foregroundGravity="center"
+        app:tabGravity="fill"
+        app:tabIndicatorColor="@color/tab_selected_color"
+        app:tabIndicatorHeight="@dimen/tab_indicator_height"
+        app:tabMode="scrollable"
+        app:tabSelectedTextColor="@color/colorAccent"
+        app:tabTextAppearance="@style/TabLayoutTextStyle"
+        app:tabTextColor="@color/tab_text_color">
+    </com.smewise.camera2.ui.CameraTab>
+
+    <include layout="@layout/camera_bottom_controls" />
 
     <include layout="@layout/cover_layout"/>
 
-    <include layout="@layout/setting_layout"/>
+    <include layout="@layout/setting_layout" />
 
 </RelativeLayout>

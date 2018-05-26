@@ -10,6 +10,7 @@ import android.widget.RelativeLayout;
 
 import com.smewise.camera2.Config;
 import com.smewise.camera2.R;
+import com.smewise.camera2.callback.CameraUiEvent;
 
 
 /**
@@ -27,16 +28,21 @@ public class DualCameraUI extends CameraBaseUI implements GestureTextureView.Ges
 
 
     public DualCameraUI(Context context, Handler mainHandler, CameraUiEvent event) {
-        super(context, mainHandler, event);
+        super(event);
         mRootView = (RelativeLayout) LayoutInflater.from(context).inflate(R.layout
                 .dual_camera_layout, null);
-        initView(mRootView, context, mainHandler);
-
-        mMainPreviewTexture = (GestureTextureView) mRootView.findViewById(R.id.main_texture);
+        mMainPreviewTexture = mRootView.findViewById(R.id.main_texture);
         mMainPreviewTexture.setSurfaceTextureListener(mMainListener);
         mMainPreviewTexture.setGestureListener(this);
-        mAuxPreviewTexture = (TextureView) mRootView.findViewById(R.id.aux_texture);
+        mAuxPreviewTexture = mRootView.findViewById(R.id.aux_texture);
         mAuxPreviewTexture.setSurfaceTextureListener(mAuxListener);
+    }
+
+    public void updateUISize(int width, int height) {
+        int auxW = (int) (width * Config.AUX_PREVIEW_SCALE);
+        int auxH = (int) (height * Config.AUX_PREVIEW_SCALE);
+        RelativeLayout.LayoutParams params1 = new RelativeLayout.LayoutParams(auxW, auxH);
+        mAuxPreviewTexture.setLayoutParams(params1);
     }
 
     @Override
@@ -49,14 +55,6 @@ public class DualCameraUI extends CameraBaseUI implements GestureTextureView.Ges
     @Override
     public RelativeLayout getRootView() {
         return mRootView;
-    }
-
-    public void setTextureUIPreviewSize(final int w, final int h) {
-        int auxW = (int) (w * Config.AUX_PREVIEW_SCALE);
-        int auxH = (int) (h * Config.AUX_PREVIEW_SCALE);
-        RelativeLayout.LayoutParams params1 = new RelativeLayout.LayoutParams(auxW, auxH);
-        mAuxPreviewTexture.setLayoutParams(params1);
-        updateUiSize(w, h);
     }
 
     private TextureView.SurfaceTextureListener mMainListener = new TextureView
@@ -85,7 +83,7 @@ public class DualCameraUI extends CameraBaseUI implements GestureTextureView.Ges
             if (frameCount == 2) {return;}
             frameCount++;
             if (frameCount == 2) {
-                uiEvent.onAction(ACTION_PREVIEW_READY, null);
+                uiEvent.onAction(CameraUiEvent.ACTION_PREVIEW_READY, null);
             }
         }
     };

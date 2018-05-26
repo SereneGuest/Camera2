@@ -9,6 +9,7 @@ import android.os.Message;
 import android.util.Log;
 
 import com.smewise.camera2.Config;
+import com.smewise.camera2.callback.CameraUiEvent;
 import com.smewise.camera2.ui.CameraBaseUI;
 import com.smewise.camera2.ui.FocusView;
 
@@ -24,7 +25,7 @@ public class FocusOverlayManager {
 
     private FocusView mFocusView;
     private MainHandler mHandler;
-    private CameraBaseUI.CameraUiEvent mListener;
+    private CameraUiEvent mListener;
     private int previewWidth;
     private int previewHeight;
     private float currentX;
@@ -63,7 +64,7 @@ public class FocusOverlayManager {
         mHandler = new MainHandler(this, looper);
     }
 
-    public void setListener(CameraBaseUI.CameraUiEvent listener) {
+    public void setListener(CameraUiEvent listener) {
         mListener = listener;
     }
 

@@ -11,6 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 
 import com.smewise.camera2.R;
+import com.smewise.camera2.callback.CameraUiEvent;
 
 
 /**
@@ -26,16 +27,14 @@ public class ProfessionalUI extends CameraBaseUI implements TextureView.SurfaceT
     private AppCompatSeekBar mFocusLensBar;
 
     public ProfessionalUI(Context context, Handler handler, CameraUiEvent event) {
-        super(context, handler, event);
+        super(event);
         mRootView = (RelativeLayout) LayoutInflater.from(context)
                 .inflate(R.layout.professional_layout, null);
-        initView(mRootView, context, handler);
-
-        mPreviewTexture = (GestureTextureView) mRootView.findViewById(R.id.texture_preview);
+        mPreviewTexture = mRootView.findViewById(R.id.texture_preview);
         mPreviewTexture.setSurfaceTextureListener(this);
         mPreviewTexture.setGestureListener(this);
 
-        mFocusLensBar = (AppCompatSeekBar) mRootView.findViewById(R.id.sb_focus_length);
+        mFocusLensBar = mRootView.findViewById(R.id.sb_focus_length);
         mFocusLensBar.setOnSeekBarChangeListener(mFocusLensChangerListener);
     }
 
@@ -72,14 +71,9 @@ public class ProfessionalUI extends CameraBaseUI implements TextureView.SurfaceT
         if (frameCount == 2) {return;}
         frameCount++;
         if (frameCount == 2) {
-            uiEvent.onAction(ACTION_PREVIEW_READY, null);
+            uiEvent.onAction(CameraUiEvent.ACTION_PREVIEW_READY, null);
         }
     }
-
-    public void setTextureUIPreviewSize(int w, int h) {
-        updateUiSize(w, h);
-    }
-
 
     private SeekBar.OnSeekBarChangeListener mFocusLensChangerListener =
             new SeekBar.OnSeekBarChangeListener() {

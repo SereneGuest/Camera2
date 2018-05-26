@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.smewise.camera2.Config;
 import com.smewise.camera2.R;
+import com.smewise.camera2.callback.CameraUiEvent;
 import com.smewise.camera2.callback.RequestCallback;
 import com.smewise.camera2.manager.CameraSession;
 import com.smewise.camera2.manager.CameraSettings;
@@ -19,7 +20,6 @@ import com.smewise.camera2.manager.Controller;
 import com.smewise.camera2.manager.DeviceManager;
 import com.smewise.camera2.manager.FocusOverlayManager;
 import com.smewise.camera2.manager.SingleDeviceManager;
-import com.smewise.camera2.ui.CameraBaseUI;
 import com.smewise.camera2.ui.ProfessionalUI;
 import com.smewise.camera2.utils.FileSaver;
 import com.smewise.camera2.utils.MediaFunc;
@@ -41,7 +41,7 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
     protected void init() {
         mUI = new ProfessionalUI(appContext, mainHandler, mCameraUiEvent);
         mUI.setCoverView(getCoverView());
-        mFocusManager = new FocusOverlayManager(mUI.getFocusView(), mainHandler.getLooper());
+        mFocusManager = new FocusOverlayManager(getBaseUI().getFocusView(), mainHandler.getLooper());
         mFocusManager.setListener(mCameraUiEvent);
         mDeviceMgr = new SingleDeviceManager(appContext, getCameraThread(), mCameraEvent);
         mSession = new CameraSession(appContext, mainHandler, getSettingManager());
@@ -54,6 +54,7 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
         mDeviceMgr.openCamera(mainHandler);
         // when module changed , need update listener
         fileSaver.setFileListener(this);
+        getBaseUI().setCameraUiEvent(mCameraUiEvent);
         addModuleView(mUI.getRootView());
         Log.d(TAG, "start module");
     }
@@ -93,7 +94,7 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
         @Override
         public void onViewChange(int width, int height) {
             super.onViewChange(width, height);
-            mUI.setTextureUIPreviewSize(width, height);
+            getBaseUI().updateUiSize(width, height);
             mFocusManager.setPreviewSize(width, height);
         }
 
@@ -106,6 +107,7 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
 
     @Override
     public void stop() {
+        getBaseUI().setCameraUiEvent(null);
         getCoverView().showCover();
         mFocusManager.removeDelayMessage();
         mFocusManager.hideFocusUI();
@@ -128,7 +130,7 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
     @Override
     public void onFileSaved(Uri uri, String path, Bitmap thumbnail) {
         mUI.setUIClickable(true);
-        mUI.setThumbnail(thumbnail);
+        getBaseUI().setThumbnail(thumbnail);
         MediaFunc.setCurrentUri(uri);
     }
 
@@ -142,7 +144,7 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
         mUI.setUIClickable(true);
     }
 
-    private CameraBaseUI.CameraUiEvent mCameraUiEvent = new CameraBaseUI.CameraUiEvent() {
+    private CameraUiEvent mCameraUiEvent = new CameraUiEvent() {
         @Override
         public void onPreviewUiReady(SurfaceTexture mainSurface, SurfaceTexture auxSurface) {
             Log.d(TAG, "onSurfaceTextureAvailable");
@@ -183,15 +185,15 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
         @Override
         public <T> void onAction(String type, T value) {
             switch (type) {
-                case CameraBaseUI.ACTION_CLICK:
+                case CameraUiEvent.ACTION_CLICK:
                     handleClick((View) value);
                     break;
-                case CameraBaseUI.ACTION_CHANGE_MODULE:
+                case CameraUiEvent.ACTION_CHANGE_MODULE:
                     setNewModule((Integer) value);
                     break;
-                case CameraBaseUI.ACTION_SWITCH_CAMERA:
+                case CameraUiEvent.ACTION_SWITCH_CAMERA:
                     break;
-                case CameraBaseUI.ACTION_PREVIEW_READY:
+                case CameraUiEvent.ACTION_PREVIEW_READY:
                     getCoverView().hideCoverWithAnimation();
                     break;
                 default:

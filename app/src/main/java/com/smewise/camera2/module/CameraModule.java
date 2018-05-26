@@ -11,6 +11,7 @@ import com.smewise.camera2.manager.CameraSettings;
 import com.smewise.camera2.manager.CameraToolKit;
 import com.smewise.camera2.manager.Controller;
 import com.smewise.camera2.manager.FocusOverlayManager;
+import com.smewise.camera2.ui.AppBaseUI;
 import com.smewise.camera2.ui.CameraBaseMenu;
 import com.smewise.camera2.ui.CameraMenu;
 import com.smewise.camera2.ui.CameraTab;
@@ -87,10 +88,10 @@ public abstract class CameraModule {
 
     void addModuleView(View view) {
         if (rootView.getChildAt(0) != view) {
-            if (rootView.getChildCount() > 0) {
-                rootView.removeAllViews();
+            if (rootView.getChildCount() > 1) {
+                rootView.removeViewAt(0);
             }
-            rootView.addView(view);
+            rootView.addView(view, 0);
         }
     }
 
@@ -127,6 +128,10 @@ public abstract class CameraModule {
 
     CameraThread getCameraThread() {
         return getToolKit().getCameraThread();
+    }
+
+    AppBaseUI getBaseUI() {
+        return mController.getBaseUI();
     }
 
     protected void runOnUiThread(Runnable runnable) {

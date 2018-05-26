@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.smewise.camera2.Config;
 import com.smewise.camera2.R;
+import com.smewise.camera2.callback.CameraUiEvent;
 import com.smewise.camera2.callback.RequestCallback;
 import com.smewise.camera2.manager.CameraSession;
 import com.smewise.camera2.manager.CameraSettings;
@@ -46,7 +47,7 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
     protected void init() {
         mUI = new DualCameraUI(appContext, mainHandler, mCameraUiEvent);
         mUI.setCoverView(getCoverView());
-        mFocusManager = new FocusOverlayManager(mUI.getFocusView(), mainHandler.getLooper());
+        mFocusManager = new FocusOverlayManager(getBaseUI().getFocusView(), mainHandler.getLooper());
         mFocusManager.setListener(mCameraUiEvent);
         mDeviceMgr = new DualDeviceManager(appContext, getCameraThread(), mCameraEvent);
         mSession = new CameraSession(appContext, mainHandler, getSettingManager());
@@ -63,6 +64,7 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
         mDeviceMgr.openCamera(mainHandler);
         // when module changed , need update listener
         fileSaver.setFileListener(this);
+        getBaseUI().setCameraUiEvent(mCameraUiEvent);
         addModuleView(mUI.getRootView());
         Log.d(TAG, "start module");
     }
@@ -110,7 +112,8 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
         @Override
         public void onViewChange(int width, int height) {
             super.onViewChange(width, height);
-            mUI.setTextureUIPreviewSize(width, height);
+            getBaseUI().updateUiSize(width, height);
+            mUI.updateUISize(width, height);
             mFocusManager.setPreviewSize(width, height);
         }
 
@@ -142,6 +145,7 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
 
     @Override
     public void stop() {
+        getBaseUI().setCameraUiEvent(null);
         getCoverView().showCover();
         mFocusManager.hideFocusUI();
         mFocusManager.removeDelayMessage();
@@ -161,7 +165,7 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
     public void onFileSaved(Uri uri, String path, Bitmap thumbnail) {
         MediaFunc.setCurrentUri(uri);
         mUI.setUIClickable(true);
-        mUI.setThumbnail(thumbnail);
+        getBaseUI().setThumbnail(thumbnail);
     }
 
     /**
@@ -180,7 +184,7 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
         mAuxSession.sendCaptureRequest(getToolKit().getOrientation());
     }
 
-    private CameraBaseUI.CameraUiEvent mCameraUiEvent = new CameraBaseUI.CameraUiEvent() {
+    private CameraUiEvent mCameraUiEvent = new CameraUiEvent() {
 
         @Override
         public void onPreviewUiReady(SurfaceTexture mainSurface, SurfaceTexture auxSurface) {
@@ -229,15 +233,15 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
         @Override
         public <T> void onAction(String type, T value) {
             switch (type) {
-                case CameraBaseUI.ACTION_CLICK:
+                case CameraUiEvent.ACTION_CLICK:
                     handleClick((View) value);
                     break;
-                case CameraBaseUI.ACTION_CHANGE_MODULE:
+                case CameraUiEvent.ACTION_CHANGE_MODULE:
                     setNewModule((Integer) value);
                     break;
-                case CameraBaseUI.ACTION_SWITCH_CAMERA:
+                case CameraUiEvent.ACTION_SWITCH_CAMERA:
                     break;
-                case CameraBaseUI.ACTION_PREVIEW_READY:
+                case CameraUiEvent.ACTION_PREVIEW_READY:
                     getCoverView().hideCoverWithAnimation();
                     break;
                 default:

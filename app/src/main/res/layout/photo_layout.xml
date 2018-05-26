@@ -5,8 +5,4 @@
 
     <include layout="@layout/preview_layout" />
 
-    <include layout="@layout/common_right_controls"/>
-
-    <include layout="@layout/photo_bottom_controls" />
-
 </RelativeLayout>

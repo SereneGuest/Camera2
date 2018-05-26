@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.smewise.camera2.Config;
 import com.smewise.camera2.R;
+import com.smewise.camera2.callback.CameraUiEvent;
 import com.smewise.camera2.callback.RequestCallback;
 import com.smewise.camera2.manager.CameraSession;
 import com.smewise.camera2.manager.CameraSettings;
@@ -20,7 +21,6 @@ import com.smewise.camera2.manager.DeviceManager;
 import com.smewise.camera2.manager.FocusOverlayManager;
 import com.smewise.camera2.manager.SingleDeviceManager;
 import com.smewise.camera2.ui.CameraBaseMenu;
-import com.smewise.camera2.ui.CameraBaseUI;
 import com.smewise.camera2.ui.PhotoUI;
 import com.smewise.camera2.utils.FileSaver;
 import com.smewise.camera2.utils.MediaFunc;
@@ -43,7 +43,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
     protected void init() {
         mUI = new PhotoUI(appContext, mainHandler, mCameraUiEvent);
         mUI.setCoverView(getCoverView());
-        mFocusManager = new FocusOverlayManager(mUI.getFocusView(), mainHandler.getLooper());
+        mFocusManager = new FocusOverlayManager(getBaseUI().getFocusView(), mainHandler.getLooper());
         mFocusManager.setListener(mCameraUiEvent);
         setCameraMenu(R.xml.menu_preference, this);
         mSession = new CameraSession(appContext, mainHandler, getSettingManager());
@@ -60,6 +60,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
         getSettingManager().dumpSupportInfo(c);
         // when module changed , need update listener
         fileSaver.setFileListener(this);
+        getBaseUI().setCameraUiEvent(mCameraUiEvent);
         addModuleView(mUI.getRootView());
         Log.d(TAG, "start module");
     }
@@ -99,7 +100,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
         @Override
         public void onViewChange(int width, int height) {
             super.onViewChange(width, height);
-            mUI.setTextureUIPreviewSize(width, height);
+            getBaseUI().updateUiSize(width, height);
             mFocusManager.setPreviewSize(width, height);
         }
 
@@ -113,6 +114,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
     @Override
     public void stop() {
         cameraMenu.close();
+        getBaseUI().setCameraUiEvent(null);
         getCoverView().showCover();
         mFocusManager.removeDelayMessage();
         mFocusManager.hideFocusUI();
@@ -136,7 +138,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
     public void onFileSaved(Uri uri, String path, Bitmap thumbnail) {
         MediaFunc.setCurrentUri(uri);
         mUI.setUIClickable(true);
-        mUI.setThumbnail(thumbnail);
+        getBaseUI().setThumbnail(thumbnail);
         Log.d(TAG, "uri:" + uri.toString());
     }
 
@@ -150,7 +152,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
         mUI.setUIClickable(true);
     }
 
-    private CameraBaseUI.CameraUiEvent mCameraUiEvent = new CameraBaseUI.CameraUiEvent() {
+    private CameraUiEvent mCameraUiEvent = new CameraUiEvent() {
 
         @Override
         public void onPreviewUiReady(SurfaceTexture mainSurface, SurfaceTexture auxSurface) {
@@ -192,15 +194,15 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
         @Override
         public <T> void onAction(String type, T value) {
             switch (type) {
-                case CameraBaseUI.ACTION_CLICK:
+                case CameraUiEvent.ACTION_CLICK:
                     handleClick((View) value);
                     break;
-                case CameraBaseUI.ACTION_CHANGE_MODULE:
+                case CameraUiEvent.ACTION_CHANGE_MODULE:
                     setNewModule((Integer) value);
                     break;
-                case CameraBaseUI.ACTION_SWITCH_CAMERA:
+                case CameraUiEvent.ACTION_SWITCH_CAMERA:
                     break;
-                case CameraBaseUI.ACTION_PREVIEW_READY:
+                case CameraUiEvent.ACTION_PREVIEW_READY:
                     getCoverView().hideCoverWithAnimation();
                     break;
                 default:
@@ -221,7 +223,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
                 MediaFunc.goToGallery(appContext);
                 break;
             case R.id.camera_menu:
-                cameraMenu.show(mUI.getBottomView(), 0, mUI.getBottomView().getHeight());
+                cameraMenu.show(getBaseUI().getBottomView(), 0, getBaseUI().getBottomView().getHeight());
                 break;
             default:
                 break;
