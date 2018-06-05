@@ -16,10 +16,8 @@ import com.smewise.camera2.manager.DeviceManager;
  * Created by wenzhe on 11/27/17.
  */
 
-public class CameraPreference {
-    private static final String TAG = Config.getTag(CameraPreference.class);
-    private String mKey;
-    private String mTitle;
+public class CamMenuPreference extends CamListPreference{
+    private static final String TAG = Config.getTag(CamMenuPreference.class);
     private int mIcon;
     private CharSequence[] mEntries;
     private CharSequence[] mEntryValues;
@@ -27,21 +25,20 @@ public class CameraPreference {
     private String mDefaultValue;
     private int mHighLightIdx = -1;
 
-    public CameraPreference(Context context, AttributeSet attrs) {
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CameraPreference);
-        mKey = a.getString(R.styleable.CameraPreference_key);
-        mTitle = a.getString(R.styleable.CameraPreference_title);
-        mIcon = a.getResourceId(R.styleable.CameraPreference_icon, 0);
-        mEntries = a.getTextArray(R.styleable.CameraPreference_entries);
-        mEntryValues = a.getTextArray(R.styleable.CameraPreference_entryValues);
+    public CamMenuPreference(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CamListPreference);
+        mIcon = a.getResourceId(R.styleable.CamListPreference_icon, 0);
+        mEntries = a.getTextArray(R.styleable.CamListPreference_entries);
+        mEntryValues = a.getTextArray(R.styleable.CamListPreference_entryValues);
         mEntryIcons = getIds(context.getResources(),
-                a.getResourceId(R.styleable.CameraPreference_entryIcons, 0));
-        mDefaultValue = a.getString(R.styleable.CameraPreference_defaultValue);
+                a.getResourceId(R.styleable.CamListPreference_entryIcons, 0));
+        mDefaultValue = a.getString(R.styleable.CamListPreference_defaultValue);
         a.recycle();
     }
 
     public void dynamicUpdateValue(Context context) {
-        switch (mKey) {
+        switch (getKey()) {
             case CameraSettings.KEY_SWITCH_CAMERA:
                 updateCameraIdList(context);
                 break;
@@ -56,49 +53,34 @@ public class CameraPreference {
         mEntries = mEntryValues;
     }
 
-    public String getKey() {
-        return mKey;
-    }
-
-    public String getTitle() {
-        return mTitle;
-    }
-
+    @Override
     public int getIcon() {
         return mIcon;
     }
 
+    @Override
     public CharSequence[] getEntries() {
         return mEntries;
     }
 
+    @Override
     public CharSequence[] getEntryValues() {
         return mEntryValues;
     }
 
+    @Override
     public int[] getEntryIcons() {
         return mEntryIcons;
     }
 
+    @Override
     public int getHighLightIdx() {
         return mHighLightIdx;
     }
 
-    private int[] getIds(Resources res, int iconsRes) {
-        if (iconsRes == 0) return null;
-        TypedArray array = res.obtainTypedArray(iconsRes);
-        int n = array.length();
-        int ids[] = new int[n];
-        for (int i = 0; i < n; ++i) {
-            ids[i] = array.getResourceId(i, 0);
-        }
-        array.recycle();
-        return ids;
-    }
-
     private void dump() {
-        Log.d(TAG, "key:" + mKey);
-        Log.d(TAG, "title:" + mTitle);
+        Log.d(TAG, "key:" + getKey());
+        Log.d(TAG, "title:" + getTitle());
         Log.d(TAG, "default value:" + mDefaultValue);
         Log.d(TAG, "icon:" + mIcon);
         if (mEntries != null) {

@@ -31,7 +31,6 @@ public abstract class CameraModule {
     private int mCameraState = Controller.CAMERA_MODULE_STOP;
 
     RelativeLayout rootView;
-    CameraMenu cameraMenu;
 
     private Controller mController;
     Context appContext;
@@ -140,10 +139,6 @@ public abstract class CameraModule {
 
     void showSetting(boolean stopModule) {
         mController.showSetting(stopModule);
-    }
-
-    void setCameraMenu(int resId, CameraBaseMenu.OnMenuClickListener listener) {
-        cameraMenu = new CameraMenu(appContext, resId, listener);
     }
 
     void updateAFState(int state, FocusOverlayManager overlayManager) {

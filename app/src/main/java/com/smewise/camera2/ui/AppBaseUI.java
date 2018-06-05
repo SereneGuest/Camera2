@@ -32,7 +32,7 @@ public class AppBaseUI implements TabLayout.OnTabSelectedListener, View.OnClickL
     private CircleImageView mThumbnail;
     private LinearLayout mBottomContainer;
     private FocusView mFocusView;
-    private ImageButton mCameraMenu;
+    private LinearLayout mMenuContainer;
     private CameraUiEvent mEvent;
 
     private Point mDisplaySize;
@@ -54,8 +54,7 @@ public class AppBaseUI implements TabLayout.OnTabSelectedListener, View.OnClickL
         mBottomContainer = activity.findViewById(R.id.bottom_container);
         mThumbnail = activity.findViewById(R.id.thumbnail);
         mThumbnail.setOnClickListener(this);
-        mCameraMenu = activity.findViewById(R.id.camera_menu);
-        mCameraMenu.setOnClickListener(this);
+        mMenuContainer = activity.findViewById(R.id.menu_container);
 
         mDisplaySize = CameraUtil.getDisplaySize(activity);
         mVirtualKeyHeight = CameraUtil.getVirtualKeyHeight(activity);
@@ -91,6 +90,15 @@ public class AppBaseUI implements TabLayout.OnTabSelectedListener, View.OnClickL
 
     public void changeModule(int index) {
         mCameraTab.setSelected(index);
+    }
+
+    public void setMenuView(View view) {
+        mMenuContainer.removeAllViews();
+        mMenuContainer.addView(view);
+    }
+
+    public void removeMenuView() {
+        mMenuContainer.removeAllViews();
     }
 
     public void updateUiSize(int width, int height) {

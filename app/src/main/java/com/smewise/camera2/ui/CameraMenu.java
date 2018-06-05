@@ -2,9 +2,7 @@ package com.smewise.camera2.ui;
 
 import android.content.Context;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.widget.PopupWindow;
 
 import com.smewise.camera2.Config;
 import com.smewise.camera2.utils.XmlInflater;
@@ -13,39 +11,45 @@ import com.smewise.camera2.utils.XmlInflater;
  * Created by wenzhe on 11/27/17.
  */
 
-public class CameraMenu extends CameraBaseMenu implements PopupWindow.OnDismissListener {
+public class CameraMenu extends CameraBaseMenu {
 
     public static final String TAG = Config.getTag(CameraMenu.class);
     private CameraSubMenu mSubMenu;
     private Context mContext;
-    private View mShowView;
     private OnMenuClickListener mMenuClickListener;
 
     public CameraMenu(Context context, int resId, OnMenuClickListener listener) {
         super(context);
         mContext = context;
         XmlInflater xmlInflater = new XmlInflater(context);
-        MenuListAdapter adapter = new MenuListAdapter(context, xmlInflater.inflate(resId));
-        adapter.setMenuListener(mMenuListener);
+        PrefListAdapter adapter = new PrefListAdapter(context, xmlInflater.inflate(resId));
+        adapter.setClickListener(mMenuListener);
         recycleView.setAdapter(adapter);
-        popWindow.setOnDismissListener(this);
         mMenuClickListener = listener;
     }
 
-    private Listener mMenuListener = new Listener() {
+    public View getView() {
+        return recycleView;
+    }
+
+    private PrefListAdapter.PrefClickListener mMenuListener =
+            new PrefListAdapter.PrefClickListener() {
         @Override
-        public void onMenuItemClick(View view, String key, CameraPreference preference) {
+        public void onClick(View view, String key, CamListPreference preference) {
             if (mSubMenu == null) {
                 mSubMenu = new CameraSubMenu(mContext, preference);
-                mSubMenu.setItemClickListener(mMenuListener);
+                mSubMenu.setItemClickListener(mItemClickListener);
             } else {
                 mSubMenu.notifyDataSetChange(preference);
             }
-            mSubMenu.show(mShowView, 0, mShowView.getHeight() + view.getHeight());
+            mSubMenu.show(view, 0, view.getHeight());
         }
+    };
 
+    private SubPrefListAdapter.PrefItemClickListener mItemClickListener =
+            new SubPrefListAdapter.PrefItemClickListener() {
         @Override
-        public void onSubMenuItemClick(String key, String value) {
+        public void onItemClick(String key, String value) {
             Log.d(TAG, "sub menu click key:" + key + " value:" + value);
             if (mMenuClickListener != null) {
                 mMenuClickListener.onMenuClick(key, value);
@@ -53,16 +57,7 @@ public class CameraMenu extends CameraBaseMenu implements PopupWindow.OnDismissL
         }
     };
 
-    @Override
-    public void show(View view, int xOffset, int yOffset) {
-        if(!popWindow.isShowing()) {
-            mShowView = view;
-            popWindow.showAtLocation(view, Gravity.BOTTOM | Gravity.CENTER, xOffset, yOffset);
-        }
-    }
-
-    @Override
-    public void onDismiss() {
+    public void close() {
         if (mSubMenu != null) {
             mSubMenu.close();
         }

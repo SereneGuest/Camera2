@@ -1,12 +1,10 @@
 package com.smewise.camera2.ui;
 
 import android.content.Context;
-import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,29 +15,38 @@ import com.smewise.camera2.R;
  * Created by wenzhe on 11/22/17.
  */
 
-public class SubMenuListAdapter extends RecyclerView.Adapter<SubMenuListAdapter.MyViewHolder> {
+public class SubPrefListAdapter extends RecyclerView.Adapter<SubPrefListAdapter.MyViewHolder> {
 
-    private CameraPreference mPref;
+    private CamListPreference mPref;
     private Context mContext;
-    private CameraBaseMenu.Listener mListener;
+    private PrefItemClickListener mListener;
     private int mTextColor;
-    private int mHightlightColor;
+    private int mHighlightColor;
 
-    public SubMenuListAdapter(Context context, CameraPreference pref) {
-        mContext = context;
-        mPref = pref;
-        mPref.dynamicUpdateValue(context);
-        mTextColor = context.getColor(R.color.options_text_color);
-        mHightlightColor = context.getColor(R.color.options_highlight_color);
+    public interface PrefItemClickListener {
+        void onItemClick(String key, String value);
     }
 
-    public void setMenuListener(CameraBaseMenu.Listener listener) {
+
+    public SubPrefListAdapter(Context context, CamListPreference pref) {
+        mContext = context;
+        mPref = pref;
+        if (pref instanceof CamMenuPreference) {
+            ((CamMenuPreference) pref).dynamicUpdateValue(mContext);
+        }
+        mTextColor = context.getResources().getColor(R.color.options_text_color);
+        mHighlightColor = context.getResources().getColor(R.color.options_highlight_color);
+    }
+
+    public void setClickListener(PrefItemClickListener listener) {
         mListener = listener;
     }
 
-    public void updateDataSet(CameraPreference pref) {
+    public void updateDataSet(CamListPreference pref) {
         mPref = pref;
-        mPref.dynamicUpdateValue(mContext);
+        if (pref instanceof CamMenuPreference) {
+            ((CamMenuPreference) pref).dynamicUpdateValue(mContext);
+        }
         notifyDataSetChanged();
     }
 
@@ -54,7 +61,7 @@ public class SubMenuListAdapter extends RecyclerView.Adapter<SubMenuListAdapter.
     public void onBindViewHolder(MyViewHolder holder, final int position) {
         holder.itemText.setText(mPref.getEntries()[position]);
         if (position == mPref.getHighLightIdx()) {
-            holder.itemText.setTextColor(mHightlightColor);
+            holder.itemText.setTextColor(mHighlightColor);
         }else {
             holder.itemText.setTextColor(mTextColor);
         }
@@ -68,7 +75,7 @@ public class SubMenuListAdapter extends RecyclerView.Adapter<SubMenuListAdapter.
             @Override
             public void onClick(View v) {
                 if (mListener != null) {
-                    mListener.onSubMenuItemClick(mPref.getKey(),
+                    mListener.onItemClick(mPref.getKey(),
                             mPref.getEntryValues()[position].toString());
                 }
             }

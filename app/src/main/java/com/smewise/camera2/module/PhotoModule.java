@@ -21,6 +21,7 @@ import com.smewise.camera2.manager.DeviceManager;
 import com.smewise.camera2.manager.FocusOverlayManager;
 import com.smewise.camera2.manager.SingleDeviceManager;
 import com.smewise.camera2.ui.CameraBaseMenu;
+import com.smewise.camera2.ui.CameraMenu;
 import com.smewise.camera2.ui.PhotoUI;
 import com.smewise.camera2.utils.FileSaver;
 import com.smewise.camera2.utils.MediaFunc;
@@ -36,6 +37,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
     private CameraSession mSession;
     private SingleDeviceManager mDeviceMgr;
     private FocusOverlayManager mFocusManager;
+    private CameraMenu mCameraMenu;
 
     private static final String TAG = Config.getTag(PhotoModule.class);
 
@@ -45,7 +47,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
         mUI.setCoverView(getCoverView());
         mFocusManager = new FocusOverlayManager(getBaseUI().getFocusView(), mainHandler.getLooper());
         mFocusManager.setListener(mCameraUiEvent);
-        setCameraMenu(R.xml.menu_preference, this);
+        mCameraMenu = new CameraMenu(appContext, R.xml.menu_preference, this);
         mSession = new CameraSession(appContext, mainHandler, getSettingManager());
         mDeviceMgr = new SingleDeviceManager(appContext, getCameraThread(), mCameraEvent);
     }
@@ -61,6 +63,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
         // when module changed , need update listener
         fileSaver.setFileListener(this);
         getBaseUI().setCameraUiEvent(mCameraUiEvent);
+        getBaseUI().setMenuView(mCameraMenu.getView());
         addModuleView(mUI.getRootView());
         Log.d(TAG, "start module");
     }
@@ -113,9 +116,10 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
 
     @Override
     public void stop() {
-        cameraMenu.close();
+        mCameraMenu.close();
         getBaseUI().setCameraUiEvent(null);
         getCoverView().showCover();
+        getBaseUI().removeMenuView();
         mFocusManager.removeDelayMessage();
         mFocusManager.hideFocusUI();
         mSession.release();
@@ -221,9 +225,6 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
                 break;
             case R.id.thumbnail:
                 MediaFunc.goToGallery(appContext);
-                break;
-            case R.id.camera_menu:
-                cameraMenu.show(getBaseUI().getBottomView(), 0, getBaseUI().getBottomView().getHeight());
                 break;
             default:
                 break;

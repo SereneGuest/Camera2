@@ -13,8 +13,6 @@
 
     </RelativeLayout>
 
-    <include layout="@layout/camera_menu_controls" />
-
     <com.smewise.camera2.ui.CameraTab
         android:id="@+id/tab_view"
         android:layout_width="match_parent"
@@ -32,6 +30,16 @@
     </com.smewise.camera2.ui.CameraTab>
 
     <include layout="@layout/camera_bottom_controls" />
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/menu_container"
+        android:background="@color/menu_background"
+        android:orientation="vertical"
+        android:gravity="end"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
 
     <include layout="@layout/cover_layout"/>
 

@@ -7,13 +7,13 @@ import java.util.ArrayList;
  */
 
 public class PreferenceGroup {
-    private ArrayList<CameraPreference> mList = new ArrayList<>();
+    private ArrayList<CamListPreference> mList = new ArrayList<>();
 
-    public void add(CameraPreference cameraPreference) {
-        mList.add(cameraPreference);
+    public void add(CamListPreference camListPreference) {
+        mList.add(camListPreference);
     }
 
-    public CameraPreference get(int index) {
+    public CamListPreference get(int index) {
         return mList.get(index);
     }
 
@@ -21,8 +21,8 @@ public class PreferenceGroup {
         return mList.size();
     }
 
-    public CameraPreference find(String key) {
-        for (CameraPreference preference : mList) {
+    public CamListPreference find(String key) {
+        for (CamListPreference preference : mList) {
             if (preference.getKey().equals(key)) {
                 return preference;
             }

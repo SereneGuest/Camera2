@@ -7,8 +7,7 @@ import android.util.Log;
 import android.util.Xml;
 
 import com.smewise.camera2.Config;
-import com.smewise.camera2.R;
-import com.smewise.camera2.ui.CameraPreference;
+import com.smewise.camera2.ui.CamMenuPreference;
 import com.smewise.camera2.ui.PreferenceGroup;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -24,8 +23,6 @@ import java.lang.reflect.InvocationTargetException;
 
 public class XmlInflater {
     private static final String TAG = Config.getTag(XmlInflater.class);
-
-    private static final String PACKAGE_NAME = CameraPreference.class.getPackage().getName();
     private static final Class<?>[] CTOR_SIGNATURE =
             new Class[] {Context.class, AttributeSet.class};
     private static final ArrayMap<String, Constructor<?>> sConstructorMap = new ArrayMap<>();
@@ -35,21 +32,20 @@ public class XmlInflater {
         mContext = context;
     }
 
-    private CameraPreference getInstance(String tagName, Object[] args) {
-        String name = PACKAGE_NAME + "." + tagName;
-        Constructor<?> constructor = sConstructorMap.get(name);
+    private CamMenuPreference getInstance(String tagName, Object[] args) {
+        Constructor<?> constructor = sConstructorMap.get(tagName);
         if (constructor == null) {
             try {
-                Class<?> clazz = mContext.getClassLoader().loadClass(name);
+                Class<?> clazz = mContext.getClassLoader().loadClass(tagName);
                 constructor = clazz.getConstructor(CTOR_SIGNATURE);
-                sConstructorMap.put(name, constructor);
+                sConstructorMap.put(tagName, constructor);
             } catch (ClassNotFoundException | NoSuchMethodException e) {
                 e.printStackTrace();
             }
         }
         try {
             assert constructor != null;
-            return (CameraPreference) constructor.newInstance(args);
+            return (CamMenuPreference) constructor.newInstance(args);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
@@ -68,7 +64,7 @@ public class XmlInflater {
                 if (type != XmlPullParser.START_TAG) continue;
                 int depth = parser.getDepth();
                 if (depth > 1) {
-                    CameraPreference pref = getInstance(parser.getName(), args);
+                    CamMenuPreference pref = getInstance(parser.getName(), args);
                     preferenceGroup.add(pref);
                 }
             }

@@ -35,7 +35,7 @@
     <dimen name="setting_catalog_size">14sp</dimen>
     <dimen name="setting_text_size">16sp</dimen>
 
-    <dimen name="options_item_height">60dp</dimen>
+    <dimen name="options_item_height">@dimen/tab_layout_height</dimen>
     <dimen name="options_img_size">35dp</dimen>
     <dimen name="options_text_size">13sp</dimen>
     <dimen name="options_text_margin">5dp</dimen>

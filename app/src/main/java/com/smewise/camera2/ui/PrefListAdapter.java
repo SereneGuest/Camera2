@@ -2,10 +2,10 @@ package com.smewise.camera2.ui;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,18 +16,22 @@ import com.smewise.camera2.R;
  * Created by wenzhe on 11/22/17.
  */
 
-public class MenuListAdapter extends RecyclerView.Adapter<MenuListAdapter.MyViewHolder> {
+public class PrefListAdapter extends RecyclerView.Adapter<PrefListAdapter.MyViewHolder> {
 
     private PreferenceGroup mGroup;
     private Context mContext;
-    private CameraBaseMenu.Listener mListener;
+    private PrefClickListener mListener;
 
-    public MenuListAdapter(Context context, PreferenceGroup group) {
+    public interface PrefClickListener {
+        void onClick(View view, String key, CamListPreference preference);
+    }
+
+    public PrefListAdapter(Context context, PreferenceGroup group) {
         mContext = context;
         mGroup = group;
     }
 
-    public void setMenuListener(CameraBaseMenu.Listener listener) {
+    public void setClickListener(PrefClickListener listener) {
         mListener = listener;
     }
 
@@ -40,14 +44,19 @@ public class MenuListAdapter extends RecyclerView.Adapter<MenuListAdapter.MyView
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
-        holder.itemText.setText(mGroup.get(position).getTitle());
-        holder.itemIcon.setImageResource(mGroup.get(position).getIcon());
+        CamListPreference preference = mGroup.get(position);
+        if (TextUtils.isEmpty(preference.getTitle())) {
+            holder.itemText.setVisibility(View.GONE);
+        } else {
+            holder.itemText.setVisibility(View.VISIBLE);
+            holder.itemText.setText(preference.getTitle());
+        }
+        holder.itemIcon.setImageResource(preference.getIcon());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mListener != null) {
-                    mListener.onMenuItemClick(v,
-                            mGroup.get(position).getKey(), mGroup.get(position));
+                    mListener.onClick(v, mGroup.get(position).getKey(), mGroup.get(position));
                 }
             }
         });
