@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.PopupWindow;
 
 import com.smewise.camera2.R;
+import com.smewise.camera2.data.CamListPreference;
+import com.smewise.camera2.data.SubPrefListAdapter;
 
 /**
  * Created by wenzhe on 11/27/17.

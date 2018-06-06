@@ -5,6 +5,9 @@ import android.util.Log;
 import android.view.View;
 
 import com.smewise.camera2.Config;
+import com.smewise.camera2.data.CamListPreference;
+import com.smewise.camera2.data.PrefListAdapter;
+import com.smewise.camera2.data.SubPrefListAdapter;
 import com.smewise.camera2.utils.XmlInflater;
 
 /**

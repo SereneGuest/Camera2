@@ -1,7 +1,6 @@
-package com.smewise.camera2.ui;
+package com.smewise.camera2.data;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.util.Log;

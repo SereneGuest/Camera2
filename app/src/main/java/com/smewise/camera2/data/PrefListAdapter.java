@@ -1,4 +1,4 @@
-package com.smewise.camera2.ui;
+package com.smewise.camera2.data;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

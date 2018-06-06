@@ -7,8 +7,8 @@ import android.util.Log;
 import android.util.Xml;
 
 import com.smewise.camera2.Config;
-import com.smewise.camera2.ui.CamMenuPreference;
-import com.smewise.camera2.ui.PreferenceGroup;
+import com.smewise.camera2.data.CamMenuPreference;
+import com.smewise.camera2.data.PreferenceGroup;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
