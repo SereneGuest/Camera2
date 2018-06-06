@@ -22,9 +22,9 @@ import com.smewise.camera2.utils.MediaFunc;
  * Created by wenzhe on 9/15/17.
  */
 
-public class AppBaseUI implements TabLayout.OnTabSelectedListener, View.OnClickListener {
+public class AppBaseUI implements View.OnClickListener {
     private CoverView mCoverView;
-    private CameraTab mCameraTab;
+    private LinearLayout mIndicatorContainer;
     private Controller mController;
     private RelativeLayout mPreviewRootView;
     private ShutterButton mShutter;
@@ -43,9 +43,8 @@ public class AppBaseUI implements TabLayout.OnTabSelectedListener, View.OnClickL
     public AppBaseUI(Activity activity, Controller controller) {
         mController = controller;
         mCoverView = activity.findViewById(R.id.cover_view);
-        mCameraTab = activity.findViewById(R.id.tab_view);
-        mCameraTab.setSelected(ModuleManager.getCurrentIndex());
-        mCameraTab.addOnTabSelectedListener(this);
+        mIndicatorContainer = activity.findViewById(R.id.module_indicator_container);
+
         mPreviewRootView = activity.findViewById(R.id.preview_root_view);
         mShutter = activity.findViewById(R.id.btn_shutter);
         mShutter.setOnClickListener(this);
@@ -68,6 +67,11 @@ public class AppBaseUI implements TabLayout.OnTabSelectedListener, View.OnClickL
         mEvent = event;
     }
 
+    public void setIndicatorView(View view) {
+        mIndicatorContainer.removeAllViews();
+        mIndicatorContainer.addView(view);
+    }
+
     public RelativeLayout getRootView() {
         return mPreviewRootView;
     }
@@ -77,7 +81,7 @@ public class AppBaseUI implements TabLayout.OnTabSelectedListener, View.OnClickL
     }
 
     public CameraTab getCameraTab() {
-        return mCameraTab;
+        return null;
     }
 
     public FocusView getFocusView() {
@@ -86,10 +90,6 @@ public class AppBaseUI implements TabLayout.OnTabSelectedListener, View.OnClickL
 
     public View getBottomView() {
         return mBottomContainer;
-    }
-
-    public void changeModule(int index) {
-        mCameraTab.setSelected(index);
     }
 
     public void setMenuView(View view) {
@@ -156,25 +156,6 @@ public class AppBaseUI implements TabLayout.OnTabSelectedListener, View.OnClickL
         if (mThumbnail != null && bitmap != null) {
             mThumbnail.setImageBitmap(bitmap);
         }
-    }
-
-
-    @Override
-    public void onTabSelected(TabLayout.Tab tab) {
-        if (tab.getPosition() != ModuleManager.getCurrentIndex()) {
-            mCoverView.setMode(tab.getPosition());
-            mController.changeModule(tab.getPosition());
-        }
-    }
-
-    @Override
-    public void onTabUnselected(TabLayout.Tab tab) {
-
-    }
-
-    @Override
-    public void onTabReselected(TabLayout.Tab tab) {
-
     }
 
     @Override

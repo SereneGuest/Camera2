@@ -18,6 +18,8 @@ public class CamListPreference {
     private String mKey;
     private String mTitle;
 
+    public static final int RES_NULL = 0;
+
     public CamListPreference(Context context, AttributeSet attrs) {
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CamListPreference);
         mKey = a.getString(R.styleable.CamListPreference_key);
@@ -34,7 +36,7 @@ public class CamListPreference {
     }
 
     public int getIcon() {
-        return 0;
+        return RES_NULL;
     }
 
     public CharSequence[] getEntries() {

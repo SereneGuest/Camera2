@@ -36,10 +36,11 @@ public class CameraActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mModuleManager = new ModuleManager();
+        mModuleManager = new ModuleManager(getApplicationContext(), mController);
         setWindowFlag();
         setContentView(R.layout.main_layout);
         mBaseUI = new AppBaseUI(this, mController);
+        mBaseUI.setIndicatorView(mModuleManager.getIndicatorView());
         mToolKit = new CameraToolKit(getApplicationContext());
         mSettings = new CameraSettings(getApplicationContext());
     }

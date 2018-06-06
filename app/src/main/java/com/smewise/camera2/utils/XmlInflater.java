@@ -7,6 +7,7 @@ import android.util.Log;
 import android.util.Xml;
 
 import com.smewise.camera2.Config;
+import com.smewise.camera2.data.CamListPreference;
 import com.smewise.camera2.data.CamMenuPreference;
 import com.smewise.camera2.data.PreferenceGroup;
 
@@ -32,7 +33,7 @@ public class XmlInflater {
         mContext = context;
     }
 
-    private CamMenuPreference getInstance(String tagName, Object[] args) {
+    private CamListPreference getInstance(String tagName, Object[] args) {
         Constructor<?> constructor = sConstructorMap.get(tagName);
         if (constructor == null) {
             try {
@@ -45,7 +46,7 @@ public class XmlInflater {
         }
         try {
             assert constructor != null;
-            return (CamMenuPreference) constructor.newInstance(args);
+            return (CamListPreference) constructor.newInstance(args);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
@@ -64,7 +65,7 @@ public class XmlInflater {
                 if (type != XmlPullParser.START_TAG) continue;
                 int depth = parser.getDepth();
                 if (depth > 1) {
-                    CamMenuPreference pref = getInstance(parser.getName(), args);
+                    CamListPreference pref = getInstance(parser.getName(), args);
                     preferenceGroup.add(pref);
                 }
             }

@@ -38,7 +38,7 @@ public class CameraMenu extends CameraBaseMenu {
     private PrefListAdapter.PrefClickListener mMenuListener =
             new PrefListAdapter.PrefClickListener() {
         @Override
-        public void onClick(View view, String key, CamListPreference preference) {
+        public void onClick(View view, int position, CamListPreference preference) {
             if (mSubMenu == null) {
                 mSubMenu = new CameraSubMenu(mContext, preference);
                 mSubMenu.setItemClickListener(mItemClickListener);

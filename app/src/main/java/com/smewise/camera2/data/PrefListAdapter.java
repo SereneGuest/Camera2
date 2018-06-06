@@ -23,7 +23,7 @@ public class PrefListAdapter extends RecyclerView.Adapter<PrefListAdapter.MyView
     private PrefClickListener mListener;
 
     public interface PrefClickListener {
-        void onClick(View view, String key, CamListPreference preference);
+        void onClick(View view, int position, CamListPreference preference);
     }
 
     public PrefListAdapter(Context context, PreferenceGroup group) {
@@ -51,12 +51,17 @@ public class PrefListAdapter extends RecyclerView.Adapter<PrefListAdapter.MyView
             holder.itemText.setVisibility(View.VISIBLE);
             holder.itemText.setText(preference.getTitle());
         }
-        holder.itemIcon.setImageResource(preference.getIcon());
+        if (CamListPreference.RES_NULL == preference.getIcon()) {
+            holder.itemIcon.setVisibility(View.GONE);
+        } else {
+            holder.itemIcon.setVisibility(View.VISIBLE);
+            holder.itemIcon.setImageResource(preference.getIcon());
+        }
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mListener != null) {
-                    mListener.onClick(v, mGroup.get(position).getKey(), mGroup.get(position));
+                    mListener.onClick(v, position, mGroup.get(position));
                 }
             }
         });
