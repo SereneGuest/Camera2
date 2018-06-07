@@ -129,6 +129,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
 
     private void takePicture() {
         mUI.setUIClickable(false);
+        getBaseUI().setUIClickable(false);
         mSession.sendCaptureRequest(getToolKit().getOrientation());
     }
 
@@ -142,6 +143,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
     public void onFileSaved(Uri uri, String path, Bitmap thumbnail) {
         MediaFunc.setCurrentUri(uri);
         mUI.setUIClickable(true);
+        getBaseUI().setUIClickable(true);
         getBaseUI().setThumbnail(thumbnail);
         Log.d(TAG, "uri:" + uri.toString());
     }
@@ -154,6 +156,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
     public void onFileSaveError(String msg) {
         Toast.makeText(appContext,msg, Toast.LENGTH_LONG).show();
         mUI.setUIClickable(true);
+        getBaseUI().setUIClickable(true);
     }
 
     private CameraUiEvent mCameraUiEvent = new CameraUiEvent() {

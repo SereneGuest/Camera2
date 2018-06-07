@@ -3,8 +3,10 @@ package com.smewise.camera2;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -43,6 +45,16 @@ public class CameraActivity extends AppCompatActivity {
         mBaseUI.setIndicatorView(mModuleManager.getIndicatorView());
         mToolKit = new CameraToolKit(getApplicationContext());
         mSettings = new CameraSettings(getApplicationContext());
+        updateThumbnail(getApplicationContext());
+    }
+
+    public void updateThumbnail(final Context context) {
+        mToolKit.getCameraThread().post(new Runnable() {
+            @Override
+            public void run() {
+                mBaseUI.updateThumbnail(context, mToolKit.getMainHandler());
+            }
+        });
     }
 
     private boolean isSettingShortcut() {

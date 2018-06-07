@@ -158,6 +158,16 @@ public class AppBaseUI implements View.OnClickListener {
         }
     }
 
+    public void setUIClickable(boolean clickable) {
+        mShutter.setClickable(clickable);
+        mThumbnail.setClickable(clickable);
+        mSetting.setClickable(clickable);
+        if (mMenuContainer.getChildCount() > 0) {
+            mMenuContainer.getChildAt(0).setClickable(clickable);
+        }
+        mIndicatorContainer.getChildAt(0).setClickable(clickable);
+    }
+
     @Override
     public void onClick(View v) {
         if (mEvent != null) {

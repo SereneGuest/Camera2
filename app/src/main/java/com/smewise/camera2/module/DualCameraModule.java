@@ -137,6 +137,7 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
     private void enableUiAfterShot() {
         if (mPicCount == 2) {
             mUI.setUIClickable(true);
+            getBaseUI().setUIClickable(true);
             mPicCount = 0;
             mSession.restartPreviewAfterShot();
             mAuxSession.restartPreviewAfterShot();
@@ -165,6 +166,7 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
     public void onFileSaved(Uri uri, String path, Bitmap thumbnail) {
         MediaFunc.setCurrentUri(uri);
         mUI.setUIClickable(true);
+        getBaseUI().setUIClickable(true);
         getBaseUI().setThumbnail(thumbnail);
     }
 
@@ -176,10 +178,12 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
     public void onFileSaveError(String msg) {
         Toast.makeText(appContext,msg, Toast.LENGTH_LONG).show();
         mUI.setUIClickable(true);
+        getBaseUI().setUIClickable(true);
     }
 
     private void takePicture() {
         mUI.setUIClickable(false);
+        getBaseUI().setUIClickable(false);
         mSession.sendCaptureRequest(getToolKit().getOrientation());
         mAuxSession.sendCaptureRequest(getToolKit().getOrientation());
     }

@@ -118,6 +118,7 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
 
     private void takePicture() {
         mUI.setUIClickable(false);
+        getBaseUI().setUIClickable(false);
         mSession.sendCaptureRequest(getToolKit().getOrientation());
     }
 
@@ -130,6 +131,7 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
     @Override
     public void onFileSaved(Uri uri, String path, Bitmap thumbnail) {
         mUI.setUIClickable(true);
+        getBaseUI().setUIClickable(true);
         getBaseUI().setThumbnail(thumbnail);
         MediaFunc.setCurrentUri(uri);
     }
@@ -142,6 +144,7 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
     public void onFileSaveError(String msg) {
         Toast.makeText(appContext,msg, Toast.LENGTH_LONG).show();
         mUI.setUIClickable(true);
+        getBaseUI().setUIClickable(true);
     }
 
     private CameraUiEvent mCameraUiEvent = new CameraUiEvent() {
