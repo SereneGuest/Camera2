@@ -7,20 +7,24 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.smewise.camera2.R;
+import com.smewise.camera2.data.CamListPreference;
 import com.smewise.camera2.data.PrefListAdapter;
 import com.smewise.camera2.data.PreferenceGroup;
 import com.smewise.camera2.utils.XmlInflater;
 
-public class ModuleIndicator {
+public class ModuleIndicator implements PrefListAdapter.PrefClickListener {
     private PreferenceGroup mGroup;
     private PrefListAdapter mAdapter;
     private RecyclerView mRecycleView;
+    private PrefListAdapter.PrefClickListener mListener;
 
     public ModuleIndicator(Context context) {
         XmlInflater inflater = new XmlInflater(context);
         mGroup = inflater.inflate(R.xml.module_preference);
 
         mAdapter = new PrefListAdapter(context, mGroup);
+        mAdapter.setClickListener(this);
+        mAdapter.updateHighlightIndex(0, false);
         // init recycler view
         mRecycleView = new RecyclerView(context);
         RecyclerView.LayoutParams params = new RecyclerView.LayoutParams(
@@ -50,6 +54,14 @@ public class ModuleIndicator {
     }
 
     public void setPrefClickListener(PrefListAdapter.PrefClickListener listener) {
-        mAdapter.setClickListener(listener);
+        mListener = listener;
+    }
+
+    @Override
+    public void onClick(View view, int position, CamListPreference preference) {
+        mAdapter.updateHighlightIndex(position, true);
+        if (mListener != null) {
+            mListener.onClick(view, position, preference);
+        }
     }
 }

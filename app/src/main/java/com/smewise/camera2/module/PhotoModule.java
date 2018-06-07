@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.smewise.camera2.Config;
 import com.smewise.camera2.R;
 import com.smewise.camera2.callback.CameraUiEvent;
+import com.smewise.camera2.callback.MenuInfo;
 import com.smewise.camera2.callback.RequestCallback;
 import com.smewise.camera2.manager.CameraSession;
 import com.smewise.camera2.manager.CameraSettings;
@@ -47,7 +48,8 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
         mUI.setCoverView(getCoverView());
         mFocusManager = new FocusOverlayManager(getBaseUI().getFocusView(), mainHandler.getLooper());
         mFocusManager.setListener(mCameraUiEvent);
-        mCameraMenu = new CameraMenu(appContext, R.xml.menu_preference, this);
+        mCameraMenu = new CameraMenu(appContext, R.xml.menu_preference, mMenuInfo);
+        mCameraMenu.setOnMenuClickListener(this);
         mSession = new CameraSession(appContext, mainHandler, getSettingManager());
         mDeviceMgr = new SingleDeviceManager(appContext, getCameraThread(), mCameraEvent);
     }
@@ -215,6 +217,23 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
                 default:
                     break;
             }
+        }
+    };
+
+    private MenuInfo mMenuInfo = new MenuInfo() {
+        @Override
+        public String[] getCameraIdList() {
+            return mDeviceMgr.getCameraIdList();
+        }
+
+        @Override
+        public String getCurrentCameraId() {
+            return mDeviceMgr.getCameraId();
+        }
+
+        @Override
+        public String getCurrentValue(String key) {
+            return null;
         }
     };
 

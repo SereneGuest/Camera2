@@ -22,6 +22,7 @@ public class SubPrefListAdapter extends RecyclerView.Adapter<SubPrefListAdapter.
     private PrefItemClickListener mListener;
     private int mTextColor;
     private int mHighlightColor;
+    private int mHighlightIndex = -1;
 
     public interface PrefItemClickListener {
         void onItemClick(String key, String value);
@@ -31,9 +32,6 @@ public class SubPrefListAdapter extends RecyclerView.Adapter<SubPrefListAdapter.
     public SubPrefListAdapter(Context context, CamListPreference pref) {
         mContext = context;
         mPref = pref;
-        if (pref instanceof CamMenuPreference) {
-            ((CamMenuPreference) pref).dynamicUpdateValue(mContext);
-        }
         mTextColor = context.getResources().getColor(R.color.options_text_color);
         mHighlightColor = context.getResources().getColor(R.color.options_highlight_color);
     }
@@ -44,11 +42,18 @@ public class SubPrefListAdapter extends RecyclerView.Adapter<SubPrefListAdapter.
 
     public void updateDataSet(CamListPreference pref) {
         mPref = pref;
-        if (pref instanceof CamMenuPreference) {
-            ((CamMenuPreference) pref).dynamicUpdateValue(mContext);
-        }
         notifyDataSetChanged();
     }
+
+    public void updateHighlightIndex(int index, boolean notify) {
+        int preIndex = mHighlightIndex;
+        mHighlightIndex = index;
+        if (notify) {
+            notifyItemChanged(preIndex);
+            notifyItemChanged(mHighlightIndex);
+        }
+    }
+
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -60,11 +65,9 @@ public class SubPrefListAdapter extends RecyclerView.Adapter<SubPrefListAdapter.
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
         holder.itemText.setText(mPref.getEntries()[position]);
-        if (position == mPref.getHighLightIdx()) {
-            holder.itemText.setTextColor(mHighlightColor);
-        }else {
-            holder.itemText.setTextColor(mTextColor);
-        }
+        int color = mHighlightIndex == position ? mHighlightColor : mTextColor;
+        holder.itemText.setTextColor(color);
+
         if (mPref.getEntryIcons() != null) {
             holder.itemIcon.setImageResource(mPref.getEntryIcons()[position]);
             holder.itemIcon.setVisibility(View.VISIBLE);
@@ -92,8 +95,8 @@ public class SubPrefListAdapter extends RecyclerView.Adapter<SubPrefListAdapter.
         TextView itemText;
         MyViewHolder(View itemView) {
             super(itemView);
-            itemIcon = (ImageView) itemView.findViewById(R.id.item_icon);
-            itemText = (TextView) itemView.findViewById(R.id.item_text);
+            itemIcon = itemView.findViewById(R.id.item_icon);
+            itemText = itemView.findViewById(R.id.item_text);
         }
     }
 

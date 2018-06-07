@@ -22,7 +22,6 @@ public class CamMenuPreference extends CamListPreference{
     private CharSequence[] mEntryValues;
     private int[] mEntryIcons;
     private String mDefaultValue;
-    private int mHighLightIdx = -1;
 
     public CamMenuPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -36,20 +35,14 @@ public class CamMenuPreference extends CamListPreference{
         a.recycle();
     }
 
-    public void dynamicUpdateValue(Context context) {
-        switch (getKey()) {
-            case CameraSettings.KEY_SWITCH_CAMERA:
-                updateCameraIdList(context);
-                break;
-            default:
-                break;
-        }
+    @Override
+    public void setEntries(CharSequence[] entries) {
+        mEntries = entries;
     }
 
-    private void updateCameraIdList(Context context) {
-        DeviceManager manager = new DeviceManager(context);
-        mEntryValues = manager.getCameraIdList();
-        mEntries = mEntryValues;
+    @Override
+    public void setEntryValues(CharSequence[] entryValues) {
+        mEntryValues = entryValues;
     }
 
     @Override
@@ -70,11 +63,6 @@ public class CamMenuPreference extends CamListPreference{
     @Override
     public int[] getEntryIcons() {
         return mEntryIcons;
-    }
-
-    @Override
-    public int getHighLightIdx() {
-        return mHighLightIdx;
     }
 
     private void dump() {

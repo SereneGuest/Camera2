@@ -47,12 +47,14 @@ public class CamListPreference {
         return null;
     }
 
-    public int[] getEntryIcons() {
-        return null;
+    public void setEntries(CharSequence[] entries) {
     }
 
-    public int getHighLightIdx() {
-        return -1;
+    public void setEntryValues(CharSequence[] entryValues) {
+    }
+
+    public int[] getEntryIcons() {
+        return null;
     }
 
     int[] getIds(Resources res, int iconsRes) {

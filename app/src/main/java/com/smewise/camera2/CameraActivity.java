@@ -45,7 +45,6 @@ public class CameraActivity extends AppCompatActivity {
         mBaseUI.setIndicatorView(mModuleManager.getIndicatorView());
         mToolKit = new CameraToolKit(getApplicationContext());
         mSettings = new CameraSettings(getApplicationContext());
-        updateThumbnail(getApplicationContext());
     }
 
     public void updateThumbnail(final Context context) {
@@ -154,6 +153,7 @@ public class CameraActivity extends AppCompatActivity {
     private void initCameraModule() {
         if (mModuleManager.getCurrentModule() == null) {
             Log.d(TAG, "init module");
+            updateThumbnail(getApplicationContext());
             CameraModule cameraModule = mModuleManager.getNewModule();
             cameraModule.init(getApplicationContext(), mController);
         }

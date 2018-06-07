@@ -21,6 +21,9 @@ public class PrefListAdapter extends RecyclerView.Adapter<PrefListAdapter.MyView
     private PreferenceGroup mGroup;
     private Context mContext;
     private PrefClickListener mListener;
+    private int mHighlightIndex = -1;
+    private int mTextColor;
+    private int mHighlightColor;
 
     public interface PrefClickListener {
         void onClick(View view, int position, CamListPreference preference);
@@ -29,6 +32,17 @@ public class PrefListAdapter extends RecyclerView.Adapter<PrefListAdapter.MyView
     public PrefListAdapter(Context context, PreferenceGroup group) {
         mContext = context;
         mGroup = group;
+        mTextColor = context.getResources().getColor(R.color.options_text_color);
+        mHighlightColor = context.getResources().getColor(R.color.options_highlight_color);
+    }
+
+    public void updateHighlightIndex(int index, boolean notify) {
+        int preIndex = mHighlightIndex;
+        mHighlightIndex = index;
+        if (notify) {
+            notifyItemChanged(preIndex);
+            notifyItemChanged(mHighlightIndex);
+        }
     }
 
     public void setClickListener(PrefClickListener listener) {
@@ -45,6 +59,8 @@ public class PrefListAdapter extends RecyclerView.Adapter<PrefListAdapter.MyView
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
         CamListPreference preference = mGroup.get(position);
+        int color = position == mHighlightIndex ? mHighlightColor : mTextColor;
+        holder.itemText.setTextColor(color);
         if (TextUtils.isEmpty(preference.getTitle())) {
             holder.itemText.setVisibility(View.GONE);
         } else {
@@ -77,8 +93,8 @@ public class PrefListAdapter extends RecyclerView.Adapter<PrefListAdapter.MyView
         TextView itemText;
         MyViewHolder(View itemView) {
             super(itemView);
-            itemIcon = (ImageView) itemView.findViewById(R.id.item_icon);
-            itemText = (TextView) itemView.findViewById(R.id.item_text);
+            itemIcon = itemView.findViewById(R.id.item_icon);
+            itemText = itemView.findViewById(R.id.item_text);
         }
     }
 
