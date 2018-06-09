@@ -50,18 +50,18 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
         mFocusManager.setListener(mCameraUiEvent);
         mCameraMenu = new CameraMenu(appContext, R.xml.menu_preference, mMenuInfo);
         mCameraMenu.setOnMenuClickListener(this);
-        mSession = new CameraSession(appContext, mainHandler, getSettingManager());
+        mSession = new CameraSession(appContext, mainHandler, getSettings());
         mDeviceMgr = new SingleDeviceManager(appContext, getCameraThread(), mCameraEvent);
     }
 
     @Override
     public void start() {
-        String cameraId = getSettingManager().getCameraId(CameraSettings.KEY_CAMERA_ID);
+        String cameraId = getSettings().getCameraId(CameraSettings.KEY_CAMERA_ID);
         mDeviceMgr.setCameraId(cameraId);
         mDeviceMgr.openCamera(mainHandler);
         //dump support info
         CameraCharacteristics c = mDeviceMgr.getCharacteristics();
-        getSettingManager().dumpSupportInfo(c);
+        getSettings().dumpSupportInfo(c);
         // when module changed , need update listener
         fileSaver.setFileListener(this);
         getBaseUI().setCameraUiEvent(mCameraUiEvent);
@@ -262,18 +262,26 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
     public void onMenuClick(String key, String value) {
         switch (key) {
             case CameraSettings.KEY_SWITCH_CAMERA:
-                switchCamera(value);
+                switchCamera();
                 break;
             default:
                 break;
         }
     }
 
-    private void switchCamera(String cameraId) {
-        if(!mDeviceMgr.getCameraId().equals(cameraId) && getSettingManager()
-                .setCameraIdPref(CameraSettings.KEY_CAMERA_ID, cameraId)) {
+    private void switchCamera() {
+        int currentId = Integer.parseInt(mDeviceMgr.getCameraId());
+        currentId++;
+        if (currentId >= mDeviceMgr.getCameraIdList().length) {
+            currentId = 0;
+        }
+        boolean ret = getSettings().setCameraIdPref(
+                CameraSettings.KEY_CAMERA_ID, String.valueOf(currentId));
+        if (ret) {
             stopModule();
             startModule();
+        } else {
+            Log.e(TAG, "set camera id pref fail");
         }
     }
 }

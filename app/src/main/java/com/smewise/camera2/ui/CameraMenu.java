@@ -9,6 +9,7 @@ import com.smewise.camera2.callback.MenuInfo;
 import com.smewise.camera2.data.CamListPreference;
 import com.smewise.camera2.data.PrefListAdapter;
 import com.smewise.camera2.data.SubPrefListAdapter;
+import com.smewise.camera2.manager.CameraSettings;
 import com.smewise.camera2.utils.XmlInflater;
 
 /**
@@ -48,6 +49,13 @@ public class CameraMenu extends CameraBaseMenu {
             new PrefListAdapter.PrefClickListener() {
         @Override
         public void onClick(View view, int position, CamListPreference preference) {
+            // if is switch menu click, no need show sub menu
+            if (preference.getKey().equals(CameraSettings.KEY_SWITCH_CAMERA)) {
+                if (mMenuClickListener != null) {
+                    mMenuClickListener.onMenuClick(preference.getKey(), null);
+                }
+                return;
+            }
             if (mSubMenu == null) {
                 mSubMenu = new CameraSubMenu(mContext, preference);
                 mSubMenu.setItemClickListener(mItemClickListener);

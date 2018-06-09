@@ -12,8 +12,6 @@ import com.smewise.camera2.manager.CameraToolKit;
 import com.smewise.camera2.manager.Controller;
 import com.smewise.camera2.manager.FocusOverlayManager;
 import com.smewise.camera2.ui.AppBaseUI;
-import com.smewise.camera2.ui.CameraBaseMenu;
-import com.smewise.camera2.ui.CameraMenu;
 import com.smewise.camera2.ui.CameraTab;
 import com.smewise.camera2.ui.CoverView;
 import com.smewise.camera2.utils.CameraThread;
@@ -99,7 +97,7 @@ public abstract class CameraModule {
         getCameraThread().post(new Runnable() {
             @Override
             public void run() {
-                int format = getSettingManager().getPicFormat(cameraId, formatKey);
+                int format = getSettings().getPicFormat(cameraId, formatKey);
                 fileSaver.saveFile(width, height, getToolKit().getOrientation(), data, tag, format);
             }
         });
@@ -121,7 +119,7 @@ public abstract class CameraModule {
         return mController.getBaseUI().getCameraTab();
     }
 
-    protected CameraSettings getSettingManager() {
+    protected CameraSettings getSettings() {
         return mController.getSettingManager();
     }
 

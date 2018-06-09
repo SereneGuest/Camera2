@@ -21,7 +21,6 @@ import com.smewise.camera2.manager.Controller;
 import com.smewise.camera2.manager.DeviceManager;
 import com.smewise.camera2.manager.DualDeviceManager;
 import com.smewise.camera2.manager.FocusOverlayManager;
-import com.smewise.camera2.ui.CameraBaseUI;
 import com.smewise.camera2.ui.DualCameraUI;
 import com.smewise.camera2.utils.FileSaver;
 import com.smewise.camera2.utils.MediaFunc;
@@ -50,15 +49,15 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
         mFocusManager = new FocusOverlayManager(getBaseUI().getFocusView(), mainHandler.getLooper());
         mFocusManager.setListener(mCameraUiEvent);
         mDeviceMgr = new DualDeviceManager(appContext, getCameraThread(), mCameraEvent);
-        mSession = new CameraSession(appContext, mainHandler, getSettingManager());
-        mAuxSession = new CameraSession(appContext, mainHandler, getSettingManager());
+        mSession = new CameraSession(appContext, mainHandler, getSettings());
+        mAuxSession = new CameraSession(appContext, mainHandler, getSettings());
     }
 
     @Override
     public void start() {
         String[] idList = mDeviceMgr.getCameraIdList();
-        String mainId = getSettingManager().getCameraId(CameraSettings.KEY_MAIN_CAMERA_ID);
-        String auxId = getSettingManager().getCameraId(CameraSettings.KEY_AUX_CAMERA_ID,
+        String mainId = getSettings().getCameraId(CameraSettings.KEY_MAIN_CAMERA_ID);
+        String auxId = getSettings().getCameraId(CameraSettings.KEY_AUX_CAMERA_ID,
                 idList[idList.length - 1]);
         mDeviceMgr.setCameraId(mainId, auxId);
         mDeviceMgr.openCamera(mainHandler);

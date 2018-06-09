@@ -44,12 +44,12 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
         mFocusManager = new FocusOverlayManager(getBaseUI().getFocusView(), mainHandler.getLooper());
         mFocusManager.setListener(mCameraUiEvent);
         mDeviceMgr = new SingleDeviceManager(appContext, getCameraThread(), mCameraEvent);
-        mSession = new CameraSession(appContext, mainHandler, getSettingManager());
+        mSession = new CameraSession(appContext, mainHandler, getSettings());
     }
 
     @Override
     public void start() {
-        String cameraId = getSettingManager().getCameraId(CameraSettings.KEY_CAMERA_ID);
+        String cameraId = getSettings().getCameraId(CameraSettings.KEY_CAMERA_ID);
         mDeviceMgr.setCameraId(cameraId);
         mDeviceMgr.openCamera(mainHandler);
         // when module changed , need update listener
