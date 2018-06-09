@@ -46,6 +46,11 @@ public class CamMenuPreference extends CamListPreference{
     }
 
     @Override
+    public void setIcon(int icon) {
+        mIcon = icon;
+    }
+
+    @Override
     public int getIcon() {
         return mIcon;
     }

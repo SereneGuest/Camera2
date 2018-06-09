@@ -63,15 +63,6 @@ public class CameraSubMenu extends CameraBaseMenu{
         }
     }
 
-    private <T> int getIndex(T[] lists, T value) {
-        for (int i = 0; i < lists.length; i++) {
-            if (lists[i].equals(value)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
     public void show(View view, int xOffset, int yOffset) {
         if (!mPopWindow.isShowing()) {
             mPopWindow.showAtLocation(view, Gravity.TOP | Gravity.CENTER, xOffset, yOffset);

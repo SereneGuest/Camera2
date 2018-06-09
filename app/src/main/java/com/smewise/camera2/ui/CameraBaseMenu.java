@@ -27,4 +27,13 @@ public abstract class CameraBaseMenu {
         recycleView.setLayoutManager(manager);
         recycleView.setHasFixedSize(true);
     }
+
+    <T> int getIndex(T[] lists, T value) {
+        for (int i = 0; i < lists.length; i++) {
+            if (lists[i].equals(value)) {
+                return i;
+            }
+        }
+        return -1;
+    }
 }

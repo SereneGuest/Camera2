@@ -228,7 +228,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
 
         @Override
         public String getCurrentCameraId() {
-            return mDeviceMgr.getCameraId();
+            return getSettings().getCameraId(CameraSettings.KEY_CAMERA_ID);
         }
 
         @Override
@@ -275,8 +275,9 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
         if (currentId >= mDeviceMgr.getCameraIdList().length) {
             currentId = 0;
         }
-        boolean ret = getSettings().setCameraIdPref(
-                CameraSettings.KEY_CAMERA_ID, String.valueOf(currentId));
+        String switchId = String.valueOf(currentId);
+        mDeviceMgr.setCameraId(switchId);
+        boolean ret = getSettings().setCameraIdPref(CameraSettings.KEY_CAMERA_ID, switchId);
         if (ret) {
             stopModule();
             startModule();

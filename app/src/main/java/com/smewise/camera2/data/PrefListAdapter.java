@@ -36,6 +36,10 @@ public class PrefListAdapter extends RecyclerView.Adapter<PrefListAdapter.MyView
         mHighlightColor = context.getResources().getColor(R.color.options_highlight_color);
     }
 
+    public PreferenceGroup getPrefGroup() {
+        return mGroup;
+    }
+
     public void updateHighlightIndex(int index, boolean notify) {
         int preIndex = mHighlightIndex;
         mHighlightIndex = index;

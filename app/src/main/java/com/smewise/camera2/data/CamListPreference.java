@@ -53,6 +53,9 @@ public class CamListPreference {
     public void setEntryValues(CharSequence[] entryValues) {
     }
 
+    public void setIcon(int icon) {
+    }
+
     public int[] getEntryIcons() {
         return null;
     }

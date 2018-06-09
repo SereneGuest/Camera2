@@ -35,7 +35,11 @@
     <!--for menu setting start-->
     <string name="menu_switch_camera">Switch</string>
     <string name="menu_flash_title">Flash</string>
-    <array name="menu_flash_icon">
+    <array name="menu_switch_icon_list">
+        <item>@drawable/ic_vector_switch_to_front</item>
+        <item>@drawable/ic_vector_switch_to_back</item>
+    </array>
+    <array name="menu_flash_icon_list">
         <item>@drawable/ic_vector_flash_auto</item>
         <item>@drawable/ic_vector_flash_off</item>
         <item>@drawable/ic_vector_flash_on</item>
