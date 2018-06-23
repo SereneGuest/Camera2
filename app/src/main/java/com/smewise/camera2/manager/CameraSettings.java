@@ -39,6 +39,7 @@ public class CameraSettings {
     public static final String KEY_AUX_PICTURE_FORMAT = "pref_aux_picture_format";
     public static final String KEY_RESTART_PREVIEW = "pref_restart_preview";
     public static final String KEY_SWITCH_CAMERA = "pref_switch_camera";
+    public static final String KEY_FLASH_MODE = "pref_flash_mode";
 
     private static final ArrayList<String> SPEC_KEY = new ArrayList<>(5);
 
@@ -92,23 +93,19 @@ public class CameraSettings {
         return editor.commit();
     }
 
-    private String getSharedPrefName(String cameraId) {
-        return mContext.getPackageName() + "_camera_" + cameraId;
-    }
 
-    public String getCameraId(String key) {
-        String defaultValue = KEY_AUX_CAMERA_ID.equals(key) ? Config.AUX_ID : Config.MAIN_ID;
-        return mSharedPreference.getString(key, defaultValue);
-    }
-
-    public boolean setCameraIdPref(String key, String idValue) {
+    public boolean setGlobalPref(String key, String value) {
         SharedPreferences.Editor editor = mSharedPreference.edit();
-        editor.putString(key, idValue);
+        editor.putString(key, value);
         return editor.commit();
     }
 
-    public String getCameraId(String key, String defaultValue) {
+    public String getGlobalPref(String key, String defaultValue) {
         return mSharedPreference.getString(key, defaultValue);
+    }
+
+    private String getSharedPrefName(String cameraId) {
+        return mContext.getPackageName() + "_camera_" + cameraId;
     }
 
     public int getPicFormat(String id, String key) {

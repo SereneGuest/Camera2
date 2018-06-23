@@ -46,17 +46,18 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
     protected void init() {
         mUI = new PhotoUI(appContext, mainHandler, mCameraUiEvent);
         mUI.setCoverView(getCoverView());
+        mDeviceMgr = new SingleDeviceManager(appContext, getCameraThread(), mCameraEvent);
         mFocusManager = new FocusOverlayManager(getBaseUI().getFocusView(), mainHandler.getLooper());
         mFocusManager.setListener(mCameraUiEvent);
         mCameraMenu = new CameraMenu(appContext, R.xml.menu_preference, mMenuInfo);
         mCameraMenu.setOnMenuClickListener(this);
         mSession = new CameraSession(appContext, mainHandler, getSettings());
-        mDeviceMgr = new SingleDeviceManager(appContext, getCameraThread(), mCameraEvent);
     }
 
     @Override
     public void start() {
-        String cameraId = getSettings().getCameraId(CameraSettings.KEY_CAMERA_ID);
+        String cameraId = getSettings().getGlobalPref(
+                CameraSettings.KEY_CAMERA_ID, mDeviceMgr.getCameraIdList()[0]);
         mDeviceMgr.setCameraId(cameraId);
         mDeviceMgr.openCamera(mainHandler);
         //dump support info
@@ -228,12 +229,17 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
 
         @Override
         public String getCurrentCameraId() {
-            return getSettings().getCameraId(CameraSettings.KEY_CAMERA_ID);
+            return getSettings().getGlobalPref(
+                    CameraSettings.KEY_CAMERA_ID, mDeviceMgr.getCameraIdList()[0]);
         }
 
         @Override
         public String getCurrentValue(String key) {
-            return null;
+            String defaultValue = null;
+            if (key.equals(CameraSettings.KEY_FLASH_MODE)) {
+                defaultValue = "0"; // off
+            }
+            return getSettings().getGlobalPref(key, defaultValue);
         }
     };
 
@@ -264,6 +270,9 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
             case CameraSettings.KEY_SWITCH_CAMERA:
                 switchCamera();
                 break;
+            case CameraSettings.KEY_FLASH_MODE:
+                getSettings().setPrefValueById(mDeviceMgr.getCameraId(), key, value);
+                break;
             default:
                 break;
         }
@@ -277,7 +286,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
         }
         String switchId = String.valueOf(currentId);
         mDeviceMgr.setCameraId(switchId);
-        boolean ret = getSettings().setCameraIdPref(CameraSettings.KEY_CAMERA_ID, switchId);
+        boolean ret = getSettings().setGlobalPref(CameraSettings.KEY_CAMERA_ID, switchId);
         if (ret) {
             stopModule();
             startModule();

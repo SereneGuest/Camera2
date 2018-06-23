@@ -44,11 +44,19 @@ public class CameraMenu extends CameraBaseMenu {
         }
     }
 
+    /**
+     * Find icon preference and notify update item
+     * @param position used for get CamListPreference
+     */
     private void updateMenuIcon(int position) {
+        if (position < 0) { return; }
         CamListPreference preference = mAdapter.getPrefGroup().get(position);
         switch (preference.getKey()) {
             case CameraSettings.KEY_SWITCH_CAMERA:
-                updateSwitchIcon(preference);
+                updateIcon(preference, mMenuInfo.getCurrentCameraId());
+                break;
+            case CameraSettings.KEY_FLASH_MODE:
+                updateIcon(preference, mMenuInfo.getCurrentValue(preference.getKey()));
                 break;
             default:
                 break;
@@ -56,13 +64,18 @@ public class CameraMenu extends CameraBaseMenu {
         mAdapter.notifyItemChanged(position);
     }
 
-    private void updateSwitchIcon(CamListPreference preference) {
-        int index = getIndex(preference.getEntryValues(),
-                mMenuInfo.getCurrentCameraId());
-        if (index < preference.getEntryIcons().length) {
+    /**
+     * Find correct icon in icon list by currentValue
+     * @param preference which icon need update
+     * @param currentValue current value of this preference stored in shared pref
+     */
+    private void updateIcon(CamListPreference preference, String currentValue) {
+        int index = getIndex(preference.getEntryValues(), currentValue);
+        if (index < preference.getEntryIcons().length && index >= 0) {
             preference.setIcon(preference.getEntryIcons()[index]);
         }
     }
+
 
     public View getView() {
         return recycleView;
@@ -106,6 +119,12 @@ public class CameraMenu extends CameraBaseMenu {
             Log.d(TAG, "sub menu click key:" + key + " value:" + value);
             if (mMenuClickListener != null) {
                 mMenuClickListener.onMenuClick(key, value);
+            }
+            // after menu value change, update icon
+            if (key.equals(CameraSettings.KEY_FLASH_MODE)) {
+                mSubMenu.close();
+                int position = mAdapter.getPrefGroup().find(key);
+                updateMenuIcon(position);
             }
         }
     };

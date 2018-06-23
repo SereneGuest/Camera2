@@ -21,12 +21,12 @@ public class PreferenceGroup {
         return mList.size();
     }
 
-    public CamListPreference find(String key) {
-        for (CamListPreference preference : mList) {
-            if (preference.getKey().equals(key)) {
-                return preference;
+    public int find(String key) {
+        for (int i = 0; i < mList.size(); i++) {
+            if (mList.get(i).getKey().equals(key)) {
+                return i;
             }
         }
-        return null;
+        return -1;
     }
 }

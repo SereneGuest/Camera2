@@ -56,9 +56,9 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
     @Override
     public void start() {
         String[] idList = mDeviceMgr.getCameraIdList();
-        String mainId = getSettings().getCameraId(CameraSettings.KEY_MAIN_CAMERA_ID);
-        String auxId = getSettings().getCameraId(CameraSettings.KEY_AUX_CAMERA_ID,
-                idList[idList.length - 1]);
+        String mainId = getSettings().getGlobalPref(CameraSettings.KEY_MAIN_CAMERA_ID, idList[0]);
+        String auxId = getSettings().getGlobalPref(
+                CameraSettings.KEY_AUX_CAMERA_ID, idList[idList.length - 1]);
         mDeviceMgr.setCameraId(mainId, auxId);
         mDeviceMgr.openCamera(mainHandler);
         // when module changed , need update listener

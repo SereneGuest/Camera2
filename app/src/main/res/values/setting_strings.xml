@@ -39,21 +39,36 @@
         <item>@drawable/ic_vector_switch_to_front</item>
         <item>@drawable/ic_vector_switch_to_back</item>
     </array>
+
     <array name="menu_flash_icon_list">
-        <item>@drawable/ic_vector_flash_auto</item>
         <item>@drawable/ic_vector_flash_off</item>
         <item>@drawable/ic_vector_flash_on</item>
+        <item>@drawable/ic_vector_flash_auto</item>
         <item>@drawable/ic_vector_flash_torch</item>
     </array>
+
     <array name="menu_flash_entries">
-        <item>@string/flash_auto</item>
         <item>@string/flash_off</item>
         <item>@string/flash_on</item>
+        <item>@string/flash_auto</item>
         <item>@string/flash_torch</item>
     </array>
+
+    <array name="menu_flash_entries_value">
+        <item>@string/flash_off_value</item>
+        <item>@string/flash_on_value</item>
+        <item>@string/flash_auto_value</item>
+        <item>@string/flash_torch_value</item>
+    </array>
+
     <string name="flash_auto">auto</string>
     <string name="flash_off">off</string>
     <string name="flash_on">on</string>
     <string name="flash_torch">torch</string>
+
+    <string name="flash_off_value">0</string>
+    <string name="flash_on_value">1</string>
+    <string name="flash_auto_value">2</string>
+    <string name="flash_torch_value">3</string>
     <!--for menu setting end-->
 </resources>

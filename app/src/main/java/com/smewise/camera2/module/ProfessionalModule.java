@@ -49,7 +49,8 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
 
     @Override
     public void start() {
-        String cameraId = getSettings().getCameraId(CameraSettings.KEY_CAMERA_ID);
+        String cameraId = getSettings().getGlobalPref(
+                CameraSettings.KEY_CAMERA_ID, mDeviceMgr.getCameraIdList()[0]);
         mDeviceMgr.setCameraId(cameraId);
         mDeviceMgr.openCamera(mainHandler);
         // when module changed , need update listener
