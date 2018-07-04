@@ -1,6 +1,7 @@
 package com.smewise.camera2.manager;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -16,6 +17,7 @@ import android.media.Image;
 import android.media.ImageReader;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.util.ArrayMap;
 import android.util.Log;
 import android.util.Size;
 import android.view.Surface;
@@ -38,19 +40,70 @@ public class CameraSession {
     private RequestHelper mHelper;
     private RequestCallback mCallback;
     private SurfaceTexture mTexture;
+    private Surface mSurface;
     private ImageReader mImageReader;
     private CameraCaptureSession mSession;
+    private CaptureRequest.Builder mPreviewBuilder;
+    private CaptureRequest.Builder mCaptureBuilder;
     private int mLatestAfState = -1;
+    // for reset AE/AF metering area
+    private MeteringRectangle mResetRect = new MeteringRectangle(0, 0, 0, 0, 0);
+
+    private ArrayMap<CaptureRequest.Key, Object> mPreviewSettings;
+    private ArrayMap<CaptureRequest.Key, Object> mCaptureSettings;
 
     public CameraSession(Context context, Handler mainHandler, CameraSettings settings) {
         mContext = context;
         mMainHandler = mainHandler;
         mSettings = settings;
-        mHelper = new RequestHelper(context, mainHandler);
+        mPreviewSettings = new ArrayMap<>();
+        mCaptureSettings = new ArrayMap<>();
+    }
+
+    public void sendFlashRequest(String value) {
+        Log.e(TAG, "flash value:" + value);
+        switch (value) {
+            case CameraSettings.FLASH_VALUE_ON:
+                mCaptureSettings.put(CaptureRequest.CONTROL_AE_MODE,
+                        CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH);
+                mPreviewSettings.put(CaptureRequest.CONTROL_AE_MODE,
+                        CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH);
+                mCaptureSettings.remove(CaptureRequest.FLASH_MODE);
+                break;
+            case CameraSettings.FLASH_VALUE_OFF:
+                mCaptureSettings.put(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
+                mCaptureSettings.put(CaptureRequest.CONTROL_AE_MODE,
+                        CaptureRequest.CONTROL_AE_MODE_ON);
+                mPreviewSettings.put(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
+                mCaptureSettings.put(CaptureRequest.CONTROL_AE_MODE,
+                        CaptureRequest.CONTROL_AE_MODE_ON);
+                break;
+            case CameraSettings.FLASH_VALUE_AUTO:
+                mPreviewSettings.put(CaptureRequest.CONTROL_AE_MODE,
+                        CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
+                mCaptureSettings.put(CaptureRequest.CONTROL_AE_MODE,
+                        CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
+                mCaptureSettings.remove(CaptureRequest.FLASH_MODE);
+                break;
+            case CameraSettings.FLASH_VALUE_TORCH:
+                mPreviewSettings.put(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_TORCH);
+                mCaptureSettings.put(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_TORCH);
+                mPreviewSettings.put(CaptureRequest.CONTROL_AE_MODE,
+                        CaptureRequest.CONTROL_AE_MODE_ON);
+                break;
+            default:
+                Log.e(TAG, "error value for flash mode");
+                break;
+        }
+        mHelper.applyPreviewRequest(getPreviewRequestBuilder(mSurface),
+                mPreviewSettings, mPreviewCallback);
     }
 
     public void setCameraDevice(CameraDevice device) {
         mDevice = device;
+        // camera device may change, reset builder
+        mPreviewBuilder = null;
+        mCaptureBuilder = null;
     }
 
     /* need call after surface is available, after session configured
@@ -58,6 +111,7 @@ public class CameraSession {
     public void createPreviewSession(@NonNull SurfaceTexture texture, RequestCallback callback) {
         mCallback = callback;
         mTexture = texture;
+        mSurface = new Surface(mTexture);
         try {
             mDevice.createCaptureSession(setOutputSize(mDevice.getId(), mTexture),
                     sessionStateCb, mMainHandler);
@@ -68,25 +122,58 @@ public class CameraSession {
     }
 
     public void sendPreviewRequest() {
-        mHelper.sendPreviewRequest(getPreviewRequestBuilder(new Surface(mTexture)),
-                mSession, mPreviewCallback);
+        mPreviewSettings.put(CaptureRequest.CONTROL_AF_MODE,
+                CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+        mPreviewSettings.put(CaptureRequest.CONTROL_AE_ANTIBANDING_MODE,
+                CaptureRequest.CONTROL_AE_ANTIBANDING_MODE_AUTO);
+        mPreviewSettings.put(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO);
+        mPreviewSettings.put(CaptureRequest.CONTROL_AF_TRIGGER,
+                CaptureRequest.CONTROL_AF_TRIGGER_IDLE);
+        mHelper.applyPreviewRequest(getPreviewRequestBuilder(mSurface),
+                mPreviewSettings, mPreviewCallback);
     }
 
     public void sendControlAfAeRequest(MeteringRectangle focusRect, MeteringRectangle
-            meteringRectangle) {
-        mHelper.sendControlAfAeRequest(getPreviewRequestBuilder(new Surface(mTexture)),
-                focusRect, meteringRectangle, mSession, mPreviewCallback);
+            meteringRect) {
+        // repeating
+        MeteringRectangle[] focusArea = new MeteringRectangle[]{focusRect};
+        MeteringRectangle[] meteringArea = new MeteringRectangle[]{meteringRect};
+        mPreviewSettings.put(CaptureRequest.CONTROL_AF_REGIONS, focusArea);
+        mPreviewSettings.put(CaptureRequest.CONTROL_AE_REGIONS, meteringArea);
+        mPreviewSettings.put(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);
+        mPreviewSettings.put(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO);
+        // capture
+        mCaptureSettings.put(CaptureRequest.CONTROL_AF_TRIGGER,
+                CaptureRequest.CONTROL_AF_TRIGGER_START);
+        mHelper.applyPreviewRequest(getPreviewRequestBuilder(mSurface),
+                mPreviewSettings, mPreviewCallback);
+        mHelper.applyCaptureRequest(getPreviewRequestBuilder(mSurface),
+                mCaptureSettings, mPreviewCallback);
     }
 
     public void sendControlFocusModeRequest(int focusMode) {
-        mHelper.sendFocusModeRequest(getPreviewRequestBuilder(new Surface(mTexture)),
-                focusMode, mSession, mPreviewCallback);
+        Log.d(TAG, "focusMode:" + focusMode);
+        mPreviewSettings.put(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO);
+        mPreviewSettings.put(CaptureRequest.CONTROL_AF_MODE, focusMode);
+        MeteringRectangle[] rect = new MeteringRectangle[]{mResetRect};
+        mPreviewSettings.put(CaptureRequest.CONTROL_AF_REGIONS, rect);
+        mPreviewSettings.put(CaptureRequest.CONTROL_AE_REGIONS, rect);
+        mHelper.applyPreviewRequest(getPreviewRequestBuilder(mSurface),
+                mPreviewSettings, mPreviewCallback);
+        // cancel af trigger
+        mCaptureSettings.put(CaptureRequest.CONTROL_AF_TRIGGER,
+                CaptureRequest.CONTROL_AF_TRIGGER_CANCEL);
+        mHelper.applyCaptureRequest(getPreviewRequestBuilder(mSurface),
+                mCaptureSettings, mPreviewCallback);
     }
 
     public void sendCaptureRequest(int deviceRotation) {
         int mainRotation = CameraUtil.getJpgRotation(getCharacteristics(), deviceRotation);
-        mHelper.sendCaptureRequest(getCaptureRequestBuilder(mImageReader.getSurface()),
-                mainRotation, mSession, null);
+        mCaptureSettings.put(CaptureRequest.JPEG_ORIENTATION, mainRotation);
+        mCaptureSettings.put(CaptureRequest.CONTROL_AF_TRIGGER,
+                CaptureRequest.CONTROL_AF_TRIGGER_IDLE);
+        mHelper.applyCaptureRequest(getCaptureRequestBuilder(
+                mImageReader.getSurface(), false), mCaptureSettings, null);
     }
 
     public void restartPreviewAfterShot() {
@@ -97,8 +184,18 @@ public class CameraSession {
     }
 
     public <T> void sendControlSettingRequest(CaptureRequest.Key<T> key, T value) {
-        mHelper.sendControlSettingRequest(getPreviewRequestBuilder(new Surface(mTexture)),
-                mSession, mPreviewCallback, key, value);
+        if (key == CaptureRequest.LENS_FOCUS_DISTANCE) {
+            // preview
+            mPreviewSettings.put(CaptureRequest.CONTROL_AF_MODE,
+                    CaptureRequest.CONTROL_AF_MODE_OFF);
+            mPreviewSettings.put(CaptureRequest.LENS_FOCUS_DISTANCE, value);
+            // capture
+            mCaptureSettings.put(CaptureRequest.CONTROL_AF_MODE,
+                    CaptureRequest.CONTROL_AF_MODE_OFF);
+            mCaptureSettings.put(CaptureRequest.LENS_FOCUS_DISTANCE, value);
+            mHelper.applyPreviewRequest(getPreviewRequestBuilder(mSurface),
+                    mPreviewSettings, mPreviewCallback);
+        }
     }
 
     private CameraCharacteristics getCharacteristics() {
@@ -112,11 +209,21 @@ public class CameraSession {
     }
 
     private CaptureRequest.Builder getPreviewRequestBuilder(Surface surface) {
-        return createBuilder(CameraDevice.TEMPLATE_PREVIEW, surface);
+        if (mPreviewBuilder == null) {
+            mPreviewBuilder = createBuilder(CameraDevice.TEMPLATE_PREVIEW, surface);
+        }
+        return mPreviewBuilder;
     }
 
-    private CaptureRequest.Builder getCaptureRequestBuilder(Surface surface) {
-        return createBuilder(CameraDevice.TEMPLATE_STILL_CAPTURE, surface);
+    private CaptureRequest.Builder getCaptureRequestBuilder(Surface surface, boolean create) {
+        if (create) {
+            return createBuilder(CameraDevice.TEMPLATE_STILL_CAPTURE, surface);
+        } else {
+            if (mCaptureBuilder == null) {
+                mCaptureBuilder = createBuilder(CameraDevice.TEMPLATE_STILL_CAPTURE, surface);
+            }
+            return mCaptureBuilder;
+        }
     }
 
     private CaptureRequest.Builder createBuilder(int type, Surface surface) {
@@ -182,6 +289,7 @@ public class CameraSession {
         public void onConfigured(@NonNull CameraCaptureSession session) {
             Log.d(TAG, " session onConfigured id:" + session.getDevice().getId());
             mSession = session;
+            mHelper = new RequestHelper(mContext, mMainHandler, mSession);
             sendPreviewRequest();
         }
 

@@ -28,20 +28,19 @@ public class CameraSettings {
     public static final String KEY_PICTURE_SIZE = "pref_picture_size";
     public static final String KEY_PREVIEW_SIZE = "pref_preview_size";
     public static final String KEY_CAMERA_ID = "pref_camera_id";
-    public static final String KEY_MAIN_PICTURE_SIZE = "pref_main_picture_size";
-    public static final String KEY_MAIN_PREVIEW_SIZE = "pref_main_preview_size";
     public static final String KEY_MAIN_CAMERA_ID = "pref_main_camera_id";
-    public static final String KEY_AUX_PICTURE_SIZE = "pref_aux_picture_size";
-    public static final String KEY_AUX_PREVIEW_SIZE = "pref_aux_preview_size";
     public static final String KEY_AUX_CAMERA_ID = "pref_aux_camera_id";
     public static final String KEY_PICTURE_FORMAT = "pref_picture_format";
-    public static final String KEY_MAIN_PICTURE_FORMAT = "pref_main_picture_format";
-    public static final String KEY_AUX_PICTURE_FORMAT = "pref_aux_picture_format";
     public static final String KEY_RESTART_PREVIEW = "pref_restart_preview";
     public static final String KEY_SWITCH_CAMERA = "pref_switch_camera";
     public static final String KEY_FLASH_MODE = "pref_flash_mode";
+    //for flash mode
+    public static final String FLASH_VALUE_ON = "on";
+    public static final String FLASH_VALUE_OFF = "off";
+    public static final String FLASH_VALUE_AUTO = "auto";
+    public static final String FLASH_VALUE_TORCH = "torch";
 
-    private static final ArrayList<String> SPEC_KEY = new ArrayList<>(5);
+    private static final ArrayList<String> SPEC_KEY = new ArrayList<>(3);
 
     static {
         SPEC_KEY.add(KEY_PICTURE_SIZE);

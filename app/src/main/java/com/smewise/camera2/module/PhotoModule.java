@@ -272,6 +272,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
                 break;
             case CameraSettings.KEY_FLASH_MODE:
                 getSettings().setPrefValueById(mDeviceMgr.getCameraId(), key, value);
+                mSession.sendFlashRequest(value);
                 break;
             default:
                 break;

@@ -72,14 +72,14 @@ public class FocusOverlayManager {
         previewWidth = width;
         previewHeight = height;
     }
-    /* just need set focus view position, no need to show focus view */
+    /* just set focus view position, not start animation*/
     public void startFocus(float x, float y) {
         currentX = x;
         currentY = y;
         mHandler.removeMessages(MSG_HIDE_FOCUS);
         mFocusView.moveToPosition(x, y);
         //mFocusView.startFocus();
-        //mHandler.sendEmptyMessageDelayed(MSG_HIDE_FOCUS, HIDE_FOCUS_DELAY);
+        mHandler.sendEmptyMessageDelayed(MSG_HIDE_FOCUS, HIDE_FOCUS_DELAY);
     }
     /* show focus view by af state */
     public void startFocus() {
@@ -90,7 +90,7 @@ public class FocusOverlayManager {
 
     public void autoFocus() {
         mHandler.removeMessages(MSG_HIDE_FOCUS);
-        mFocusView.resetToDefautlPosition();
+        mFocusView.resetToDefaultPosition();
         mFocusView.startFocus();
         mHandler.sendEmptyMessageDelayed(MSG_HIDE_FOCUS, 1000);
     }

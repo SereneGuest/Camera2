@@ -129,9 +129,12 @@ public class FocusView extends View {
         y -= radiusOuter;
         this.setTranslationX(x);
         this.setTranslationY(y);
+        this.setVisibility(VISIBLE);
+        colorCurrent = colorNormal;
+        invalidate();
     }
 
-    public void resetToDefautlPosition() {
+    public void resetToDefaultPosition() {
         int x = previewWidth / 2 - radiusOuter;
         int y = previewHeight / 2 - radiusOuter;
         this.setTranslationX(x);

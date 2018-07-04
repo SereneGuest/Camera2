@@ -6,6 +6,7 @@ import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.MeteringRectangle;
 import android.os.Handler;
+import android.util.ArrayMap;
 import android.util.Log;
 
 import com.smewise.camera2.Config;
@@ -20,17 +21,47 @@ public class RequestHelper {
     private static final String TAG = Config.getTag(RequestHelper.class);
     private Handler mHandler;
     private CameraCapability mCapability;
+    private CameraCaptureSession mSession;
 
-    public RequestHelper(Context context, Handler handler) {
+
+    public RequestHelper(Context context, Handler handler, CameraCaptureSession session) {
         mCapability = new CameraCapability(context);
         mHandler = handler;
+        mSession = session;
+    }
+
+
+    public void applyPreviewRequest(CaptureRequest.Builder builder,
+            ArrayMap<CaptureRequest.Key, Object> map,
+            CameraCaptureSession.CaptureCallback captureCallback) {
+        for (ArrayMap.Entry<CaptureRequest.Key, Object> entry : map.entrySet()) {
+            checkAndSetRequest(entry.getKey(), entry.getValue(), builder);
+        }
+        try {
+            mSession.setRepeatingRequest(builder.build(), captureCallback, mHandler);
+        } catch (CameraAccessException | IllegalStateException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void applyCaptureRequest(CaptureRequest.Builder builder,
+            ArrayMap<CaptureRequest.Key, Object> map,
+            CameraCaptureSession.CaptureCallback captureCallback) {
+        for (ArrayMap.Entry<CaptureRequest.Key, Object> entry : map.entrySet()) {
+            checkAndSetRequest(entry.getKey(), entry.getValue(), builder);
+        }
+        try {
+            mSession.capture(builder.build(), captureCallback, mHandler);
+        } catch (CameraAccessException | IllegalStateException e) {
+            e.printStackTrace();
+        }
     }
 
     public void sendPreviewRequest(CaptureRequest.Builder builder,
-            CameraCaptureSession session, CameraCaptureSession.CaptureCallback captureCallback) {
-        int afMode = mCapability.getSupportedAFMode(session.getDevice().getId(), CaptureRequest
+            CameraCaptureSession.CaptureCallback captureCallback) {
+        int afMode = mCapability.getSupportedAFMode(mSession.getDevice().getId(), CaptureRequest
                 .CONTROL_AF_MODE_CONTINUOUS_PICTURE);
-        int antiBandingMode = mCapability.getSupportedAntiBandingMode(session.getDevice().getId(),
+        int antiBandingMode = mCapability.getSupportedAntiBandingMode(mSession.getDevice().getId(),
                 CaptureRequest.CONTROL_AE_ANTIBANDING_MODE_AUTO);
         try {
             if (antiBandingMode != -1) {
@@ -39,83 +70,73 @@ public class RequestHelper {
             builder.set(CaptureRequest.CONTROL_AF_MODE, afMode);
             builder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO);
             builder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_IDLE);
-            session.setRepeatingRequest(builder.build(), captureCallback, mHandler);
+            mSession.setRepeatingRequest(builder.build(), captureCallback, mHandler);
         } catch (CameraAccessException | IllegalStateException e) {
             e.printStackTrace();
         }
     }
 
     public void sendRestartPreviewRequest(CaptureRequest.Builder builder,
-           CameraCaptureSession session, CameraCaptureSession.CaptureCallback captureCallback) {
-        int afMode = mCapability.getSupportedAFMode(session.getDevice().getId(), CaptureRequest
+           CameraCaptureSession.CaptureCallback captureCallback) {
+        int afMode = mCapability.getSupportedAFMode(mSession.getDevice().getId(), CaptureRequest
                 .CONTROL_AF_MODE_CONTINUOUS_PICTURE);
         builder.set(CaptureRequest.CONTROL_AF_MODE, afMode);
         try {
-            session.setRepeatingRequest(builder.build(), captureCallback, mHandler);
+            mSession.setRepeatingRequest(builder.build(), captureCallback, mHandler);
         } catch (CameraAccessException | IllegalStateException e) {
             e.printStackTrace();
         }
     }
 
     public void sendControlAfAeRequest(CaptureRequest.Builder builder, MeteringRectangle
-            focusRect, MeteringRectangle meteringRect, CameraCaptureSession session,
-                                       CameraCaptureSession.CaptureCallback captureCallback) {
-        int afMode = mCapability.getSupportedAFMode(session.getDevice().getId(), CaptureRequest
+            focusRect, MeteringRectangle meteringRect,
+            CameraCaptureSession.CaptureCallback captureCallback) {
+        int afMode = mCapability.getSupportedAFMode(mSession.getDevice().getId(), CaptureRequest
                 .CONTROL_AF_MODE_AUTO);
         MeteringRectangle[] focusArea = new MeteringRectangle[]{focusRect};
         MeteringRectangle[] meteringArea = new MeteringRectangle[]{meteringRect};
         builder.set(CaptureRequest.CONTROL_AF_MODE, afMode);
         //AE
-        if (mCapability.isAERegionSupported(session.getDevice().getId())) {
+        if (mCapability.isAERegionSupported(mSession.getDevice().getId())) {
             builder.set(CaptureRequest.CONTROL_AE_REGIONS, meteringArea);
         } else {
-            Log.d(TAG, "not support ae region id:" + session.getDevice().getId());
+            Log.d(TAG, "not support ae region id:" + mSession.getDevice().getId());
         }
         //AF
-        if (mCapability.isAFRegionSupported(session.getDevice().getId())) {
+        if (mCapability.isAFRegionSupported(mSession.getDevice().getId())) {
             builder.set(CaptureRequest.CONTROL_AF_REGIONS, focusArea);
         } else {
-            Log.d(TAG, "not support af region camera id:"+session.getDevice().getId());
+            Log.d(TAG, "not support af region camera id:"+mSession.getDevice().getId());
         }
         // repeating for af ae region
         try {
-            session.setRepeatingRequest(builder.build(), captureCallback, mHandler);
+            mSession.setRepeatingRequest(builder.build(), captureCallback, mHandler);
         } catch (CameraAccessException | IllegalStateException e) {
             e.printStackTrace();
         }
         // capture for af trigger
         builder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_START);
         try {
-            session.capture(builder.build(), captureCallback, mHandler);
+            mSession.capture(builder.build(), captureCallback, mHandler);
         } catch (CameraAccessException | IllegalStateException e) {
             e.printStackTrace();
         }
     }
 
     public void sendFocusModeRequest(CaptureRequest.Builder builder, int focusMode,
-            CameraCaptureSession session, CameraCaptureSession.CaptureCallback captureCallback) {
-        int afMode = mCapability.getSupportedAFMode(session.getDevice().getId(), focusMode);
+             CameraCaptureSession.CaptureCallback captureCallback) {
+        int afMode = mCapability.getSupportedAFMode(mSession.getDevice().getId(), focusMode);
         builder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_IDLE);
         builder.set(CaptureRequest.CONTROL_AF_MODE, afMode);
         try {
-            session.setRepeatingRequest(builder.build(), captureCallback, mHandler);
+            mSession.setRepeatingRequest(builder.build(), captureCallback, mHandler);
         } catch (CameraAccessException | IllegalStateException e) {
             e.printStackTrace();
         }
     }
 
-    /*public void sendCaptureRequest(CaptureRequest.Builder builder, int rotation ,
-            CameraCaptureSession session, CameraCaptureSession.CaptureCallback captureCallback) {
-        try {
-            builder.set(CaptureRequest.JPEG_ORIENTATION, rotation);
-            session.capture(builder.build(), captureCallback, mHandler);
-        } catch (CameraAccessException | IllegalStateException e) {
-            e.printStackTrace();
-        }
-    }*/
-
     public void sendCaptureRequest(CaptureRequest.Builder builder, int rotation ,
-                                   CameraCaptureSession session, CaptureRequest captureRequest) {
+            CaptureRequest captureRequest) {
         try {
             builder.set(CaptureRequest.JPEG_ORIENTATION, rotation);
             if (captureRequest != null) {
@@ -128,29 +149,68 @@ public class RequestHelper {
                 builder.set(CaptureRequest.LENS_FOCUS_DISTANCE,
                         captureRequest.get(CaptureRequest.LENS_FOCUS_DISTANCE));
             }
-            session.capture(builder.build(), null, mHandler);
+            mSession.capture(builder.build(), null, mHandler);
         } catch (CameraAccessException | IllegalStateException e) {
             e.printStackTrace();
         }
     }
 
     public <T> void sendControlSettingRequest(CaptureRequest.Builder builder,
-            CameraCaptureSession session, CameraCaptureSession.CaptureCallback captureCallback,
+            CameraCaptureSession.CaptureCallback captureCallback,
             CaptureRequest.Key<T> key, T value) {
         // control focus distance
         if (key.getName().equals(CaptureRequest.LENS_FOCUS_DISTANCE.getName())) {
-            Float focusLength = mCapability.getMiniMumFocusDistance(session.getDevice().getId());
+            Float focusLength = mCapability.getMiniMumFocusDistance(mSession.getDevice().getId());
             if (focusLength != null && focusLength > 0) {
                 builder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_OFF);
                 builder.set(CaptureRequest.LENS_FOCUS_DISTANCE, (Float) value * focusLength);
             } else {
-                Log.d(TAG, "not support control focus distance id:" + session.getDevice().getId());
+                Log.d(TAG, "not support control focus distance id:" + mSession.getDevice().getId());
             }
         }
         try {
-            session.setRepeatingRequest(builder.build(), captureCallback, null);
+            mSession.setRepeatingRequest(builder.build(), captureCallback, null);
         } catch (CameraAccessException | IllegalStateException e) {
             e.printStackTrace();
+        }
+    }
+
+    private <T> void checkAndSetRequest(CaptureRequest.Key<T> key, T value,
+            CaptureRequest.Builder builder) {
+        String cameraId = mSession.getDevice().getId();
+        if (key == CaptureRequest.CONTROL_AF_MODE) {
+            int afMode = mCapability.getSupportedAFMode(cameraId, (Integer) value);
+            builder.set(CaptureRequest.CONTROL_AF_MODE, afMode);
+        } else if (key == CaptureRequest.CONTROL_AE_ANTIBANDING_MODE) {
+            int antiBandingMode = mCapability.getSupportedAntiBandingMode(cameraId, (Integer) value);
+            if (antiBandingMode != -1) {
+                builder.set(CaptureRequest.CONTROL_AE_ANTIBANDING_MODE, antiBandingMode);
+            }
+        } else if (key == CaptureRequest.CONTROL_MODE) {
+            // TODO need query supported mode
+            builder.set(CaptureRequest.CONTROL_MODE, (Integer) value);
+        } else if (key == CaptureRequest.CONTROL_AE_REGIONS) {
+            if (mCapability.isAFRegionSupported(cameraId)) {
+                builder.set(CaptureRequest.CONTROL_AF_REGIONS, (MeteringRectangle[]) value);
+            } else {
+                Log.d(TAG, "not support af region camera id:" + cameraId);
+            }
+        } else if (key == CaptureRequest.CONTROL_AF_REGIONS) {
+            if (mCapability.isAERegionSupported(mSession.getDevice().getId())) {
+                builder.set(CaptureRequest.CONTROL_AE_REGIONS, (MeteringRectangle[]) value);
+            } else {
+                Log.d(TAG, "not support ae region id:" + mSession.getDevice().getId());
+            }
+        } else if (key == CaptureRequest.LENS_FOCUS_DISTANCE) {
+            Float focusLength = mCapability.getMiniMumFocusDistance(cameraId);
+            if (focusLength != null && focusLength > 0) {
+                builder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_OFF);
+                builder.set(CaptureRequest.LENS_FOCUS_DISTANCE, (Float) value * focusLength);
+            } else {
+                Log.d(TAG, "not support control focus distance id:" + cameraId);
+            }
+        } else {
+            builder.set(key, value);
         }
     }
 
