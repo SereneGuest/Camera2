@@ -143,11 +143,11 @@ public class AppBaseUI implements View.OnClickListener {
             @Override
             public void run() {
                 if (bitmap == null) {
-                    mThumbnail.setEnabled(false);
+                    mThumbnail.setClickable(false);
                     return;
                 }
                 mThumbnail.setImageBitmap(bitmap);
-                mThumbnail.setEnabled(true);
+                mThumbnail.setClickable(true);
             }
         });
     }

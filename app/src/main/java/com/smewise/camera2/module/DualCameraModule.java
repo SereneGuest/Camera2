@@ -6,6 +6,7 @@ import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CaptureRequest;
+import android.hardware.camera2.params.MeteringRectangle;
 import android.net.Uri;
 import android.util.Log;
 import android.view.View;
@@ -21,6 +22,7 @@ import com.smewise.camera2.manager.Controller;
 import com.smewise.camera2.manager.DeviceManager;
 import com.smewise.camera2.manager.DualDeviceManager;
 import com.smewise.camera2.manager.FocusOverlayManager;
+import com.smewise.camera2.manager.Session;
 import com.smewise.camera2.ui.DualCameraUI;
 import com.smewise.camera2.utils.FileSaver;
 import com.smewise.camera2.utils.MediaFunc;
@@ -73,11 +75,11 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
         public void onDeviceOpened(CameraDevice device) {
             super.onDeviceOpened(device);
             Log.d(TAG, "camera opened");
-            mSession.setCameraDevice(device);
+            mSession.applyRequest(Session.RQ_SET_DEVICE, device);
             enableState(Controller.CAMERA_STATE_OPENED);
             if (stateEnabled(Controller.CAMERA_STATE_UI_READY)) {
-                mSession.createPreviewSession(mainSurfaceTexture, mRequestCallback);
-                mAuxSession.createPreviewSession(auxSurfaceTexture, mAuxRequestCb);
+                mSession.applyRequest(Session.RQ_START_PREVIEW,mainSurfaceTexture, mRequestCallback);
+                mAuxSession.applyRequest(Session.RQ_START_PREVIEW, auxSurfaceTexture, mAuxRequestCb);
             }
         }
 
@@ -85,7 +87,7 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
         public void onAuxDeviceOpened(CameraDevice device) {
             super.onAuxDeviceOpened(device);
             // method will be called before onDeviceOpened(CameraDevice device)
-            mAuxSession.setCameraDevice(device);
+            mAuxSession.applyRequest(Session.RQ_SET_DEVICE, device, null);
         }
 
         @Override
@@ -138,8 +140,8 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
             mUI.setUIClickable(true);
             getBaseUI().setUIClickable(true);
             mPicCount = 0;
-            mSession.restartPreviewAfterShot();
-            mAuxSession.restartPreviewAfterShot();
+            mSession.applyRequest(Session.RQ_RESTART_PREVIEW);
+            mAuxSession.applyRequest(Session.RQ_RESTART_PREVIEW);
         }
     }
 
@@ -183,8 +185,8 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
     private void takePicture() {
         mUI.setUIClickable(false);
         getBaseUI().setUIClickable(false);
-        mSession.sendCaptureRequest(getToolKit().getOrientation());
-        mAuxSession.sendCaptureRequest(getToolKit().getOrientation());
+        mSession.applyRequest(Session.RQ_TAKE_PICTURE, getToolKit().getOrientation());
+        mAuxSession.applyRequest(Session.RQ_TAKE_PICTURE, getToolKit().getOrientation());
     }
 
     private CameraUiEvent mCameraUiEvent = new CameraUiEvent() {
@@ -196,8 +198,8 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
             auxSurfaceTexture = auxSurface;
             enableState(Controller.CAMERA_STATE_UI_READY);
             if (stateEnabled(Controller.CAMERA_STATE_OPENED)) {
-                mSession.createPreviewSession(mainSurface, mRequestCallback);
-                mAuxSession.createPreviewSession(auxSurface, mAuxRequestCb);
+                mSession.applyRequest(Session.RQ_START_PREVIEW,mainSurfaceTexture, mRequestCallback);
+                mAuxSession.applyRequest(Session.RQ_START_PREVIEW, auxSurfaceTexture, mAuxRequestCb);
             }
         }
 
@@ -211,20 +213,21 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
         public void onTouchToFocus(float x, float y) {
             mFocusManager.startFocus(x, y);
             CameraCharacteristics main = mDeviceMgr.getCharacteristics(true);
-            CameraCharacteristics aux = mDeviceMgr.getCharacteristics(false);
-            mSession.sendControlAfAeRequest(mFocusManager.getFocusArea(main, true),
-                    mFocusManager.getFocusArea(main, false));
-            mAuxSession.sendControlAfAeRequest(mFocusManager.getFocusArea(main, true),
-                    mFocusManager.getFocusArea(aux, false));
+            //CameraCharacteristics aux = mDeviceMgr.getCharacteristics(false);
+            MeteringRectangle focusRect = mFocusManager.getFocusArea(main, true);
+            MeteringRectangle meterRect = mFocusManager.getFocusArea(main, false);
+            mSession.applyRequest(Session.RQ_AF_AE_REGIONS, focusRect, meterRect);
+            //mAuxSession.applyRequest(Session.RQ_AF_AE_REGIONS, focusRect, meterRect);
         }
 
         @Override
         public void resetTouchToFocus() {
             if (stateEnabled(Controller.CAMERA_MODULE_RUNNING)) {
-                mSession.sendControlFocusModeRequest(
+                mSession.applyRequest(Session.RQ_FOCUS_MODE,
                         CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
-                mAuxSession.sendControlFocusModeRequest(
+                mAuxSession.applyRequest(Session.RQ_FOCUS_MODE,
                         CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+
             }
         }
 

@@ -17,6 +17,7 @@ import android.media.Image;
 import android.media.ImageReader;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.ArrayMap;
 import android.util.Log;
 import android.util.Size;
@@ -30,7 +31,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
 
-public class CameraSession {
+public class CameraSession extends Session {
     private final String TAG = Config.getTag(CameraSession.class);
 
     private Context mContext;
@@ -46,60 +47,111 @@ public class CameraSession {
     private CaptureRequest.Builder mPreviewBuilder;
     private CaptureRequest.Builder mCaptureBuilder;
     private int mLatestAfState = -1;
-    // for reset AE/AF metering area
-    private MeteringRectangle mResetRect = new MeteringRectangle(0, 0, 0, 0, 0);
-
-    private ArrayMap<CaptureRequest.Key, Object> mPreviewSettings;
-    private ArrayMap<CaptureRequest.Key, Object> mCaptureSettings;
 
     public CameraSession(Context context, Handler mainHandler, CameraSettings settings) {
         mContext = context;
         mMainHandler = mainHandler;
         mSettings = settings;
-        mPreviewSettings = new ArrayMap<>();
-        mCaptureSettings = new ArrayMap<>();
+        mHelper = new RequestHelper(mContext, mMainHandler);
     }
 
-    public void sendFlashRequest(String value) {
-        Log.e(TAG, "flash value:" + value);
-        switch (value) {
-            case CameraSettings.FLASH_VALUE_ON:
-                mCaptureSettings.put(CaptureRequest.CONTROL_AE_MODE,
-                        CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH);
-                mPreviewSettings.put(CaptureRequest.CONTROL_AE_MODE,
-                        CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH);
-                mCaptureSettings.remove(CaptureRequest.FLASH_MODE);
+
+    @Override
+    public void applyRequest(int msg, Object value1, Object value2) {
+        switch (msg) {
+            case RQ_SET_DEVICE: {
+                setCameraDevice((CameraDevice) value1);
                 break;
-            case CameraSettings.FLASH_VALUE_OFF:
-                mCaptureSettings.put(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
-                mCaptureSettings.put(CaptureRequest.CONTROL_AE_MODE,
-                        CaptureRequest.CONTROL_AE_MODE_ON);
-                mPreviewSettings.put(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
-                mCaptureSettings.put(CaptureRequest.CONTROL_AE_MODE,
-                        CaptureRequest.CONTROL_AE_MODE_ON);
+            }
+            case RQ_START_PREVIEW: {
+                createPreviewSession((SurfaceTexture) value1, (RequestCallback) value2);
                 break;
-            case CameraSettings.FLASH_VALUE_AUTO:
-                mPreviewSettings.put(CaptureRequest.CONTROL_AE_MODE,
-                        CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
-                mCaptureSettings.put(CaptureRequest.CONTROL_AE_MODE,
-                        CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
-                mCaptureSettings.remove(CaptureRequest.FLASH_MODE);
+            }
+            case RQ_AF_AE_REGIONS: {
+                sendControlAfAeRequest((MeteringRectangle) value1, (MeteringRectangle) value2);
                 break;
-            case CameraSettings.FLASH_VALUE_TORCH:
-                mPreviewSettings.put(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_TORCH);
-                mCaptureSettings.put(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_TORCH);
-                mPreviewSettings.put(CaptureRequest.CONTROL_AE_MODE,
-                        CaptureRequest.CONTROL_AE_MODE_ON);
+            }
+            case RQ_FOCUS_MODE: {
+                sendControlFocusModeRequest((int) value1);
                 break;
-            default:
-                Log.e(TAG, "error value for flash mode");
+            }
+            case RQ_FOCUS_DISTANCE: {
+                sendControlFocusDistanceRequest((float) value1);
                 break;
+            }
+            case RQ_FLASH_MODE: {
+                sendFlashRequest((String) value1);
+                break;
+            }
+            case RQ_RESTART_PREVIEW: {
+                sendRestartPreviewRequest();
+                break;
+            }
+            case RQ_TAKE_PICTURE: {
+                sendCaptureRequest((Integer) value1);
+                break;
+            }
+            default: {
+                Log.w(TAG, "invalid request code " + msg);
+                break;
+            }
         }
-        mHelper.applyPreviewRequest(getPreviewRequestBuilder(mSurface),
-                mPreviewSettings, mPreviewCallback);
     }
 
-    public void setCameraDevice(CameraDevice device) {
+    @Override
+    public void setRequest(int msg, @Nullable Object value1, @Nullable Object value2) {
+        switch (msg) {
+            case RQ_SET_DEVICE: {
+                break;
+            }
+            case RQ_START_PREVIEW: {
+                break;
+            }
+            case RQ_AF_AE_REGIONS: {
+                break;
+            }
+            case RQ_FOCUS_MODE: {
+                break;
+            }
+            case RQ_FOCUS_DISTANCE: {
+                break;
+            }
+            case RQ_FLASH_MODE: {
+                mHelper.setFlashRequest((String) value1);
+                break;
+            }
+            case RQ_RESTART_PREVIEW: {
+                break;
+            }
+            case RQ_TAKE_PICTURE: {
+                break;
+            }
+            default: {
+                Log.w(TAG, "invalid request code " + msg);
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void release() {
+        if (mSession != null) {
+            mSession.close();
+            mSession = null;
+        }
+        if (mImageReader != null) {
+            mImageReader.close();
+            mImageReader = null;
+        }
+    }
+
+    private void sendFlashRequest(String value) {
+        Log.e(TAG, "flash value:" + value);
+        mHelper.setFlashRequest(value);
+        mHelper.applyPreviewRequest(getPreviewRequestBuilder(mSurface), mPreviewCallback);
+    }
+
+    private void setCameraDevice(CameraDevice device) {
         mDevice = device;
         // camera device may change, reset builder
         mPreviewBuilder = null;
@@ -108,7 +160,7 @@ public class CameraSession {
 
     /* need call after surface is available, after session configured
      * send preview request in callback */
-    public void createPreviewSession(@NonNull SurfaceTexture texture, RequestCallback callback) {
+    private void createPreviewSession(@NonNull SurfaceTexture texture, RequestCallback callback) {
         mCallback = callback;
         mTexture = texture;
         mSurface = new Surface(mTexture);
@@ -121,82 +173,45 @@ public class CameraSession {
 
     }
 
-    public void sendPreviewRequest() {
-        mPreviewSettings.put(CaptureRequest.CONTROL_AF_MODE,
-                CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
-        mPreviewSettings.put(CaptureRequest.CONTROL_AE_ANTIBANDING_MODE,
-                CaptureRequest.CONTROL_AE_ANTIBANDING_MODE_AUTO);
-        mPreviewSettings.put(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO);
-        mPreviewSettings.put(CaptureRequest.CONTROL_AF_TRIGGER,
-                CaptureRequest.CONTROL_AF_TRIGGER_IDLE);
-        mHelper.applyPreviewRequest(getPreviewRequestBuilder(mSurface),
-                mPreviewSettings, mPreviewCallback);
+    private void sendPreviewRequest() {
+        mHelper.setPreviewRequest();
+        mHelper.applyPreviewRequest(getPreviewRequestBuilder(mSurface), mPreviewCallback);
     }
 
-    public void sendControlAfAeRequest(MeteringRectangle focusRect, MeteringRectangle
-            meteringRect) {
-        // repeating
-        MeteringRectangle[] focusArea = new MeteringRectangle[]{focusRect};
-        MeteringRectangle[] meteringArea = new MeteringRectangle[]{meteringRect};
-        mPreviewSettings.put(CaptureRequest.CONTROL_AF_REGIONS, focusArea);
-        mPreviewSettings.put(CaptureRequest.CONTROL_AE_REGIONS, meteringArea);
-        mPreviewSettings.put(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);
-        mPreviewSettings.put(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO);
-        // capture
-        mCaptureSettings.put(CaptureRequest.CONTROL_AF_TRIGGER,
-                CaptureRequest.CONTROL_AF_TRIGGER_START);
-        mHelper.applyPreviewRequest(getPreviewRequestBuilder(mSurface),
-                mPreviewSettings, mPreviewCallback);
-        mHelper.applyCaptureRequest(getPreviewRequestBuilder(mSurface),
-                mCaptureSettings, mPreviewCallback);
+    private void sendControlAfAeRequest(MeteringRectangle focusRect,
+                                        MeteringRectangle meteringRect) {
+        mHelper.setControlAfAeRequest(focusRect, meteringRect);
+        mHelper.applyPreviewRequest(getPreviewRequestBuilder(mSurface), mPreviewCallback);
+        mHelper.applyCaptureRequest(getPreviewRequestBuilder(mSurface), mPreviewCallback);
     }
 
-    public void sendControlFocusModeRequest(int focusMode) {
+    private void sendControlFocusModeRequest(int focusMode) {
         Log.d(TAG, "focusMode:" + focusMode);
-        mPreviewSettings.put(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO);
-        mPreviewSettings.put(CaptureRequest.CONTROL_AF_MODE, focusMode);
-        MeteringRectangle[] rect = new MeteringRectangle[]{mResetRect};
-        mPreviewSettings.put(CaptureRequest.CONTROL_AF_REGIONS, rect);
-        mPreviewSettings.put(CaptureRequest.CONTROL_AE_REGIONS, rect);
-        mHelper.applyPreviewRequest(getPreviewRequestBuilder(mSurface),
-                mPreviewSettings, mPreviewCallback);
+        mHelper.setControlFocusModeRequest(focusMode);
+        mHelper.applyPreviewRequest(getPreviewRequestBuilder(mSurface), mPreviewCallback);
         // cancel af trigger
-        mCaptureSettings.put(CaptureRequest.CONTROL_AF_TRIGGER,
-                CaptureRequest.CONTROL_AF_TRIGGER_CANCEL);
-        mHelper.applyCaptureRequest(getPreviewRequestBuilder(mSurface),
-                mCaptureSettings, mPreviewCallback);
+        mHelper.applyCaptureRequest(getPreviewRequestBuilder(mSurface), mPreviewCallback);
     }
 
-    public void sendCaptureRequest(int deviceRotation) {
-        int mainRotation = CameraUtil.getJpgRotation(getCharacteristics(), deviceRotation);
-        mCaptureSettings.put(CaptureRequest.JPEG_ORIENTATION, mainRotation);
-        mCaptureSettings.put(CaptureRequest.CONTROL_AF_TRIGGER,
-                CaptureRequest.CONTROL_AF_TRIGGER_IDLE);
+    private void sendCaptureRequest(int deviceRotation) {
+        int jpegRotation = CameraUtil.getJpgRotation(getCharacteristics(), deviceRotation);
+        mHelper.setCaptureRequest(jpegRotation);
         mHelper.applyCaptureRequest(getCaptureRequestBuilder(
-                mImageReader.getSurface(), false), mCaptureSettings, null);
+                mImageReader.getSurface(), false), null);
     }
 
-    public void restartPreviewAfterShot() {
+    private void sendRestartPreviewRequest() {
         Log.d(TAG, "need start preview :" + mSettings.needStartPreview());
         if (mSettings.needStartPreview()) {
             sendPreviewRequest();
         }
     }
 
-    public <T> void sendControlSettingRequest(CaptureRequest.Key<T> key, T value) {
-        if (key == CaptureRequest.LENS_FOCUS_DISTANCE) {
-            // preview
-            mPreviewSettings.put(CaptureRequest.CONTROL_AF_MODE,
-                    CaptureRequest.CONTROL_AF_MODE_OFF);
-            mPreviewSettings.put(CaptureRequest.LENS_FOCUS_DISTANCE, value);
-            // capture
-            mCaptureSettings.put(CaptureRequest.CONTROL_AF_MODE,
-                    CaptureRequest.CONTROL_AF_MODE_OFF);
-            mCaptureSettings.put(CaptureRequest.LENS_FOCUS_DISTANCE, value);
-            mHelper.applyPreviewRequest(getPreviewRequestBuilder(mSurface),
-                    mPreviewSettings, mPreviewCallback);
-        }
+    private void sendControlFocusDistanceRequest(float value) {
+        mHelper.setControlFocusDistanceRequest(value);
+        mHelper.applyPreviewRequest(getPreviewRequestBuilder(mSurface), mPreviewCallback);
     }
+
 
     private CameraCharacteristics getCharacteristics() {
         CameraManager manager = (CameraManager) mContext.getSystemService(Context.CAMERA_SERVICE);
@@ -262,7 +277,9 @@ public class CameraSession {
             @Override
             public void onImageAvailable(ImageReader reader) {
                 mCallback.onDataBack(getByteFromReader(reader),
-                        reader.getWidth(), reader.getHeight()); }}, null);
+                        reader.getWidth(), reader.getHeight());
+            }
+        }, null);
         Size uiSize = CameraUtil.getPreviewUiSize(mContext, previewSize);
         mCallback.onViewChange(uiSize.getHeight(), uiSize.getWidth());
         return Arrays.asList(surface, mImageReader.getSurface());
@@ -289,7 +306,7 @@ public class CameraSession {
         public void onConfigured(@NonNull CameraCaptureSession session) {
             Log.d(TAG, " session onConfigured id:" + session.getDevice().getId());
             mSession = session;
-            mHelper = new RequestHelper(mContext, mMainHandler, mSession);
+            mHelper.setCameraCaptureSession(mSession);
             sendPreviewRequest();
         }
 
@@ -326,14 +343,4 @@ public class CameraSession {
         }
     }
 
-    public void release() {
-        if (mSession != null) {
-            mSession.close();
-            mSession = null;
-        }
-        if (mImageReader != null) {
-            mImageReader.close();
-            mImageReader = null;
-        }
-    }
 }

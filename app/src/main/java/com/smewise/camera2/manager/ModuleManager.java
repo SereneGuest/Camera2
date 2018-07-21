@@ -48,6 +48,7 @@ public class ModuleManager implements PrefListAdapter.PrefClickListener {
             return false;
         } else {
             mCurrentIndex = index;
+            mIndicator.updateHightlightIndex(mCurrentIndex);
             return true;
         }
     }

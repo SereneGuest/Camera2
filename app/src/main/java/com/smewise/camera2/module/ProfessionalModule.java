@@ -5,6 +5,7 @@ import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CaptureRequest;
+import android.hardware.camera2.params.MeteringRectangle;
 import android.net.Uri;
 import android.util.Log;
 import android.view.View;
@@ -19,6 +20,7 @@ import com.smewise.camera2.manager.CameraSettings;
 import com.smewise.camera2.manager.Controller;
 import com.smewise.camera2.manager.DeviceManager;
 import com.smewise.camera2.manager.FocusOverlayManager;
+import com.smewise.camera2.manager.Session;
 import com.smewise.camera2.manager.SingleDeviceManager;
 import com.smewise.camera2.ui.ProfessionalUI;
 import com.smewise.camera2.utils.FileSaver;
@@ -65,10 +67,10 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
         public void onDeviceOpened(CameraDevice device) {
             super.onDeviceOpened(device);
             Log.d(TAG, "camera opened");
-            mSession.setCameraDevice(device);
+            mSession.applyRequest(Session.RQ_SET_DEVICE, device);
             enableState(Controller.CAMERA_STATE_OPENED);
             if (stateEnabled(Controller.CAMERA_STATE_UI_READY)) {
-                mSession.createPreviewSession(mSurfaceTexture, mRequestCallback);
+                mSession.applyRequest(Session.RQ_START_PREVIEW, mSurfaceTexture, mRequestCallback);
             }
         }
 
@@ -89,7 +91,7 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
             super.onDataBack(data, width, height);
             saveFile(data, width, height, mDeviceMgr.getCameraId(),
                     CameraSettings.KEY_PICTURE_FORMAT, "CAMERA");
-            mSession.restartPreviewAfterShot();
+            mSession.applyRequest(Session.RQ_RESTART_PREVIEW);
         }
 
         @Override
@@ -120,7 +122,7 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
     private void takePicture() {
         mUI.setUIClickable(false);
         getBaseUI().setUIClickable(false);
-        mSession.sendCaptureRequest(getToolKit().getOrientation());
+        mSession.applyRequest(Session.RQ_TAKE_PICTURE, getToolKit().getOrientation());
     }
 
     /**
@@ -155,7 +157,7 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
             mSurfaceTexture = mainSurface;
             enableState(Controller.CAMERA_STATE_UI_READY);
             if (stateEnabled(Controller.CAMERA_STATE_OPENED)) {
-                mSession.createPreviewSession(mSurfaceTexture, mRequestCallback);
+                mSession.applyRequest(Session.RQ_START_PREVIEW, mSurfaceTexture, mRequestCallback);
             }
         }
 
@@ -169,21 +171,24 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
         public void onTouchToFocus(float x, float y) {
             mFocusManager.startFocus(x, y);
             CameraCharacteristics c = mDeviceMgr.getCharacteristics();
-            mSession.sendControlAfAeRequest(mFocusManager.getFocusArea(c, true),
-                    mFocusManager.getFocusArea(c, false));
+            MeteringRectangle focusRect = mFocusManager.getFocusArea(c, true);
+            MeteringRectangle meterRect = mFocusManager.getFocusArea(c, false);
+            mSession.applyRequest(Session.RQ_AF_AE_REGIONS, focusRect, meterRect);
         }
 
         @Override
         public void resetTouchToFocus() {
             if (stateEnabled(Controller.CAMERA_MODULE_RUNNING)) {
-                mSession.sendControlFocusModeRequest(
+                mSession.applyRequest(Session.RQ_FOCUS_MODE,
                         CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
             }
         }
 
         @Override
         public <T> void onSettingChange(CaptureRequest.Key<T> key, T value) {
-            mSession.sendControlSettingRequest(key, value);
+            if (key == CaptureRequest.LENS_FOCUS_DISTANCE) {
+                mSession.applyRequest(Session.RQ_FOCUS_DISTANCE, value);
+            }
         }
 
         @Override

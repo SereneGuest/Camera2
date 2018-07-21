@@ -41,6 +41,10 @@ public class ModuleIndicator implements PrefListAdapter.PrefClickListener {
         return mRecycleView;
     }
 
+    public void updateHightlightIndex(int index) {
+        mAdapter.updateHighlightIndex(index, true);
+    }
+
     public Class<?>[] getModuleClass() {
         Class<?>[] moduleCls = new Class[mGroup.size()];
         for (int i = 0; i < mGroup.size(); i++) {
