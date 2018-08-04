@@ -103,6 +103,22 @@ public class CameraSettings {
         return mSharedPreference.getString(key, defaultValue);
     }
 
+    public String getGlobalPref(String key) {
+        String defaultValue;
+        switch (key) {
+            case KEY_FLASH_MODE:
+                defaultValue = mContext.getResources().getString(R.string.flash_off);
+                break;
+            case KEY_CAMERA_ID:
+                defaultValue = mContext.getResources().getString(R.string.default_camera_id);
+                break;
+            default:
+                defaultValue = "no value";
+                break;
+        }
+        return mSharedPreference.getString(key, defaultValue);
+    }
+
     private String getSharedPrefName(String cameraId) {
         return mContext.getPackageName() + "_camera_" + cameraId;
     }

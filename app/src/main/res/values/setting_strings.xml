@@ -1,29 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="default_camera_id">0</string>
+
     <!--for setting start-->
     <string name="setting_camera_id">Camera id</string>
     <string name="setting_main_camera_id">Main camera id</string>
     <string name="setting_aux_camera_id">Aux camera id</string>
-    <string name="setting_camera_id_0">Open Camera 0</string>
-    <string name="setting_camera_id_1">Open Camera 1</string>
-    <string name="setting_camera_id_2">Open Camera 2</string>
-    <string name="setting_camera_id_3">Open Camera 3</string>
-    <string name="setting_camera_value_0">0</string>
-    <string name="setting_camera_value_1">1</string>
-    <string name="setting_camera_value_2">2</string>
-    <string name="setting_camera_value_3">3</string>
-    <string-array name="setting_camera_id_entries">
-        <item>@string/setting_camera_id_0</item>
-        <item>@string/setting_camera_id_1</item>
-        <item>@string/setting_camera_id_2</item>
-        <item>@string/setting_camera_id_3</item>
-    </string-array>
-    <string-array name="setting_camera_id_entries_value">
-        <item>@string/setting_camera_value_0</item>
-        <item>@string/setting_camera_value_1</item>
-        <item>@string/setting_camera_value_2</item>
-        <item>@string/setting_camera_value_3</item>
-    </string-array>
 
     <string name="setting_picture_size">Picture size</string>
     <string name="setting_picture_format">Picture format</string>
@@ -38,7 +20,21 @@
     <array name="menu_switch_icon_list">
         <item>@drawable/ic_vector_switch_to_front</item>
         <item>@drawable/ic_vector_switch_to_back</item>
+        <item>@drawable/ic_vector_switch_to_back</item>
+        <item>@drawable/ic_vector_switch_to_back</item>
     </array>
+
+    <string name="camera_id_0">0</string>
+    <string name="camera_id_1">1</string>
+    <string name="camera_id_2">2</string>
+    <string name="camera_id_3">3</string>
+    <array name="menu_camera_id_list">
+        <item>@string/camera_id_0</item>
+        <item>@string/camera_id_1</item>
+        <item>@string/camera_id_2</item>
+        <item>@string/camera_id_3</item>
+    </array>
+
 
     <array name="menu_flash_icon_list">
         <item>@drawable/ic_vector_flash_off</item>
@@ -55,20 +51,16 @@
     </array>
 
     <array name="menu_flash_entries_value">
-        <item>@string/flash_off_value</item>
-        <item>@string/flash_on_value</item>
-        <item>@string/flash_auto_value</item>
-        <item>@string/flash_torch_value</item>
+        <item>@string/flash_off</item>
+        <item>@string/flash_on</item>
+        <item>@string/flash_auto</item>
+        <item>@string/flash_torch</item>
     </array>
 
-    <string name="flash_auto">auto</string>
     <string name="flash_off">off</string>
     <string name="flash_on">on</string>
+    <string name="flash_auto">auto</string>
     <string name="flash_torch">torch</string>
 
-    <string name="flash_off_value">off</string>
-    <string name="flash_on_value">on</string>
-    <string name="flash_auto_value">auto</string>
-    <string name="flash_torch_value">torch</string>
     <!--for menu setting end-->
 </resources>

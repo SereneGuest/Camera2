@@ -20,9 +20,9 @@
             android:layout="@layout/list_pref_layout"
             android:title="@string/setting_camera_id"
             android:key="pref_camera_id"
-            android:entries="@array/setting_camera_id_entries"
-            android:entryValues="@array/setting_camera_id_entries_value"
-            android:defaultValue="@string/setting_camera_value_0"/>
+            android:entries="@array/menu_camera_id_list"
+            android:entryValues="@array/menu_camera_id_list"
+            android:defaultValue="@string/default_camera_id"/>
         <ListPreference
             android:layout="@layout/list_pref_layout"
             android:title="@string/setting_picture_format"
@@ -44,15 +44,15 @@
             android:layout="@layout/list_pref_layout"
             android:title="@string/setting_main_camera_id"
             android:key="pref_main_camera_id"
-            android:entries="@array/setting_camera_id_entries"
-            android:entryValues="@array/setting_camera_id_entries_value"
-            android:defaultValue="@string/setting_camera_value_0"/>
+            android:entries="@array/menu_camera_id_list"
+            android:entryValues="@array/menu_camera_id_list"
+            android:defaultValue="@string/default_camera_id"/>
         <ListPreference
             android:layout="@layout/list_pref_layout"
             android:title="@string/setting_aux_camera_id"
             android:key="pref_aux_camera_id"
-            android:entries="@array/setting_camera_id_entries"
-            android:entryValues="@array/setting_camera_id_entries_value"/>
+            android:entries="@array/menu_camera_id_list"
+            android:entryValues="@array/menu_camera_id_list"/>
     </PreferenceCategory>
 
 

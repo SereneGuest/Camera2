@@ -240,17 +240,12 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
 
         @Override
         public String getCurrentCameraId() {
-            return getSettings().getGlobalPref(
-                    CameraSettings.KEY_CAMERA_ID, mDeviceMgr.getCameraIdList()[0]);
+            return getSettings().getGlobalPref(CameraSettings.KEY_CAMERA_ID);
         }
 
         @Override
         public String getCurrentValue(String key) {
-            String defaultValue = null;
-            if (key.equals(CameraSettings.KEY_FLASH_MODE)) {
-                defaultValue = "off"; // off
-            }
-            return getSettings().getGlobalPref(key, defaultValue);
+            return getSettings().getGlobalPref(key);
         }
     };
 
