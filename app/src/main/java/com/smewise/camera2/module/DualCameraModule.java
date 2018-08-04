@@ -262,7 +262,7 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
                 takePicture();
                 break;
             case R.id.btn_setting:
-                showSetting(true);
+                showSetting();
                 break;
             case R.id.thumbnail:
                 MediaFunc.goToGallery(appContext);

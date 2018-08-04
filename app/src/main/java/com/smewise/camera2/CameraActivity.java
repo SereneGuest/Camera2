@@ -1,25 +1,20 @@
 package com.smewise.camera2;
 
 
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
-import com.smewise.camera2.manager.CameraSettings;
 import com.smewise.camera2.manager.Controller;
-import com.smewise.camera2.module.CameraModule;
-import com.smewise.camera2.manager.CameraToolKit;
-import com.smewise.camera2.manager.ModuleManager;
-import com.smewise.camera2.ui.AppBaseUI;
+import com.smewise.camera2.module.CameraFragment;
+import com.smewise.camera2.module.SettingFragment;
 import com.smewise.camera2.utils.Permission;
 import com.smewise.camera2.utils.PermissionDialog;
 
@@ -27,33 +22,14 @@ import com.smewise.camera2.utils.PermissionDialog;
 public class CameraActivity extends AppCompatActivity {
 
     private static final String TAG = Config.getTag(CameraActivity.class);
-    private CameraToolKit mToolKit;
-    private ModuleManager mModuleManager;
-    private AppBaseUI mBaseUI;
-    private CameraSettings mSettings;
-    private boolean mIsSettingShow = false;
-
+    private CameraFragment mCameraFragment;
     public static final String SETTING_ACTION = "com.smewise.camera2.setting";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mModuleManager = new ModuleManager(getApplicationContext(), mController);
         setWindowFlag();
         setContentView(R.layout.main_layout);
-        mBaseUI = new AppBaseUI(this, mController);
-        mBaseUI.setIndicatorView(mModuleManager.getIndicatorView());
-        mToolKit = new CameraToolKit(getApplicationContext());
-        mSettings = new CameraSettings(getApplicationContext());
-    }
-
-    public void updateThumbnail(final Context context) {
-        mToolKit.getCameraThread().post(new Runnable() {
-            @Override
-            public void run() {
-                mBaseUI.updateThumbnail(context, mToolKit.getMainHandler());
-            }
-        });
     }
 
     private boolean isSettingShortcut() {
@@ -73,29 +49,24 @@ public class CameraActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if (Permission.checkPermission(this)) {
-            initCameraModule();
-        }
+        Permission.checkPermission(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (isSettingShortcut()) {
-            showSettingFragment(false);
-            getIntent().setAction(null);
-        } else if (mModuleManager.getCurrentModule() != null && !mIsSettingShow) {
-            mModuleManager.getCurrentModule().startModule();
+        if (Permission.isPermissionGranted(this)) {
+            initCameraFragment();
+            if (isSettingShortcut()) {
+                addSettingFragment();
+                getIntent().setAction(null);
+            }
         }
-
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (mModuleManager.getCurrentModule() != null) {
-            mModuleManager.getCurrentModule().stopModule();
-        }
     }
 
     @Override
@@ -106,56 +77,18 @@ public class CameraActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mToolKit.destroy();
     }
-
-    private Controller mController = new Controller() {
-        @Override
-        public void changeModule(int index) {
-            if (mModuleManager.needChangeModule(index)) {
-                mModuleManager.getCurrentModule().stopModule();
-                CameraModule module = mModuleManager.getNewModule();
-                module.init(getApplicationContext(), this);
-                module.startModule();
-            }
-        }
-
-        @Override
-        public CameraToolKit getToolKit() {
-            return mToolKit;
-        }
-
-        @Override
-        public FragmentManager getFragmentManager() {
-            return CameraActivity.this.getFragmentManager();
-        }
-
-        @Override
-        public void showSetting(boolean stopModule) {
-            showSettingFragment(stopModule);
-        }
-
-        @Override
-        public CameraSettings getSettingManager() {
-            return mSettings;
-        }
-
-        @Override
-        public AppBaseUI getBaseUI() {
-            return mBaseUI;
-        }
-    };
 
     public Controller getController() {
-        return mController;
+        return mCameraFragment.getController();
     }
 
-    private void initCameraModule() {
-        if (mModuleManager.getCurrentModule() == null) {
-            Log.d(TAG, "init module");
-            updateThumbnail(getApplicationContext());
-            CameraModule cameraModule = mModuleManager.getNewModule();
-            cameraModule.init(getApplicationContext(), mController);
+    private void initCameraFragment() {
+        if (mCameraFragment == null) {
+            mCameraFragment = new CameraFragment();
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            transaction.replace(R.id.app_root, mCameraFragment);
+            transaction.commit();
         }
     }
 
@@ -170,7 +103,6 @@ public class CameraActivity extends AppCompatActivity {
                     return;
                 }
             }
-            initCameraModule();
         }
     }
 
@@ -181,32 +113,25 @@ public class CameraActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (mToolKit.getSettingFragment().isAdded()) {
-            removeSettingFragment();
-            return;
-        }
         super.onBackPressed();
     }
 
     public void removeSettingFragment() {
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        transaction.remove(mToolKit.getSettingFragment());
-        transaction.commit();
-        if (mModuleManager.getCurrentModule() != null) {
-            mModuleManager.getCurrentModule().startModule();
+        String tag = SettingFragment.class.getSimpleName();
+        Fragment settingFragment = getFragmentManager().findFragmentByTag(tag);
+        if (settingFragment == null) {
+            return;
         }
-        mIsSettingShow = false;
+        if (settingFragment.isAdded()) {
+            getFragmentManager().popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
     }
 
-    public void showSettingFragment(boolean stopModule) {
+    public void addSettingFragment() {
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        transaction.replace(R.id.setting_container, mToolKit.getSettingFragment());
+        transaction.replace(R.id.app_root, new SettingFragment(),
+                SettingFragment.class.getSimpleName());
+        transaction.addToBackStack(SettingFragment.class.getSimpleName());
         transaction.commit();
-        if (mModuleManager.getCurrentModule() != null) {
-            if (stopModule) {
-                mModuleManager.getCurrentModule().stopModule();
-            }
-        }
-        mIsSettingShow = true;
     }
 }

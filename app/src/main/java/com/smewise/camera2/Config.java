@@ -3,8 +3,6 @@ package com.smewise.camera2;
 import android.graphics.ImageFormat;
 import android.util.Size;
 
-import com.smewise.camera2.utils.CameraUtil;
-
 /**
  * Created by wenzhe on 3/17/17.
  */

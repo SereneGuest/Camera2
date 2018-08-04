@@ -16,7 +16,7 @@ public interface Controller {
 
     FragmentManager getFragmentManager();
 
-    void showSetting(boolean stopModule);
+    void showSetting();
 
     CameraSettings getSettingManager();
 

@@ -63,6 +63,28 @@ public class AppBaseUI implements View.OnClickListener {
         mPreviewRootView.addView(mFocusView);
     }
 
+    public AppBaseUI(Context context, View rootView) {
+        mCoverView = rootView.findViewById(R.id.cover_view);
+        mIndicatorContainer = rootView.findViewById(R.id.module_indicator_container);
+
+        mPreviewRootView = rootView.findViewById(R.id.preview_root_view);
+        mShutter = rootView.findViewById(R.id.btn_shutter);
+        mShutter.setOnClickListener(this);
+        mSetting = rootView.findViewById(R.id.btn_setting);
+        mSetting.setOnClickListener(this);
+        mBottomContainer = rootView.findViewById(R.id.bottom_container);
+        mThumbnail = rootView.findViewById(R.id.thumbnail);
+        mThumbnail.setOnClickListener(this);
+        mMenuContainer = rootView.findViewById(R.id.menu_container);
+
+        mDisplaySize = CameraUtil.getDisplaySize(context);
+        mVirtualKeyHeight = CameraUtil.getVirtualKeyHeight(context);
+        mTopBarHeight = context.getResources().getDimensionPixelSize(R.dimen.tab_layout_height);
+        mFocusView = new FocusView(context);
+        mFocusView.setVisibility(View.GONE);
+        mPreviewRootView.addView(mFocusView);
+    }
+
     public void setCameraUiEvent(CameraUiEvent event) {
         mEvent = event;
     }

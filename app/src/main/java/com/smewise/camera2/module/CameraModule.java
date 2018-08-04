@@ -135,8 +135,8 @@ public abstract class CameraModule {
         getToolKit().getMainHandler().post(runnable);
     }
 
-    void showSetting(boolean stopModule) {
-        mController.showSetting(stopModule);
+    void showSetting() {
+        mController.showSetting();
     }
 
     void updateAFState(int state, FocusOverlayManager overlayManager) {

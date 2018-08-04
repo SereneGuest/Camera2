@@ -31,7 +31,7 @@ public class Permission {
         }
     }
 
-    private static boolean isPermissionGranted(Activity activity) {
+    public static boolean isPermissionGranted(Activity activity) {
         if (Build.VERSION.SDK_INT >= 23) {
             for (int i = 0; i < permission.length; i++) {
                 int checkPermission = ContextCompat.checkSelfPermission(activity, permission[i]);

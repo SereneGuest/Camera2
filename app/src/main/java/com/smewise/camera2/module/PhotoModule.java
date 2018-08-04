@@ -255,7 +255,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
                 takePicture();
                 break;
             case R.id.btn_setting:
-                showSetting(true);
+                showSetting();
                 break;
             case R.id.thumbnail:
                 MediaFunc.goToGallery(appContext);
