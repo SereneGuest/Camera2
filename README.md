@@ -10,12 +10,17 @@ Camera App write with API 2
 
 # ScreenShot
 
+<img width="220" src="./img/intro_1.png"></img>
+<img width="220" src="./img/intro_2.png"></img>
+<img width="220" src="./img/intro_3.png"></img>
+<img width="220" src="./img/intro_4.png"></img>
 
-![ScreenShot](./img/intro_1.png )
 
-![ScreenShot](./img/intro_2.png )
+[comment]: <> ![ScreenShot](./img/intro_1.png )
 
-![ScreenShot](./img/intro_3.png )
+[comment]: <> ![ScreenShot](./img/intro_2.png )
 
-!![ScreenShot](./img/intro_4.png )
+[comment]: <> ![ScreenShot](./img/intro_3.png )
+
+[comment]: <> ![ScreenShot](./img/intro_4.png )
 
