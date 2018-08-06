@@ -11,6 +11,7 @@
     <color name="inner_circle_color">#ffffff</color>
     <color name="color_record">#ef5d5d</color>
     <color name="color_background">#1b1b1b</color>
+    <color name="color_setting_bg">#e1e0e0</color>
 
     <color name="color_cover_bg">#cfcfcf</color>
     <color name="setting_normal_color">#318f8f8f</color>

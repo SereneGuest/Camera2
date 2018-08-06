@@ -8,6 +8,7 @@
     <dimen name="stroke_width">2dp</dimen>
     <dimen name="outer_radius">5dp</dimen>
 
+    <dimen name="setting_elevation">7dp</dimen>
     <dimen name="setting_icon_size">50dp</dimen>
     <dimen name="setting_bg_size">45dp</dimen>
     <dimen name="thumbnail_size">51dp</dimen>
