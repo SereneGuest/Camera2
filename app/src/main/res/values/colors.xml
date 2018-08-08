@@ -11,6 +11,7 @@
     <color name="inner_circle_color">#ffffff</color>
     <color name="color_record">#ef5d5d</color>
     <color name="color_background">#1b1b1b</color>
+    <color name="color_setting_bg">#e1e0e0</color>
 
     <color name="color_cover_bg">#cfcfcf</color>
     <color name="setting_normal_color">#318f8f8f</color>
@@ -18,10 +19,10 @@
 
     <color name="tab_text_color">#6bffffff</color>
     <color name="tab_selected_color">#ffffff</color>
-    <color name="tab_background">#3b000000</color>
+    <color name="tab_background">#73000000</color>
 
     <color name="button_color_normal">#3b000000</color>
-    <color name="setting_icon_bg_color">#20ffffff</color>
+    <color name="setting_icon_bg_color">#20000000</color>
 
     <color name="setting_title_color">#252525</color>
     <color name="setting_summary_color">#8f8f8f</color>
@@ -29,7 +30,8 @@
 
     <color name="options_text_color">#ffffff</color>
     <color name="options_highlight_color">@color/colorAccent</color>
-    <color name="pop_window_bg">#bd1d1d1d</color>
+    <color name="pop_window_bg">#00131313</color>
+    <color name="menu_background">@color/pop_window_bg</color>
 
     <color name="icon_tint">#ffffff</color>
 

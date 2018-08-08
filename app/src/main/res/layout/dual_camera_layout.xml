@@ -5,6 +5,4 @@
 
     <include layout="@layout/dual_camera_preview_layout" />
 
-    <include layout="@layout/photo_bottom_controls" />
-
 </RelativeLayout>

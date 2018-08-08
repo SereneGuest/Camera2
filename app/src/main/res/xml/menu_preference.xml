@@ -1,18 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceGroup xmlns:camera="http://schemas.android.com/apk/res/com.smewise.camera2">
-    <CameraPreference
+    <com.smewise.camera2.data.CamMenuPreference
         camera:key="pref_switch_camera"
-        camera:title="@string/menu_switch_camera"
-        camera:icon="@drawable/ic_vector_switch_camera"
-        camera:entries="@array/setting_camera_id_entries"
-        camera:entryValues="@array/setting_camera_id_entries_value"
-        camera:defaultValue="@string/setting_camera_value_0"/>
-    <CameraPreference
+        camera:icon="@drawable/ic_vector_switch_to_front"
+        camera:entries="@array/menu_camera_id_list"
+        camera:entryValues="@array/menu_camera_id_list"
+        camera:entryIcons="@array/menu_switch_icon_list" />
+    <com.smewise.camera2.data.CamMenuPreference
         camera:key="pref_flash_mode"
-        camera:title="@string/menu_flash_title"
         camera:icon="@drawable/ic_vector_flash_on"
         camera:entries="@array/menu_flash_entries"
-        camera:entryValues="@array/setting_camera_id_entries_value"
-        camera:entryIcons="@array/menu_flash_icon"
-        camera:defaultValue="@string/setting_camera_value_3"/>
+        camera:entryValues="@array/menu_flash_entries_value"
+        camera:entryIcons="@array/menu_flash_icon_list"/>
 </PreferenceGroup>

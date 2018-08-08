@@ -8,6 +8,7 @@
     <dimen name="stroke_width">2dp</dimen>
     <dimen name="outer_radius">5dp</dimen>
 
+    <dimen name="setting_elevation">7dp</dimen>
     <dimen name="setting_icon_size">50dp</dimen>
     <dimen name="setting_bg_size">45dp</dimen>
     <dimen name="thumbnail_size">51dp</dimen>
@@ -35,7 +36,7 @@
     <dimen name="setting_catalog_size">14sp</dimen>
     <dimen name="setting_text_size">16sp</dimen>
 
-    <dimen name="options_item_height">60dp</dimen>
+    <dimen name="options_item_height">@dimen/tab_layout_height</dimen>
     <dimen name="options_img_size">35dp</dimen>
     <dimen name="options_text_size">13sp</dimen>
     <dimen name="options_text_margin">5dp</dimen>

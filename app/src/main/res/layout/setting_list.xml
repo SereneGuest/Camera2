@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_setting_bg"
+    android:orientation="vertical">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="@color/colorPrimary">
+        android:background="@color/colorPrimary"
+        android:elevation="@dimen/setting_elevation">
         <ImageView
             android:id="@+id/iv_menu_back"
             android:layout_width="@dimen/setting_bar_height"
@@ -21,8 +24,7 @@
             android:textSize="@dimen/setting_title_size"
             android:paddingStart="@dimen/setting_padding"
             android:textColor="@android:color/background_light"
-            android:layout_height="@dimen/setting_bar_height"
-            android:elevation="5dp" />
+            android:layout_height="@dimen/setting_bar_height" />
     </LinearLayout>
     <ListView
         android:id="@android:id/list"

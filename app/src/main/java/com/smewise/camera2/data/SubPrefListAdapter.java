@@ -1,12 +1,10 @@
-package com.smewise.camera2.ui;
+package com.smewise.camera2.data;
 
 import android.content.Context;
-import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,31 +15,45 @@ import com.smewise.camera2.R;
  * Created by wenzhe on 11/22/17.
  */
 
-public class SubMenuListAdapter extends RecyclerView.Adapter<SubMenuListAdapter.MyViewHolder> {
+public class SubPrefListAdapter extends RecyclerView.Adapter<SubPrefListAdapter.MyViewHolder> {
 
-    private CameraPreference mPref;
+    private CamListPreference mPref;
     private Context mContext;
-    private CameraBaseMenu.Listener mListener;
+    private PrefItemClickListener mListener;
     private int mTextColor;
-    private int mHightlightColor;
+    private int mHighlightColor;
+    private int mHighlightIndex = -1;
 
-    public SubMenuListAdapter(Context context, CameraPreference pref) {
-        mContext = context;
-        mPref = pref;
-        mPref.dynamicUpdateValue(context);
-        mTextColor = context.getColor(R.color.options_text_color);
-        mHightlightColor = context.getColor(R.color.options_highlight_color);
+    public interface PrefItemClickListener {
+        void onItemClick(String key, String value);
     }
 
-    public void setMenuListener(CameraBaseMenu.Listener listener) {
+
+    public SubPrefListAdapter(Context context, CamListPreference pref) {
+        mContext = context;
+        mPref = pref;
+        mTextColor = context.getResources().getColor(R.color.options_text_color);
+        mHighlightColor = context.getResources().getColor(R.color.options_highlight_color);
+    }
+
+    public void setClickListener(PrefItemClickListener listener) {
         mListener = listener;
     }
 
-    public void updateDataSet(CameraPreference pref) {
+    public void updateDataSet(CamListPreference pref) {
         mPref = pref;
-        mPref.dynamicUpdateValue(mContext);
         notifyDataSetChanged();
     }
+
+    public void updateHighlightIndex(int index, boolean notify) {
+        int preIndex = mHighlightIndex;
+        mHighlightIndex = index;
+        if (notify) {
+            notifyItemChanged(preIndex);
+            notifyItemChanged(mHighlightIndex);
+        }
+    }
+
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -53,11 +65,9 @@ public class SubMenuListAdapter extends RecyclerView.Adapter<SubMenuListAdapter.
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
         holder.itemText.setText(mPref.getEntries()[position]);
-        if (position == mPref.getHighLightIdx()) {
-            holder.itemText.setTextColor(mHightlightColor);
-        }else {
-            holder.itemText.setTextColor(mTextColor);
-        }
+        int color = mHighlightIndex == position ? mHighlightColor : mTextColor;
+        holder.itemText.setTextColor(color);
+
         if (mPref.getEntryIcons() != null) {
             holder.itemIcon.setImageResource(mPref.getEntryIcons()[position]);
             holder.itemIcon.setVisibility(View.VISIBLE);
@@ -68,7 +78,7 @@ public class SubMenuListAdapter extends RecyclerView.Adapter<SubMenuListAdapter.
             @Override
             public void onClick(View v) {
                 if (mListener != null) {
-                    mListener.onSubMenuItemClick(mPref.getKey(),
+                    mListener.onItemClick(mPref.getKey(),
                             mPref.getEntryValues()[position].toString());
                 }
             }
@@ -85,8 +95,8 @@ public class SubMenuListAdapter extends RecyclerView.Adapter<SubMenuListAdapter.
         TextView itemText;
         MyViewHolder(View itemView) {
             super(itemView);
-            itemIcon = (ImageView) itemView.findViewById(R.id.item_icon);
-            itemText = (TextView) itemView.findViewById(R.id.item_text);
+            itemIcon = itemView.findViewById(R.id.item_icon);
+            itemText = itemView.findViewById(R.id.item_text);
         }
     }
 

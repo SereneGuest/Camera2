@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceGroup
+    xmlns:camera="http://schemas.android.com/apk/res/com.smewise.camera2">
+
+    <com.smewise.camera2.data.CamListPreference
+        camera:key="com.smewise.camera2.module.PhotoModule"
+        camera:title="@string/mode_photo"/>
+
+    <com.smewise.camera2.data.CamListPreference
+        camera:key="com.smewise.camera2.module.ProfessionalModule"
+        camera:title="@string/mode_professional"/>
+
+    <com.smewise.camera2.data.CamListPreference
+        camera:key="com.smewise.camera2.module.DualCameraModule"
+        camera:title="@string/mode_dual_camera"/>
+</PreferenceGroup>

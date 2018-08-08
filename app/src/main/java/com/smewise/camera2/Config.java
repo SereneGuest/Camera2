@@ -3,8 +3,6 @@ package com.smewise.camera2;
 import android.graphics.ImageFormat;
 import android.util.Size;
 
-import com.smewise.camera2.utils.CameraUtil;
-
 /**
  * Created by wenzhe on 3/17/17.
  */
@@ -12,7 +10,7 @@ import com.smewise.camera2.utils.CameraUtil;
 public class Config {
     // some default config, not actually
     public static final String MAIN_ID = "0";
-    public static final String AUX_ID = "2";
+    public static final String AUX_ID = "1";
     private static final String TAG_PREFIX = "wenzhe/";
     public static final float AUX_PREVIEW_SCALE = 0.3F;
     public static final String IMAGE_FORMAT = String.valueOf(ImageFormat.JPEG);

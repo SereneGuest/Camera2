@@ -1,18 +1,17 @@
 package com.smewise.camera2.module;
 
 import android.content.Context;
+import android.hardware.camera2.CaptureResult;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.smewise.camera2.Config;
-import com.smewise.camera2.manager.Camera2Manager;
 import com.smewise.camera2.manager.CameraSettings;
 import com.smewise.camera2.manager.CameraToolKit;
 import com.smewise.camera2.manager.Controller;
-import com.smewise.camera2.ui.CameraBaseMenu;
-import com.smewise.camera2.ui.CameraMenu;
+import com.smewise.camera2.manager.FocusOverlayManager;
+import com.smewise.camera2.ui.AppBaseUI;
 import com.smewise.camera2.ui.CameraTab;
 import com.smewise.camera2.ui.CoverView;
 import com.smewise.camera2.utils.CameraThread;
@@ -30,7 +29,6 @@ public abstract class CameraModule {
     private int mCameraState = Controller.CAMERA_MODULE_STOP;
 
     RelativeLayout rootView;
-    CameraMenu cameraMenu;
 
     private Controller mController;
     Context appContext;
@@ -66,32 +64,16 @@ public abstract class CameraModule {
     public void startModule() {
         if (isAndTrue(mCameraState, Controller.CAMERA_MODULE_STOP)) {
             disableState(Controller.CAMERA_MODULE_STOP);
-            enableState(Controller.CAMERA_MODULE_PAUSE);
+            enableState(Controller.CAMERA_MODULE_RUNNING);
             start();
         }
     }
 
     public void stopModule() {
-        if (isAndTrue(mCameraState, Controller.CAMERA_MODULE_PAUSE)) {
-            disableState(Controller.CAMERA_MODULE_PAUSE);
-            enableState(Controller.CAMERA_MODULE_STOP);
-            stop();
-        }
-    }
-
-    public void pauseModule() {
         if (isAndTrue(mCameraState, Controller.CAMERA_MODULE_RUNNING)) {
             disableState(Controller.CAMERA_MODULE_RUNNING);
-            enableState(Controller.CAMERA_MODULE_PAUSE);
-            pause();
-        }
-    }
-
-    public void resumeModule() {
-        if (isAndTrue(mCameraState, Controller.CAMERA_MODULE_PAUSE)) {
-            disableState(Controller.CAMERA_MODULE_PAUSE);
-            enableState(Controller.CAMERA_MODULE_RUNNING);
-            resume();
+            enableState(Controller.CAMERA_MODULE_STOP);
+            stop();
         }
     }
 
@@ -101,33 +83,28 @@ public abstract class CameraModule {
 
     protected abstract void stop();
 
-    protected abstract void pause();
-
-    protected abstract void resume();
-
     void addModuleView(View view) {
         if (rootView.getChildAt(0) != view) {
-            if (rootView.getChildCount() > 0) {
-                rootView.removeAllViews();
+            if (rootView.getChildCount() > 1) {
+                rootView.removeViewAt(0);
             }
-            rootView.addView(view);
+            rootView.addView(view, 0);
         }
     }
 
-    void saveFile(final byte[] data, final int width, final int height,
+    void saveFile(final byte[] data, final int width, final int height, final String cameraId,
                   final String formatKey, final String tag) {
         getCameraThread().post(new Runnable() {
             @Override
             public void run() {
-                int format = getSettingManager()
-                        .getPicFormat(Camera2Manager.getManager().getCameraId(), formatKey);
+                int format = getSettings().getPicFormat(cameraId, formatKey);
                 fileSaver.saveFile(width, height, getToolKit().getOrientation(), data, tag, format);
             }
         });
     }
 
     void setNewModule(int index) {
-        mController.getBaseUI().changeModule(index);
+        mController.changeModule(index);
     }
 
     CameraToolKit getToolKit() {
@@ -142,7 +119,7 @@ public abstract class CameraModule {
         return mController.getBaseUI().getCameraTab();
     }
 
-    protected CameraSettings getSettingManager() {
+    protected CameraSettings getSettings() {
         return mController.getSettingManager();
     }
 
@@ -150,16 +127,42 @@ public abstract class CameraModule {
         return getToolKit().getCameraThread();
     }
 
+    AppBaseUI getBaseUI() {
+        return mController.getBaseUI();
+    }
+
     protected void runOnUiThread(Runnable runnable) {
         getToolKit().getMainHandler().post(runnable);
     }
 
-    void showSetting(boolean stopModule) {
-        mController.showSetting(stopModule);
+    void showSetting() {
+        mController.showSetting();
     }
 
-    void setCameraMenu(int resId, CameraBaseMenu.OnMenuClickListener listener) {
-        cameraMenu = new CameraMenu(appContext, resId, listener);
+    void updateAFState(int state, FocusOverlayManager overlayManager) {
+        switch (state) {
+            case CaptureResult.CONTROL_AF_STATE_ACTIVE_SCAN:
+                overlayManager.startFocus();
+                break;
+            case CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED:
+                overlayManager.focusSuccess();
+                break;
+            case CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED:
+                overlayManager.focusFailed();
+                break;
+            case CaptureResult.CONTROL_AF_STATE_PASSIVE_FOCUSED:
+                overlayManager.focusSuccess();
+                break;
+            case CaptureResult.CONTROL_AF_STATE_PASSIVE_SCAN:
+                overlayManager.autoFocus();
+                break;
+            case CaptureResult.CONTROL_AF_STATE_PASSIVE_UNFOCUSED:
+                overlayManager.focusFailed();
+                break;
+            case CaptureResult.CONTROL_AF_STATE_INACTIVE:
+                overlayManager.hideFocusUI();
+                break;
+        }
     }
 
 }

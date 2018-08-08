@@ -4,7 +4,7 @@
         <attr name="border_width" format="dimension" />
         <attr name="border_color" format="color" />
     </declare-styleable>
-    <declare-styleable name="CameraPreference">
+    <declare-styleable name="CamListPreference">
         <attr name="key" format="string" />
         <attr name="title" format="string" />
         <attr name="icon" format="reference" />

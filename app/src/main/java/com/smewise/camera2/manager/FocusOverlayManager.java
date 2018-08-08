@@ -9,6 +9,7 @@ import android.os.Message;
 import android.util.Log;
 
 import com.smewise.camera2.Config;
+import com.smewise.camera2.callback.CameraUiEvent;
 import com.smewise.camera2.ui.CameraBaseUI;
 import com.smewise.camera2.ui.FocusView;
 
@@ -24,7 +25,7 @@ public class FocusOverlayManager {
 
     private FocusView mFocusView;
     private MainHandler mHandler;
-    private CameraBaseUI.CameraUiEvent mListener;
+    private CameraUiEvent mListener;
     private int previewWidth;
     private int previewHeight;
     private float currentX;
@@ -63,7 +64,7 @@ public class FocusOverlayManager {
         mHandler = new MainHandler(this, looper);
     }
 
-    public void setListener(CameraBaseUI.CameraUiEvent listener) {
+    public void setListener(CameraUiEvent listener) {
         mListener = listener;
     }
 
@@ -71,14 +72,14 @@ public class FocusOverlayManager {
         previewWidth = width;
         previewHeight = height;
     }
-    /* just need set focus view position, no need to show focus view */
+    /* just set focus view position, not start animation*/
     public void startFocus(float x, float y) {
         currentX = x;
         currentY = y;
         mHandler.removeMessages(MSG_HIDE_FOCUS);
         mFocusView.moveToPosition(x, y);
         //mFocusView.startFocus();
-        //mHandler.sendEmptyMessageDelayed(MSG_HIDE_FOCUS, HIDE_FOCUS_DELAY);
+        mHandler.sendEmptyMessageDelayed(MSG_HIDE_FOCUS, HIDE_FOCUS_DELAY);
     }
     /* show focus view by af state */
     public void startFocus() {
@@ -89,7 +90,7 @@ public class FocusOverlayManager {
 
     public void autoFocus() {
         mHandler.removeMessages(MSG_HIDE_FOCUS);
-        mFocusView.resetToDefautlPosition();
+        mFocusView.resetToDefaultPosition();
         mFocusView.startFocus();
         mHandler.sendEmptyMessageDelayed(MSG_HIDE_FOCUS, 1000);
     }

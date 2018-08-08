@@ -1,11 +1,12 @@
 package com.smewise.camera2.utils;
 
+import android.content.Context;
+import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
-import android.support.annotation.Nullable;
+import android.hardware.camera2.CameraManager;
 import android.util.Log;
 
 import com.smewise.camera2.Config;
-import com.smewise.camera2.manager.Camera2Manager;
 
 /**
  * Created by wenzhe on 9/21/17.
@@ -15,25 +16,19 @@ public class CameraCapability {
 
     private static final String TAG = Config.getTag(CameraCapability.class);
 
-    private CameraCharacteristics mMainParam;
-    private CameraCharacteristics mAuxParam;
+    private CameraManager mManager;
 
-
-    public void setCameraCharacteristics(CameraCharacteristics mainC, @Nullable
-            CameraCharacteristics auxC) {
-        mMainParam = mainC;
-        mAuxParam = auxC;
+    public CameraCapability(Context context) {
+        mManager = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
     }
 
     private CameraCharacteristics getCharacteristics(String id) {
-        if (mAuxParam == null) {
-            return mMainParam;
+        try {
+            return mManager.getCameraCharacteristics(id);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
         }
-        if (Camera2Manager.getManager().getCameraId().equals(id)) {
-            return mMainParam;
-        } else {
-            return mAuxParam;
-        }
+        return null;
     }
 
     private int[] getAvailableAFMode(String cameraId) {
