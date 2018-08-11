@@ -38,7 +38,8 @@ public class ModuleManager implements PrefListAdapter.PrefClickListener {
     public ModuleManager(Context context, Controller controller) {
         mController = controller;
         mIndicator = new ModuleIndicator(context);
-        mModulesClass = mIndicator.getModuleClass();
+        boolean loadDualCamera = mController.getSettingManager().isDualCameraEnable();
+        mModulesClass = mIndicator.getModuleClass(loadDualCamera);
         sModuleNum = mModulesClass.length;
         mIndicator.setPrefClickListener(this);
     }
@@ -48,7 +49,7 @@ public class ModuleManager implements PrefListAdapter.PrefClickListener {
             return false;
         } else {
             mCurrentIndex = index;
-            mIndicator.updateHightlightIndex(mCurrentIndex);
+            mIndicator.updateHighlightIndex(mCurrentIndex);
             return true;
         }
     }

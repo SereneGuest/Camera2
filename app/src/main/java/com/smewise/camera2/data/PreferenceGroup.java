@@ -29,4 +29,11 @@ public class PreferenceGroup {
         }
         return -1;
     }
+
+    public void remove(String key) {
+        int index = find(key);
+        if (index >= 0) {
+            mList.remove(index);
+        }
+    }
 }

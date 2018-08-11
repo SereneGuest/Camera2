@@ -11,7 +11,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textSize="@dimen/setting_text_size"
-        android:textColor="@color/setting_title_color"/>
+        android:textColor="@drawable/list_pref_color"/>
 
     <TextView
         android:id="@android:id/summary"

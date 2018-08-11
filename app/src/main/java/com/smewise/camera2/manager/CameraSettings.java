@@ -34,6 +34,7 @@ public class CameraSettings {
     public static final String KEY_RESTART_PREVIEW = "pref_restart_preview";
     public static final String KEY_SWITCH_CAMERA = "pref_switch_camera";
     public static final String KEY_FLASH_MODE = "pref_flash_mode";
+    public static final String KEY_ENABLE_DUAL_CAMERA = "pref_enable_dual_camera";
     //for flash mode
     public static final String FLASH_VALUE_ON = "on";
     public static final String FLASH_VALUE_OFF = "off";
@@ -133,6 +134,10 @@ public class CameraSettings {
 
     public boolean needStartPreview() {
         return mSharedPreference.getBoolean(KEY_RESTART_PREVIEW, true);
+    }
+
+    public boolean isDualCameraEnable() {
+        return mSharedPreference.getBoolean(KEY_ENABLE_DUAL_CAMERA, true);
     }
 
     public Size getPictureSize(String id, String key, StreamConfigurationMap map, int format) {

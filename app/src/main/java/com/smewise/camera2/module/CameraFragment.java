@@ -32,13 +32,12 @@ public class CameraFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate------");
         mAppContext = getActivity().getApplicationContext();
-        mModuleManager = new ModuleManager(mAppContext, mController);
         mToolKit = new CameraToolKit(mAppContext);
         mSettings = new CameraSettings(mAppContext);
         mRootView = LayoutInflater.from(getActivity()).inflate(R.layout.camera_fragment_layout, null);
         mBaseUI = new AppBaseUI(mAppContext, mRootView);
+        mModuleManager = new ModuleManager(mAppContext, mController);
         mBaseUI.setIndicatorView(mModuleManager.getIndicatorView());
     }
 
@@ -46,14 +45,12 @@ public class CameraFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView------");
         return mRootView;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume------");
         if (mModuleManager.getCurrentModule() == null) {
             Log.d(TAG, "init module");
             updateThumbnail(mAppContext);
@@ -66,7 +63,6 @@ public class CameraFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        Log.d(TAG, "onPause------");
         if (mModuleManager.getCurrentModule() != null) {
             mModuleManager.getCurrentModule().stopModule();
         }
@@ -75,7 +71,6 @@ public class CameraFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "onDestroy------");
         mToolKit.destroy();
     }
 
