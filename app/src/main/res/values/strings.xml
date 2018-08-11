@@ -12,7 +12,7 @@
     <string name="permission_btn_setting">go to setting</string>
     <string name="permission_btn_quit">quit</string>
 
-    <string name="mode_photo">Normal</string>
+    <string name="mode_photo">Photo</string>
     <string name="mode_dual_camera">Dual Camera</string>
     <string name="mode_professional">Professional</string>
 
@@ -26,5 +26,25 @@
     <string name="settings_msg">Settings</string>
     <string name="settings_camera">Camera settings</string>
     <string name="settings_disable">Camera settings not available</string>
+    <string name="setting_options">Options</string>
+    <string name="setting_photo">Photo</string>
+    <string name="setting_dual_camera">Dual Camera</string>
+    <string name="setting_advance">Advance</string>
+    <string name="title_enable_dual_camera">Enable dual camera module</string>
+    <string name="summary_restart">Restart to take effect</string>
+
+    <string name="setting_camera_id">Camera id</string>
+    <string name="setting_main_camera_id">Main camera id</string>
+    <string name="setting_aux_camera_id">Aux camera id</string>
+
+    <string name="setting_picture_size">Picture size</string>
+    <string name="setting_picture_format">Picture format</string>
+    <string name="setting_preview_size">Preview size</string>
+
+    <string name="setting_restart_preview">Restart preview after take picture </string>
+
+    <string name="menu_switch_camera">Switch</string>
+    <string name="menu_flash_title">Flash</string>
+
 
 </resources>

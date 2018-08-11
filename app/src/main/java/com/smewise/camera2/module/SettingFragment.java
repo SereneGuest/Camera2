@@ -190,6 +190,9 @@ public class SettingFragment extends PreferenceFragment {
                 case CameraSettings.KEY_RESTART_PREVIEW:
                     // no need to set summary
                     break;
+                case CameraSettings.KEY_ENABLE_DUAL_CAMERA:
+                    // no need to set summary
+                    break;
                 case CameraSettings.KEY_PREVIEW_SIZE:
                 case CameraSettings.KEY_PICTURE_SIZE:
                     updateSizeValue(key, preference);

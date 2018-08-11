@@ -10,6 +10,9 @@ import com.smewise.camera2.R;
 import com.smewise.camera2.data.CamListPreference;
 import com.smewise.camera2.data.PrefListAdapter;
 import com.smewise.camera2.data.PreferenceGroup;
+import com.smewise.camera2.manager.CameraSettings;
+import com.smewise.camera2.manager.ModuleManager;
+import com.smewise.camera2.module.DualCameraModule;
 import com.smewise.camera2.utils.XmlInflater;
 
 public class ModuleIndicator implements PrefListAdapter.PrefClickListener {
@@ -35,17 +38,22 @@ public class ModuleIndicator implements PrefListAdapter.PrefClickListener {
         mRecycleView.setLayoutManager(layoutManager);
         mRecycleView.setHasFixedSize(true);
         mRecycleView.setAdapter(mAdapter);
+        updateHighlightIndex(ModuleManager.getCurrentIndex());
     }
 
     public View getIndicatorView() {
         return mRecycleView;
     }
 
-    public void updateHightlightIndex(int index) {
+    public void updateHighlightIndex(int index) {
         mAdapter.updateHighlightIndex(index, true);
     }
 
-    public Class<?>[] getModuleClass() {
+    public Class<?>[] getModuleClass(boolean loadDualCamera) {
+        if (!loadDualCamera) {
+            mGroup.remove(DualCameraModule.class.getName());
+            mAdapter.notifyDataSetChanged();
+        }
         Class<?>[] moduleCls = new Class[mGroup.size()];
         for (int i = 0; i < mGroup.size(); i++) {
             try {

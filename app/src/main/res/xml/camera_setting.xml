@@ -3,19 +3,17 @@
 
     <PreferenceCategory
         android:layout="@layout/pref_catalog_layout"
-        android:title="Options">
+        android:title="@string/setting_options">
         <SwitchPreference
             android:layout="@layout/switch_pref_layout"
             android:title="@string/setting_restart_preview"
             android:key="pref_restart_preview"
-            android:summaryOff="false"
-            android:summaryOn="true"
             android:defaultValue="true"/>
     </PreferenceCategory>
 
     <PreferenceCategory
         android:layout="@layout/pref_catalog_layout"
-        android:title="Camera">
+        android:title="@string/setting_photo">
         <ListPreference
             android:layout="@layout/list_pref_layout"
             android:title="@string/setting_camera_id"
@@ -39,7 +37,20 @@
 
     <PreferenceCategory
         android:layout="@layout/pref_catalog_layout"
-        android:title="Dual Camera">
+        android:title="@string/setting_advance">
+        <SwitchPreference
+            android:layout="@layout/switch_pref_layout"
+            android:title="@string/title_enable_dual_camera"
+            android:key="pref_enable_dual_camera"
+            android:summaryOff="@string/summary_restart"
+            android:summaryOn="@string/summary_restart"
+            android:defaultValue="false"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:layout="@layout/pref_catalog_layout"
+        android:title="@string/setting_dual_camera"
+        android:dependency="pref_enable_dual_camera">
         <ListPreference
             android:layout="@layout/list_pref_layout"
             android:title="@string/setting_main_camera_id"

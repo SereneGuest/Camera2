@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.Handler;
-import android.support.design.widget.TabLayout;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -14,7 +13,6 @@ import android.widget.RelativeLayout;
 import com.smewise.camera2.R;
 import com.smewise.camera2.callback.CameraUiEvent;
 import com.smewise.camera2.manager.Controller;
-import com.smewise.camera2.manager.ModuleManager;
 import com.smewise.camera2.utils.CameraUtil;
 import com.smewise.camera2.utils.MediaFunc;
 
@@ -38,30 +36,6 @@ public class AppBaseUI implements View.OnClickListener {
     private Point mDisplaySize;
     private int mVirtualKeyHeight;
     private int mTopBarHeight;
-
-
-    public AppBaseUI(Activity activity, Controller controller) {
-        mController = controller;
-        mCoverView = activity.findViewById(R.id.cover_view);
-        mIndicatorContainer = activity.findViewById(R.id.module_indicator_container);
-
-        mPreviewRootView = activity.findViewById(R.id.preview_root_view);
-        mShutter = activity.findViewById(R.id.btn_shutter);
-        mShutter.setOnClickListener(this);
-        mSetting = activity.findViewById(R.id.btn_setting);
-        mSetting.setOnClickListener(this);
-        mBottomContainer = activity.findViewById(R.id.bottom_container);
-        mThumbnail = activity.findViewById(R.id.thumbnail);
-        mThumbnail.setOnClickListener(this);
-        mMenuContainer = activity.findViewById(R.id.menu_container);
-
-        mDisplaySize = CameraUtil.getDisplaySize(activity);
-        mVirtualKeyHeight = CameraUtil.getVirtualKeyHeight(activity);
-        mTopBarHeight = activity.getResources().getDimensionPixelSize(R.dimen.tab_layout_height);
-        mFocusView = new FocusView(activity);
-        mFocusView.setVisibility(View.GONE);
-        mPreviewRootView.addView(mFocusView);
-    }
 
     public AppBaseUI(Context context, View rootView) {
         mCoverView = rootView.findViewById(R.id.cover_view);
@@ -100,10 +74,6 @@ public class AppBaseUI implements View.OnClickListener {
 
     public CoverView getCoverView() {
         return mCoverView;
-    }
-
-    public CameraTab getCameraTab() {
-        return null;
     }
 
     public FocusView getFocusView() {
