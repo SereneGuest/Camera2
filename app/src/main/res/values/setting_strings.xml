@@ -1,22 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="default_camera_id">0</string>
-
-    <!--for setting start-->
-    <string name="setting_camera_id">Camera id</string>
-    <string name="setting_main_camera_id">Main camera id</string>
-    <string name="setting_aux_camera_id">Aux camera id</string>
-
-    <string name="setting_picture_size">Picture size</string>
-    <string name="setting_picture_format">Picture format</string>
-    <string name="setting_preview_size">Preview size</string>
-
-    <string name="setting_restart_preview">Restart preview after take picture </string>
-    <!--for setting end-->
+    <string name="default_camera_id" translatable="false">0</string>
 
     <!--for menu setting start-->
-    <string name="menu_switch_camera">Switch</string>
-    <string name="menu_flash_title">Flash</string>
     <array name="menu_switch_icon_list">
         <item>@drawable/ic_vector_switch_to_front</item>
         <item>@drawable/ic_vector_switch_to_back</item>
@@ -24,10 +10,10 @@
         <item>@drawable/ic_vector_switch_to_back</item>
     </array>
 
-    <string name="camera_id_0">0</string>
-    <string name="camera_id_1">1</string>
-    <string name="camera_id_2">2</string>
-    <string name="camera_id_3">3</string>
+    <string name="camera_id_0" translatable="false">0</string>
+    <string name="camera_id_1" translatable="false">1</string>
+    <string name="camera_id_2" translatable="false">2</string>
+    <string name="camera_id_3" translatable="false">3</string>
     <array name="menu_camera_id_list">
         <item>@string/camera_id_0</item>
         <item>@string/camera_id_1</item>
@@ -44,10 +30,10 @@
     </array>
 
     <array name="menu_flash_entries">
-        <item>@string/flash_off</item>
-        <item>@string/flash_on</item>
-        <item>@string/flash_auto</item>
-        <item>@string/flash_torch</item>
+        <item>@string/flashlight_off</item>
+        <item>@string/flashlight_on</item>
+        <item>@string/flashlight_auto</item>
+        <item>@string/flashlight_torch</item>
     </array>
 
     <array name="menu_flash_entries_value">
@@ -57,10 +43,10 @@
         <item>@string/flash_torch</item>
     </array>
 
-    <string name="flash_off">off</string>
-    <string name="flash_on">on</string>
-    <string name="flash_auto">auto</string>
-    <string name="flash_torch">torch</string>
+    <string name="flash_off" translatable="false">off</string>
+    <string name="flash_on" translatable="false">on</string>
+    <string name="flash_auto" translatable="false">auto</string>
+    <string name="flash_torch" translatable="false">torch</string>
 
     <!--for menu setting end-->
 </resources>

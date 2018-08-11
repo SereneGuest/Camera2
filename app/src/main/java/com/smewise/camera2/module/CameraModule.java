@@ -12,7 +12,6 @@ import com.smewise.camera2.manager.CameraToolKit;
 import com.smewise.camera2.manager.Controller;
 import com.smewise.camera2.manager.FocusOverlayManager;
 import com.smewise.camera2.ui.AppBaseUI;
-import com.smewise.camera2.ui.CameraTab;
 import com.smewise.camera2.ui.CoverView;
 import com.smewise.camera2.utils.CameraThread;
 import com.smewise.camera2.utils.FileSaver;
@@ -115,9 +114,6 @@ public abstract class CameraModule {
         return mController.getBaseUI().getCoverView();
     }
 
-    protected CameraTab getTabView() {
-        return mController.getBaseUI().getCameraTab();
-    }
 
     protected CameraSettings getSettings() {
         return mController.getSettingManager();
