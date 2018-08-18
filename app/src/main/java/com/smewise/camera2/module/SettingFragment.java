@@ -43,7 +43,8 @@ public class SettingFragment extends PreferenceFragment {
     }
 
     private CameraSettings getSettingMgr() {
-        return ((CameraActivity) getActivity()).getController().getSettingManager();
+        return ((CameraActivity) getActivity()).getController()
+                .getCameraSettings(getActivity().getApplicationContext());
     }
 
     private void initPreference() {
