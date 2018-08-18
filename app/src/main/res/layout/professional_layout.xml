@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/rl_preview_container">
+    <com.smewise.camera2.ui.GestureTextureView
+        android:id="@+id/texture_preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
-    <include layout="@layout/preview_layout" />
-
-    <include layout="@layout/parameter_layout"/>
+    <android.support.v7.widget.AppCompatSeekBar
+        android:id="@+id/sb_focus_length"
+        android:layout_width="match_parent"
+        style="@style/SeekBarTheme"
+        android:layout_height="@dimen/seek_bar_height"
+        android:max="100"/>
 
 </RelativeLayout>

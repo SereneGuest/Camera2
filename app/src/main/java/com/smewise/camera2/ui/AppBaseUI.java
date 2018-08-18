@@ -1,6 +1,5 @@
 package com.smewise.camera2.ui;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -12,7 +11,6 @@ import android.widget.RelativeLayout;
 
 import com.smewise.camera2.R;
 import com.smewise.camera2.callback.CameraUiEvent;
-import com.smewise.camera2.manager.Controller;
 import com.smewise.camera2.utils.CameraUtil;
 import com.smewise.camera2.utils.MediaFunc;
 
@@ -23,7 +21,6 @@ import com.smewise.camera2.utils.MediaFunc;
 public class AppBaseUI implements View.OnClickListener {
     private CoverView mCoverView;
     private LinearLayout mIndicatorContainer;
-    private Controller mController;
     private RelativeLayout mPreviewRootView;
     private ShutterButton mShutter;
     private ImageButton mSetting;
