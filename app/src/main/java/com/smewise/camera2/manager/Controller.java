@@ -1,6 +1,7 @@
 package com.smewise.camera2.manager;
 
 import android.app.FragmentManager;
+import android.content.Context;
 
 import com.smewise.camera2.ui.AppBaseUI;
 
@@ -18,7 +19,7 @@ public interface Controller {
 
     void showSetting();
 
-    CameraSettings getSettingManager();
+    CameraSettings getCameraSettings(Context context);
 
     AppBaseUI getBaseUI();
 }

@@ -38,7 +38,7 @@ public class ModuleManager implements PrefListAdapter.PrefClickListener {
     public ModuleManager(Context context, Controller controller) {
         mController = controller;
         mIndicator = new ModuleIndicator(context);
-        boolean loadDualCamera = mController.getSettingManager().isDualCameraEnable();
+        boolean loadDualCamera = mController.getCameraSettings(context).isDualCameraEnable();
         mModulesClass = mIndicator.getModuleClass(loadDualCamera);
         sModuleNum = mModulesClass.length;
         mIndicator.setPrefClickListener(this);

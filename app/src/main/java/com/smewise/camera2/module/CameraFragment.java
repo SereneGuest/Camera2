@@ -34,7 +34,6 @@ public class CameraFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mAppContext = getActivity().getApplicationContext();
         mToolKit = new CameraToolKit(mAppContext);
-        mSettings = new CameraSettings(mAppContext);
         mRootView = LayoutInflater.from(getActivity()).inflate(R.layout.camera_fragment_layout, null);
         mBaseUI = new AppBaseUI(mAppContext, mRootView);
         mModuleManager = new ModuleManager(mAppContext, mController);
@@ -106,7 +105,10 @@ public class CameraFragment extends Fragment {
         }
 
         @Override
-        public CameraSettings getSettingManager() {
+        public CameraSettings getCameraSettings(Context context) {
+            if (mSettings == null) {
+                mSettings = new CameraSettings(context);
+            }
             return mSettings;
         }
 

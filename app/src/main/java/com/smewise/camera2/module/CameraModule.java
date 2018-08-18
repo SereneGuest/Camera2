@@ -116,7 +116,7 @@ public abstract class CameraModule {
 
 
     protected CameraSettings getSettings() {
-        return mController.getSettingManager();
+        return mController.getCameraSettings(appContext);
     }
 
     CameraThread getCameraThread() {
