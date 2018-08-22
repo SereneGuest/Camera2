@@ -35,6 +35,7 @@ public class CameraSettings {
     public static final String KEY_SWITCH_CAMERA = "pref_switch_camera";
     public static final String KEY_FLASH_MODE = "pref_flash_mode";
     public static final String KEY_ENABLE_DUAL_CAMERA = "pref_enable_dual_camera";
+    public static final String KEY_SUPPORT_INFO = "pref_support_info";
     //for flash mode
     public static final String FLASH_VALUE_ON = "on";
     public static final String FLASH_VALUE_OFF = "off";
@@ -184,101 +185,30 @@ public class CameraSettings {
         }
     }
 
-    public void dumpSupportInfo(CameraCharacteristics characteristics) {
-        //print hardware support info
-        isHardwareSupported(characteristics);
-        //print support output format
-        StreamConfigurationMap map =
-                characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-        for (int format : map.getOutputFormats()) {
-            printFormatString(format);
+    public String getSupportInfo(Context context) {
+        StringBuilder builder = new StringBuilder();
+        DeviceManager deviceManager = new DeviceManager(context);
+        String[] idList = deviceManager.getCameraIdList();
+        String splitLine = "- - - - - - - - - -";
+        builder.append(splitLine).append("\n");
+        for (String cameraId : idList) {
+            builder.append("Camera ID: ").append(cameraId).append("\n");
+            // hardware support level
+            CameraCharacteristics c = deviceManager.getCharacteristics(cameraId);
+            Integer level = c.get(CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL);
+            builder.append("Hardware Support Level:").append("\n");
+            builder.append(CameraUtil.hardwareLevel2Sting(level)).append("\n");
+            builder.append("(LEGACY < LIMITED < FULL < LEVEL_3)").append("\n");
+            // Capabilities
+            builder.append("Camera Capabilities:").append("\n");
+            int[] caps = c.get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES);
+            for (int cap : caps) {
+                builder.append(CameraUtil.capabilities2String(cap)).append(" ");
+            }
+            builder.append("\n");
+            builder.append(splitLine).append("\n");
         }
-        int[] capa = characteristics.get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES);
-        for (int cap : capa) {
-            Log.i(TAG, "Capabilities:" + cap);
-        }
+        return builder.toString();
     }
 
-    private int isHardwareSupported(CameraCharacteristics characteristics) {
-        Integer deviceLevel = characteristics.get(CameraCharacteristics
-                .INFO_SUPPORTED_HARDWARE_LEVEL);
-        if (deviceLevel == null) {
-            Log.e(TAG, "can not get INFO_SUPPORTED_HARDWARE_LEVEL");
-            return -1;
-        }
-        switch (deviceLevel) {
-            case CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL_FULL:
-                Log.i(TAG, "hardware supported level:LEVEL_FULL");
-                break;
-            case CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL_LEGACY:
-                Log.i(TAG, "hardware supported level:LEVEL_LEGACY");
-                break;
-            case CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL_3:
-                Log.i(TAG, "hardware supported level:LEVEL_3");
-                break;
-            case CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL_LIMITED:
-                Log.i(TAG, "hardware supported level:LEVEL_LIMITED");
-                break;
-        }
-        return deviceLevel;
-    }
-
-    private void printFormatString(int format) {
-        switch (format) {
-            case ImageFormat.RGB_565:
-                Log.i(TAG, "support format: RGB_565");
-                break;
-            case ImageFormat.NV16:
-                Log.i(TAG, "support format: NV16");
-                break;
-            case ImageFormat.YUY2:
-                Log.i(TAG, "support format: YUY2");
-                break;
-            case ImageFormat.YV12:
-                Log.i(TAG, "support format: YV12");
-                break;
-            case ImageFormat.JPEG:
-                Log.i(TAG, "support format: JPEG");
-                break;
-            case ImageFormat.NV21:
-                Log.i(TAG, "support format: NV21");
-                break;
-            case ImageFormat.YUV_420_888:
-                Log.i(TAG, "support format: YUV_420_888");
-                break;
-            case ImageFormat.YUV_422_888:
-                Log.i(TAG, "support format: YUV_422_888");
-                break;
-            case ImageFormat.YUV_444_888:
-                Log.i(TAG, "support format: YUV_444_888");
-                break;
-            case ImageFormat.FLEX_RGB_888:
-                Log.i(TAG, "support format: FLEX_RGB_888");
-                break;
-            case ImageFormat.FLEX_RGBA_8888:
-                Log.i(TAG, "support format: FLEX_RGBA_8888");
-                break;
-            case ImageFormat.RAW_SENSOR:
-                Log.i(TAG, "support format: RAW_SENSOR");
-                break;
-            case ImageFormat.RAW_PRIVATE:
-                Log.i(TAG, "support format: RAW_PRIVATE");
-                break;
-            case ImageFormat.RAW10:
-                Log.i(TAG, "support format: RAW10");
-                break;
-            case ImageFormat.RAW12:
-                Log.i(TAG, "support format: RAW12");
-                break;
-            case ImageFormat.DEPTH16:
-                Log.i(TAG, "support format: DEPTH16");
-                break;
-            case ImageFormat.DEPTH_POINT_CLOUD:
-                Log.i(TAG, "support format: DEPTH_POINT_CLOUD");
-                break;
-            case ImageFormat.PRIVATE:
-                Log.i(TAG, "support format: PRIVATE");
-                break;
-        }
-    }
 }

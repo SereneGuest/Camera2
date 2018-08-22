@@ -62,9 +62,6 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
                 CameraSettings.KEY_CAMERA_ID, mDeviceMgr.getCameraIdList()[0]);
         mDeviceMgr.setCameraId(cameraId);
         mDeviceMgr.openCamera(mainHandler);
-        //dump support info
-        CameraCharacteristics c = mDeviceMgr.getCharacteristics();
-        getSettings().dumpSupportInfo(c);
         // when module changed , need update listener
         fileSaver.setFileListener(this);
         getBaseUI().setCameraUiEvent(mCameraUiEvent);
