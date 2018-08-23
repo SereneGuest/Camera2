@@ -86,6 +86,10 @@ public class AppBaseUI implements View.OnClickListener {
         mMenuContainer.addView(view);
     }
 
+    public void setShutterMode(String mode) {
+        mShutter.setMode(mode);
+    }
+
     public void removeMenuView() {
         mMenuContainer.removeAllViews();
     }

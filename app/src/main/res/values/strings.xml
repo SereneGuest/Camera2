@@ -15,13 +15,14 @@
     <string name="mode_photo">Photo</string>
     <string name="mode_dual_camera">Dual Camera</string>
     <string name="mode_professional">Professional</string>
+    <string name="mode_video">Video</string>
+    <string name="un_named">UnNamed</string>
 
     <string-array name="module_list">
         <item>@string/mode_photo</item>
         <item>@string/mode_dual_camera</item>
         <item>@string/mode_professional</item>
     </string-array>
-    <string name="un_named">UnNamed</string>
 
     <string name="settings_msg">Settings</string>
     <string name="settings_camera">Camera settings</string>
@@ -31,7 +32,7 @@
     <string name="setting_dual_camera">Dual Camera</string>
     <string name="setting_advance">Advance</string>
     <string name="title_enable_dual_camera">Enable dual camera module</string>
-    <string name="summary_restart">Restart to take effect</string>
+    <string name="summary_restart">Restart App to take effect</string>
 
     <string name="setting_camera_id">Camera id</string>
     <string name="setting_main_camera_id">Main camera id</string>

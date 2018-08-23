@@ -15,6 +15,7 @@
     <string name="mode_photo">拍照</string>
     <string name="mode_dual_camera">双摄</string>
     <string name="mode_professional">专业</string>
+    <string name="mode_video">视频</string>
     <string name="un_named">未命名</string>
 
     <string name="settings_msg">设置</string>
@@ -25,7 +26,7 @@
     <string name="setting_dual_camera">双摄</string>
     <string name="setting_advance">高级</string>
     <string name="title_enable_dual_camera">启用双摄模式</string>
-    <string name="summary_restart">重启生效</string>
+    <string name="summary_restart">重启应用生效</string>
 
     <string name="setting_camera_id">相机ID</string>
     <string name="setting_main_camera_id">主摄ID</string>
