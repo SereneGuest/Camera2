@@ -39,5 +39,8 @@
 
     <string name="menu_switch_camera">切换</string>
     <string name="menu_flash_title">闪光灯</string>
+    <string name="support_info_title">Camera2 支持情况</string>
+    <string name="support_info_done">确定</string>
+    <string name="show_support_info">显示设备支持信息</string>
 
 </resources>

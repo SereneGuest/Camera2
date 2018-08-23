@@ -1,16 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <PreferenceCategory
-        android:layout="@layout/pref_catalog_layout"
-        android:title="@string/setting_options">
-        <SwitchPreference
-            android:layout="@layout/switch_pref_layout"
-            android:title="@string/setting_restart_preview"
-            android:key="pref_restart_preview"
-            android:defaultValue="true"/>
-    </PreferenceCategory>
-
     <PreferenceCategory
         android:layout="@layout/pref_catalog_layout"
         android:title="@string/setting_photo">
@@ -34,7 +23,19 @@
             android:title="@string/setting_preview_size"
             android:key="pref_preview_size"/>
     </PreferenceCategory>
-
+    <PreferenceCategory
+        android:layout="@layout/pref_catalog_layout"
+        android:title="@string/setting_options">
+        <SwitchPreference
+            android:layout="@layout/switch_pref_layout"
+            android:title="@string/setting_restart_preview"
+            android:key="pref_restart_preview"
+            android:defaultValue="true"/>
+        <Preference
+            android:title="@string/support_info_title"
+            android:key="pref_support_info"
+            android:summary="@string/show_support_info"/>
+    </PreferenceCategory>
     <PreferenceCategory
         android:layout="@layout/pref_catalog_layout"
         android:title="@string/setting_advance">

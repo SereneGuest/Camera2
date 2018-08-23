@@ -21,6 +21,7 @@ import com.smewise.camera2.R;
 import com.smewise.camera2.manager.CameraSettings;
 import com.smewise.camera2.manager.DeviceManager;
 import com.smewise.camera2.utils.CameraUtil;
+import com.smewise.camera2.utils.SupportInfoDialog;
 
 /**
  * Created by wenzhe on 9/25/17.
@@ -162,7 +163,12 @@ public class SettingFragment extends PreferenceFragment {
     @Override
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
         switch (preference.getKey()) {
-            case CameraSettings.KEY_PICTURE_SIZE:
+            case CameraSettings.KEY_SUPPORT_INFO:
+                SupportInfoDialog dialog = new SupportInfoDialog();
+                dialog.setMessage(getSettingMgr().getSupportInfo(getActivity()));
+                dialog.show(getFragmentManager(), SupportInfoDialog.class.getSimpleName());
+                break;
+            default:
                 break;
         }
         return super.onPreferenceTreeClick(preferenceScreen, preference);

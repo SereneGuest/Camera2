@@ -171,6 +171,48 @@ public class CameraUtil {
         return formatStr;
     }
 
+    public static String hardwareLevel2Sting(int level) {
+        switch (level) {
+            case CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL_FULL:
+                return "LEVEL_FULL";
+            case CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL_LEGACY:
+                return "LEVEL_LEGACY";
+            case CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL_3:
+                return "LEVEL_3";
+            case CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL_LIMITED:
+                return "LEVEL_LIMITED";
+            default:
+                return "Unknown Level";
+        }
+    }
+
+    public static String capabilities2String(int cap) {
+        switch (cap) {
+            case CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_BACKWARD_COMPATIBLE:
+                return "BACKWARD_COMPATIBLE";
+            case CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_BURST_CAPTURE:
+                return "BURST_CAPTURE";
+            case CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_CONSTRAINED_HIGH_SPEED_VIDEO:
+                return "CONSTRAINED_HIGH_SPEED_VIDEO";
+            case CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_DEPTH_OUTPUT:
+                return "DEPTH_OUTPUT";
+            case CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_MANUAL_POST_PROCESSING:
+                return "MANUAL_POST_PROCESSING";
+            case CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_MANUAL_SENSOR:
+                return "MANUAL_SENSOR";
+            case CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_PRIVATE_REPROCESSING:
+                return "PRIVATE_REPROCESSING";
+            case CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_RAW:
+                return "RAW";
+            case CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_READ_SENSOR_SETTINGS:
+                return "READ_SENSOR_SETTINGS";
+            case CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_YUV_REPROCESSING:
+                return "YUV_REPROCESSING";
+            default:
+                return "Unknown Capabilities";
+        }
+    }
+
     public static String format2String(int format) {
         switch (format) {
             case ImageFormat.RGB_565:

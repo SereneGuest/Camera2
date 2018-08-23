@@ -45,6 +45,8 @@
 
     <string name="menu_switch_camera">Switch</string>
     <string name="menu_flash_title">Flash</string>
-
+    <string name="support_info_title">Camera2 Support Level</string>
+    <string name="support_info_done">Done</string>
+    <string name="show_support_info">show support information</string>
 
 </resources>
