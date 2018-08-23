@@ -63,17 +63,18 @@ public class ShutterButton extends Button {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        //super.onDraw(canvas);
-        drawOuterCircle(canvas);
-        drawInnerCircle(canvas);
         switch (currentMode) {
             case PHOTO_MODE:
+                drawOuterCircle(canvas, outerCircleColor);
+                drawInnerCircle(canvas, innerCircleColor);
                 break;
             case VIDEO_MODE:
-                drawSmallCircle(canvas);
+                drawOuterCircle(canvas, recordColor);
+                drawInnerCircle(canvas, innerCircleColor);
                 break;
             case VIDEO_RECORDING_MODE:
-                drawSmallRect(canvas);
+                drawOuterCircle(canvas, innerCircleColor);
+                drawInnerCircle(canvas, recordColor);
                 break;
         }
     }
@@ -83,29 +84,17 @@ public class ShutterButton extends Button {
         invalidate();
     }
 
-    private void drawOuterCircle(Canvas canvas) {
-        mPaint.setColor(outerCircleColor);
+    private void drawOuterCircle(Canvas canvas, int color) {
+        mPaint.setColor(color);
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeWidth(outerRadius);
         canvas.drawCircle(getWidth() / 2, getHeight() / 2, getWidth() / 2 - outerRadius, mPaint);
     }
 
-    private void drawInnerCircle(Canvas canvas) {
-        mPaint.setColor(innerCircleColor);
+    private void drawInnerCircle(Canvas canvas, int color) {
+        mPaint.setColor(color);
         mPaint.setStyle(Paint.Style.FILL);
         canvas.drawCircle(getWidth() / 2, getHeight() / 2, innerRadius, mPaint);
-    }
-
-    private void drawSmallCircle(Canvas canvas) {
-        mPaint.setStyle(Paint.Style.FILL);
-        mPaint.setColor(recordColor);
-        canvas.drawCircle(getWidth() / 2, getHeight() / 2, innerSmallRadius, mPaint);
-    }
-
-    private void drawSmallRect(Canvas canvas) {
-        mPaint.setStyle(Paint.Style.FILL);
-        mPaint.setColor(recordColor);
-        canvas.drawRoundRect(rect, 5, 5, mPaint);
     }
 
     @Override
