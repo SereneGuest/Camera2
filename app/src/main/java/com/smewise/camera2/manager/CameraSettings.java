@@ -36,6 +36,8 @@ public class CameraSettings {
     public static final String KEY_FLASH_MODE = "pref_flash_mode";
     public static final String KEY_ENABLE_DUAL_CAMERA = "pref_enable_dual_camera";
     public static final String KEY_SUPPORT_INFO = "pref_support_info";
+    public static final String KEY_VIDEO_ID = "pref_video_camera_id";
+    public static final String KEY_VIDEO_SIZE = "pref_video_size";
     //for flash mode
     public static final String FLASH_VALUE_ON = "on";
     public static final String FLASH_VALUE_OFF = "off";
@@ -48,6 +50,7 @@ public class CameraSettings {
         SPEC_KEY.add(KEY_PICTURE_SIZE);
         SPEC_KEY.add(KEY_PREVIEW_SIZE);
         SPEC_KEY.add(KEY_PICTURE_FORMAT);
+        SPEC_KEY.add(KEY_VIDEO_SIZE);
     }
 
     private SharedPreferences mSharedPreference;
@@ -182,6 +185,28 @@ public class CameraSettings {
             return size.getWidth() + CameraUtil.SPLIT_TAG + size.getHeight();
         } else {
             return preStr;
+        }
+    }
+
+    public Size getVideoSize(String id, String key, StreamConfigurationMap map) {
+        String videoStr = getValueFromPref(id, key, Config.NULL_VALUE);
+        if (Config.NULL_VALUE.equals(videoStr)) {
+            // preference not set, use default value
+            return CameraUtil.getDefaultVideoSize(map, mRealDisplaySize);
+        } else {
+            String[] size = videoStr.split(CameraUtil.SPLIT_TAG);
+            return new Size(Integer.parseInt(size[0]), Integer.parseInt(size[1]));
+        }
+    }
+
+    public String getVideoSizeStr(String id, String key, StreamConfigurationMap map) {
+        String videoStr = getValueFromPref(id, key, Config.NULL_VALUE);
+        if (Config.NULL_VALUE.equals(videoStr)) {
+            // preference not set, use default value
+            Size size = CameraUtil.getDefaultVideoSize(map, mRealDisplaySize);
+            return size.getWidth() + CameraUtil.SPLIT_TAG + size.getHeight();
+        } else {
+            return videoStr;
         }
     }
 

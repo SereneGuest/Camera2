@@ -23,18 +23,24 @@
     <string name="settings_disable">相机设置不可用</string>
     <string name="setting_options">选项</string>
     <string name="setting_photo">拍照</string>
+    <string name="setting_video">视频</string>
     <string name="setting_dual_camera">双摄</string>
     <string name="setting_advance">高级</string>
     <string name="title_enable_dual_camera">启用双摄模式</string>
     <string name="summary_restart">重启应用生效</string>
 
-    <string name="setting_camera_id">相机ID</string>
+    <string name="setting_camera_id">当前相机</string>
     <string name="setting_main_camera_id">主摄ID</string>
     <string name="setting_aux_camera_id">副摄ID</string>
+    <string name="setting_back_camera">后置摄像头</string>
+    <string name="setting_front_camera">前置摄像头</string>
+    <string name="setting_other_camera">其他</string>
+
 
     <string name="setting_picture_size">图片尺寸</string>
     <string name="setting_picture_format">图片格式</string>
     <string name="setting_preview_size">预览尺寸</string>
+    <string name="setting_video_size">视频尺寸</string>
 
     <string name="setting_restart_preview">拍照后重启预览</string>
 

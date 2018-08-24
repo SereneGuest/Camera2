@@ -25,6 +25,21 @@
     </PreferenceCategory>
     <PreferenceCategory
         android:layout="@layout/pref_catalog_layout"
+        android:title="@string/setting_video">
+        <ListPreference
+            android:layout="@layout/list_pref_layout"
+            android:title="@string/setting_camera_id"
+            android:key="pref_video_camera_id"
+            android:entries="@array/menu_camera_id_list"
+            android:entryValues="@array/menu_camera_id_list"
+            android:defaultValue="@string/default_camera_id"/>
+        <ListPreference
+            android:layout="@layout/list_pref_layout"
+            android:title="@string/setting_video_size"
+            android:key="pref_video_size"/>
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:layout="@layout/pref_catalog_layout"
         android:title="@string/setting_options">
         <SwitchPreference
             android:layout="@layout/switch_pref_layout"
