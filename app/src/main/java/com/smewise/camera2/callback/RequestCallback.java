@@ -17,4 +17,8 @@ public abstract class RequestCallback {
     public void onAFStateChanged(int state) {
         // default empty implementation
     }
+
+    public void onRecordStarted(boolean success) {
+        // default empty implementation
+    }
 }

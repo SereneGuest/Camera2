@@ -76,6 +76,22 @@ public class CameraUtil {
         return supportSize[0];
     }
 
+    public static Size getPreviewSizeByRatio(StreamConfigurationMap map, Point displaySize, double ratio) {
+        Size[] supportSize = map.getOutputSizes(SurfaceTexture.class);
+        sortCamera2Size(supportSize);
+        for (Size size : supportSize) {
+            boolean isRatioMatch = (int) (size.getHeight() * ratio) == size.getWidth();
+            if (!isRatioMatch) {
+                continue;
+            }
+            if ((size.getHeight() == displaySize.x)
+                    || (size.getWidth() <= displaySize.y && size.getHeight() <= displaySize.x)) {
+                return size;
+            }
+        }
+        return supportSize[0];
+    }
+
     /**
      * Get default video size from support video size list
      * @param map specific stream configuration map used for get supported picture size
@@ -85,7 +101,7 @@ public class CameraUtil {
         Size[] supportSize = map.getOutputSizes(MediaRecorder.class);
         sortCamera2Size(supportSize);
         for (Size size : supportSize) {
-            if (size.getHeight() <= displaySize.x) {
+            if (Config.videoRatioMatched(size) && size.getHeight() <= displaySize.x) {
                 return size;
             }
         }

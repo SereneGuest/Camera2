@@ -23,4 +23,8 @@ public class Config {
     public static boolean ratioMatched(Size size) {
         return size.getWidth() * 3 == size.getHeight() * 4;
     }
+
+    public static boolean videoRatioMatched(Size size) {
+        return size.getWidth() * 9 == size.getHeight() * 16;
+    }
 }

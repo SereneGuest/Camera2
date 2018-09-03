@@ -16,16 +16,15 @@ import com.smewise.camera2.R;
 import com.smewise.camera2.callback.CameraUiEvent;
 import com.smewise.camera2.callback.MenuInfo;
 import com.smewise.camera2.callback.RequestCallback;
-import com.smewise.camera2.manager.CameraSession;
 import com.smewise.camera2.manager.CameraSettings;
 import com.smewise.camera2.manager.Controller;
 import com.smewise.camera2.manager.DeviceManager;
 import com.smewise.camera2.manager.FocusOverlayManager;
 import com.smewise.camera2.manager.Session;
 import com.smewise.camera2.manager.SingleDeviceManager;
+import com.smewise.camera2.manager.VideoSession;
 import com.smewise.camera2.ui.CameraBaseMenu;
 import com.smewise.camera2.ui.CameraMenu;
-import com.smewise.camera2.ui.PhotoUI;
 import com.smewise.camera2.ui.ShutterButton;
 import com.smewise.camera2.ui.VideoUI;
 import com.smewise.camera2.utils.FileSaver;
@@ -39,7 +38,7 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
 
     private SurfaceTexture mSurfaceTexture;
     private VideoUI mUI;
-    private CameraSession mSession;
+    private VideoSession mSession;
     private SingleDeviceManager mDeviceMgr;
     private FocusOverlayManager mFocusManager;
     private CameraMenu mCameraMenu;
@@ -55,13 +54,13 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
         mFocusManager.setListener(mCameraUiEvent);
         mCameraMenu = new CameraMenu(appContext, R.xml.menu_preference, mMenuInfo);
         mCameraMenu.setOnMenuClickListener(this);
-        mSession = new CameraSession(appContext, mainHandler, getSettings());
+        mSession = new VideoSession(appContext, mainHandler, getSettings());
     }
 
     @Override
     public void start() {
         String cameraId = getSettings().getGlobalPref(
-                CameraSettings.KEY_CAMERA_ID, mDeviceMgr.getCameraIdList()[0]);
+                CameraSettings.KEY_VIDEO_ID, mDeviceMgr.getCameraIdList()[0]);
         mDeviceMgr.setCameraId(cameraId);
         mDeviceMgr.openCamera(mainHandler);
         // when module changed , need update listener
@@ -99,14 +98,6 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
 
     private RequestCallback mRequestCallback = new RequestCallback() {
         @Override
-        public void onDataBack(byte[] data, int width, int height) {
-            super.onDataBack(data, width, height);
-            saveFile(data, width, height, mDeviceMgr.getCameraId(),
-                    CameraSettings.KEY_PICTURE_FORMAT, "CAMERA");
-            mSession.applyRequest(Session.RQ_RESTART_PREVIEW);
-        }
-
-        @Override
         public void onViewChange(int width, int height) {
             super.onViewChange(width, height);
             getBaseUI().updateUiSize(width, height);
@@ -117,6 +108,18 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
         public void onAFStateChanged(int state) {
             super.onAFStateChanged(state);
             updateAFState(state, mFocusManager);
+        }
+
+        @Override
+        public void onRecordStarted(boolean success) {
+            super.onRecordStarted(success);
+            getBaseUI().setUIClickable(true);
+            if (success) {
+                getBaseUI().setShutterMode(ShutterButton.VIDEO_RECORDING_MODE);
+            } else {
+                disableState(Controller.CAMERA_STATE_START_RECORD);
+                getBaseUI().setShutterMode(ShutterButton.VIDEO_MODE);
+            }
         }
     };
 
@@ -129,15 +132,28 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
         getBaseUI().removeMenuView();
         mFocusManager.removeDelayMessage();
         mFocusManager.hideFocusUI();
+        if (stateEnabled(Controller.CAMERA_STATE_START_RECORD)) {
+            stopVideoRecording();
+        }
         mSession.release();
         mDeviceMgr.releaseCamera();
         Log.d(TAG, "stop module");
     }
 
-    private void takePicture() {
-        mUI.setUIClickable(false);
+    private void startVideoRecording() {
+        enableState(Controller.CAMERA_STATE_START_RECORD);
         getBaseUI().setUIClickable(false);
-        mSession.applyRequest(Session.RQ_TAKE_PICTURE, getToolKit().getOrientation());
+        if (stateEnabled(Controller.CAMERA_STATE_UI_READY)) {
+            mSession.applyRequest(Session.RQ_START_RECORD, getToolKit().getOrientation());
+        }
+    }
+
+    private void stopVideoRecording() {
+        disableState(Controller.CAMERA_STATE_START_RECORD);
+        getBaseUI().setUIClickable(false);
+        mSession.applyRequest(Session.RQ_STOP_RECORD);
+        getBaseUI().setShutterMode(ShutterButton.VIDEO_MODE);
+        getBaseUI().setUIClickable(true);
     }
 
     /**
@@ -233,6 +249,8 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
                 mMenuInfo.getCurrentValue(CameraSettings.KEY_FLASH_MODE));
     }
 
+
+
     private MenuInfo mMenuInfo = new MenuInfo() {
         @Override
         public String[] getCameraIdList() {
@@ -253,7 +271,13 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
     private void handleClick(View view) {
         switch (view.getId()) {
             case R.id.btn_shutter:
-                takePicture();
+                if (stateEnabled(Controller.CAMERA_STATE_START_RECORD)) {
+                    stopVideoRecording();
+                    mSession.applyRequest(Session.RQ_START_PREVIEW,
+                            mSurfaceTexture, mRequestCallback);
+                } else {
+                    startVideoRecording();
+                }
                 break;
             case R.id.btn_setting:
                 showSetting();

@@ -177,6 +177,10 @@ public class CameraSettings {
         }
     }
 
+    public Size getPreviewSizeByRatio(StreamConfigurationMap map, double ratio) {
+        return CameraUtil.getPreviewSizeByRatio(map, mRealDisplaySize, ratio);
+    }
+
     public String getPreviewSizeStr(String id, String key, StreamConfigurationMap map) {
         String preStr = getValueFromPref(id, key, Config.NULL_VALUE);
         if (Config.NULL_VALUE.equals(preStr)) {

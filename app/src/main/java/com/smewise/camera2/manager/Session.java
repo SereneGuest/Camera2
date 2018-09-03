@@ -11,6 +11,9 @@ public abstract class Session {
     public static final int RQ_FLASH_MODE = 6;
     public static final int RQ_RESTART_PREVIEW = 7;
     public static final int RQ_TAKE_PICTURE = 8;
+    public static final int RQ_START_RECORD = 9;
+    public static final int RQ_STOP_RECORD = 10;
+
 
     public void applyRequest(int msg) {
         applyRequest(msg, null, null);
