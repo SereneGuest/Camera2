@@ -35,5 +35,6 @@
     <color name="menu_background">@color/pop_window_bg</color>
 
     <color name="icon_tint">#ffffff</color>
+    <color name="color_timer_text">#ffffff</color>
 
 </resources>

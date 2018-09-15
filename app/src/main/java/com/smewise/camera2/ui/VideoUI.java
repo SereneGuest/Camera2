@@ -5,6 +5,8 @@ import android.graphics.SurfaceTexture;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.TextureView;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.smewise.camera2.R;
@@ -20,11 +22,16 @@ public class VideoUI extends CameraBaseUI implements TextureView.SurfaceTextureL
 
     private RelativeLayout mRootView;
     private GestureTextureView mPreviewTexture;
+    private LinearLayout mRecTimerLayout;
+    private Button mRecButton;
 
     public VideoUI(Context context, Handler handler, CameraUiEvent event) {
         super(event);
         mRootView = (RelativeLayout) LayoutInflater.from(context)
                 .inflate(R.layout.video_layout, null);
+        mRecTimerLayout = mRootView.findViewById(R.id.ll_record_timer);
+        mRecTimerLayout.setOnClickListener(this);
+        mRecButton = mRootView.findViewById(R.id.btn_record);
         mPreviewTexture = mRootView.findViewById(R.id.texture_preview);
         mPreviewTexture.setSurfaceTextureListener(this);
         mPreviewTexture.setGestureListener(this);
@@ -34,6 +41,14 @@ public class VideoUI extends CameraBaseUI implements TextureView.SurfaceTextureL
     public void setUIClickable(boolean clickable) {
         super.setUIClickable(clickable);
         mPreviewTexture.setClickable(clickable);
+    }
+
+    public void refreshPauseButton(boolean recording) {
+        if (recording) {
+            mRecButton.setBackgroundResource(R.drawable.ic_vector_recoding);
+        } else {
+            mRecButton.setBackgroundResource(R.drawable.ic_vector_record_pause);
+        }
     }
 
     @Override

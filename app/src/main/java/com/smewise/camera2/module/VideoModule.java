@@ -285,6 +285,9 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
             case R.id.thumbnail:
                 MediaFunc.goToGallery(appContext);
                 break;
+            case R.id.ll_record_timer:
+                mUI.refreshPauseButton(false);
+                break;
             default:
                 break;
         }
