@@ -3,9 +3,12 @@ package com.smewise.camera2.ui;
 import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.TextureView;
+import android.view.View;
 import android.widget.Button;
+import android.widget.Chronometer;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -24,6 +27,8 @@ public class VideoUI extends CameraBaseUI implements TextureView.SurfaceTextureL
     private GestureTextureView mPreviewTexture;
     private LinearLayout mRecTimerLayout;
     private Button mRecButton;
+    private Chronometer mChronometer;
+    private long mRecordingTime;
 
     public VideoUI(Context context, Handler handler, CameraUiEvent event) {
         super(event);
@@ -31,6 +36,7 @@ public class VideoUI extends CameraBaseUI implements TextureView.SurfaceTextureL
                 .inflate(R.layout.video_layout, null);
         mRecTimerLayout = mRootView.findViewById(R.id.ll_record_timer);
         mRecTimerLayout.setOnClickListener(this);
+        mChronometer = mRootView.findViewById(R.id.record_time);
         mRecButton = mRootView.findViewById(R.id.btn_record);
         mPreviewTexture = mRootView.findViewById(R.id.texture_preview);
         mPreviewTexture.setSurfaceTextureListener(this);
@@ -41,6 +47,29 @@ public class VideoUI extends CameraBaseUI implements TextureView.SurfaceTextureL
     public void setUIClickable(boolean clickable) {
         super.setUIClickable(clickable);
         mPreviewTexture.setClickable(clickable);
+    }
+
+    public void startVideoTimer() {
+        mRecTimerLayout.setVisibility(View.VISIBLE);
+        mChronometer.setBase(SystemClock.elapsedRealtime());
+        mChronometer.start();
+    }
+
+    public void pauseVideoTimer() {
+        mChronometer.stop();
+        mRecordingTime = SystemClock.elapsedRealtime() - mChronometer.getBase();
+    }
+
+    public void resumeVideoTimer() {
+        mChronometer.setBase(SystemClock.elapsedRealtime() - mRecordingTime);
+        mChronometer.start();
+    }
+
+    public void stopVideoTimer() {
+        mChronometer.stop();
+        mChronometer.setBase(SystemClock.elapsedRealtime());
+        mRecordingTime = 0;
+        mRecTimerLayout.setVisibility(View.INVISIBLE);
     }
 
     public void refreshPauseButton(boolean recording) {

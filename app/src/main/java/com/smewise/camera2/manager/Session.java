@@ -13,6 +13,8 @@ public abstract class Session {
     public static final int RQ_TAKE_PICTURE = 8;
     public static final int RQ_START_RECORD = 9;
     public static final int RQ_STOP_RECORD = 10;
+    public static final int RQ_PAUSE_RECORD = 11;
+    public static final int RQ_RESUME_RECORD = 12;
 
 
     public void applyRequest(int msg) {

@@ -44,6 +44,7 @@
     <dimen name="options_button_text_size">15sp</dimen>
     <dimen name="options_layout_margin">3dp</dimen>
     <dimen name="options_min_width">80dp</dimen>
-    <dimen name="record_timer_padding">5dp</dimen>
+    <dimen name="record_timer_padding">10dp</dimen>
     <dimen name="record_timer_height">30dp</dimen>
+    <dimen name="record_view_height">60dp</dimen>
 </resources>

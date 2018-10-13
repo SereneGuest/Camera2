@@ -49,6 +49,7 @@ public class VideoSession extends Session {
     private int mLatestAfState = -1;
     private Size mVideoSize;
     private Size mPreviewSize;
+    private File mCurrentRecordFile;
 
     public VideoSession(Context context, Handler mainHandler, CameraSettings settings) {
         mContext = context;
@@ -95,10 +96,18 @@ public class VideoSession extends Session {
             }
             case RQ_STOP_RECORD: {
                 if (mMediaRecorder != null) {
-                    mMediaRecorder.stop();
-                    mMediaRecorder.reset();
+                    handleStopMediaRecorder();
                 }
                 createPreviewSession(mTexture, mCallback);
+                break;
+            }
+            case RQ_PAUSE_RECORD: {
+                // TODO pause feature
+                break;
+            }
+            case RQ_RESUME_RECORD: {
+                // TODO resume feature
+                break;
             }
             default: {
                 Log.w(TAG, "not used request code " + msg);
@@ -151,6 +160,19 @@ public class VideoSession extends Session {
         if (mMediaRecorder != null) {
             mMediaRecorder.release();
             mMediaRecorder = null;
+        }
+    }
+
+    private void handleStopMediaRecorder() {
+        try {
+            mMediaRecorder.stop();
+            mMediaRecorder.reset();
+        } catch (Exception e) {
+            mMediaRecorder.reset();
+            if (mCurrentRecordFile.exists()) {
+                mCurrentRecordFile.delete();
+            }
+            Log.e(TAG, e.getMessage());
         }
     }
 
@@ -309,15 +331,15 @@ public class VideoSession extends Session {
         if (mMediaRecorder == null) {
             mMediaRecorder = new MediaRecorder();
         }
-        File file = MediaFunc.getOutputMediaFile(MediaFunc.MEDIA_TYPE_VIDEO, "VIDEO");
-        if (file == null) {
+        mCurrentRecordFile = MediaFunc.getOutputMediaFile(MediaFunc.MEDIA_TYPE_VIDEO, "VIDEO");
+        if (mCurrentRecordFile == null) {
             Log.e(TAG, " get video file failed");
             return;
         }
         mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
         mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        mMediaRecorder.setOutputFile(file.getPath());
+        mMediaRecorder.setOutputFile(mCurrentRecordFile.getPath());
         mMediaRecorder.setVideoEncodingBitRate(10000000);
         mMediaRecorder.setVideoFrameRate(30);
         mMediaRecorder.setVideoSize(mVideoSize.getWidth(), mVideoSize.getHeight());

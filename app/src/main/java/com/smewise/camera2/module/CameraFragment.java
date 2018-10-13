@@ -95,11 +95,6 @@ public class CameraFragment extends Fragment {
         }
 
         @Override
-        public FragmentManager getFragmentManager() {
-            return CameraFragment.this.getFragmentManager();
-        }
-
-        @Override
         public void showSetting() {
             getCameraActivity().addSettingFragment();
         }

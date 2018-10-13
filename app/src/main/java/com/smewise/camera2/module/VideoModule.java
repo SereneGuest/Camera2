@@ -27,6 +27,7 @@ import com.smewise.camera2.ui.CameraBaseMenu;
 import com.smewise.camera2.ui.CameraMenu;
 import com.smewise.camera2.ui.ShutterButton;
 import com.smewise.camera2.ui.VideoUI;
+import com.smewise.camera2.utils.CameraThread;
 import com.smewise.camera2.utils.FileSaver;
 import com.smewise.camera2.utils.MediaFunc;
 
@@ -113,9 +114,11 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
         @Override
         public void onRecordStarted(boolean success) {
             super.onRecordStarted(success);
+            Log.i(TAG, "start record onRecordStarted");
             getBaseUI().setUIClickable(true);
             if (success) {
                 getBaseUI().setShutterMode(ShutterButton.VIDEO_RECORDING_MODE);
+                mUI.startVideoTimer();
             } else {
                 disableState(Controller.CAMERA_STATE_START_RECORD);
                 getBaseUI().setShutterMode(ShutterButton.VIDEO_MODE);
@@ -144,16 +147,36 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
         enableState(Controller.CAMERA_STATE_START_RECORD);
         getBaseUI().setUIClickable(false);
         if (stateEnabled(Controller.CAMERA_STATE_UI_READY)) {
-            mSession.applyRequest(Session.RQ_START_RECORD, getToolKit().getOrientation());
+            Log.i(TAG, "start record start");
+            getCameraThread().post(new Runnable() {
+                @Override
+                public void run() {
+                    mSession.applyRequest(Session.RQ_START_RECORD,
+                            getToolKit().getOrientation());
+                }
+            });
+            Log.i(TAG, "start record end");
         }
     }
 
     private void stopVideoRecording() {
         disableState(Controller.CAMERA_STATE_START_RECORD);
-        getBaseUI().setUIClickable(false);
-        mSession.applyRequest(Session.RQ_STOP_RECORD);
         getBaseUI().setShutterMode(ShutterButton.VIDEO_MODE);
-        getBaseUI().setUIClickable(true);
+        getBaseUI().setUIClickable(false);
+        Log.i(TAG, "stop record start");
+        getCameraThread().post(new Runnable() {
+            @Override
+            public void run() {
+                mSession.applyRequest(Session.RQ_STOP_RECORD);
+            }
+        }, new CameraThread.JobItem.JobCallback() {
+            @Override
+            public void onJobDone() {
+                mUI.stopVideoTimer();
+                getBaseUI().setUIClickable(true);
+                Log.i(TAG, "stop record end");
+            }
+        });
     }
 
     /**
@@ -271,13 +294,7 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
     private void handleClick(View view) {
         switch (view.getId()) {
             case R.id.btn_shutter:
-                if (stateEnabled(Controller.CAMERA_STATE_START_RECORD)) {
-                    stopVideoRecording();
-                    mSession.applyRequest(Session.RQ_START_PREVIEW,
-                            mSurfaceTexture, mRequestCallback);
-                } else {
-                    startVideoRecording();
-                }
+                handleShutterClick();
                 break;
             case R.id.btn_setting:
                 showSetting();
@@ -286,10 +303,31 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
                 MediaFunc.goToGallery(appContext);
                 break;
             case R.id.ll_record_timer:
-                mUI.refreshPauseButton(false);
+                // TODO for pause/resume video recording
+                //handleTimerViewClick();
                 break;
             default:
                 break;
+        }
+    }
+
+    private void handleShutterClick() {
+        if (stateEnabled(Controller.CAMERA_STATE_START_RECORD)) {
+            stopVideoRecording();
+            mSession.applyRequest(Session.RQ_START_PREVIEW,
+                    mSurfaceTexture, mRequestCallback);
+        } else {
+            startVideoRecording();
+        }
+    }
+
+    private void handleTimerViewClick() {
+        if (stateEnabled(Controller.CAMERA_STATE_PAUSE_RECORD)) {
+            disableState(Controller.CAMERA_STATE_PAUSE_RECORD);
+            mUI.refreshPauseButton(true);
+        } else {
+            enableState(Controller.CAMERA_STATE_PAUSE_RECORD);
+            mUI.refreshPauseButton(false);
         }
     }
 

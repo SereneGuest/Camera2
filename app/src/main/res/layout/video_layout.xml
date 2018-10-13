@@ -11,7 +11,8 @@
     <LinearLayout
         android:id="@+id/ll_record_timer"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/record_view_height"
+        android:visibility="gone"
         android:orientation="horizontal"
         android:gravity="center">
         <Button
@@ -19,16 +20,15 @@
             android:layout_width="@dimen/record_timer_height"
             android:layout_height="@dimen/record_timer_height"
             android:background="@drawable/ic_vector_recoding"/>
-        <TextView
-            android:id="@+id/tv_record_time"
+        <Chronometer
+            android:id="@+id/record_time"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/record_timer_height"
             android:gravity="center_vertical"
             android:background="@drawable/record_time_bg"
             android:textColor="@color/color_timer_text"
             android:paddingLeft="@dimen/record_timer_padding"
-            android:paddingRight="@dimen/record_timer_padding"
-            android:text="Rec 00:33"/>
+            android:paddingRight="@dimen/record_timer_padding"/>
     </LinearLayout>
 
 </RelativeLayout>

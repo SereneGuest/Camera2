@@ -131,6 +131,10 @@ public abstract class CameraModule {
         getToolKit().getMainHandler().post(runnable);
     }
 
+    protected void runOnUiThreadDelay(Runnable runnable, long delay) {
+        getToolKit().getMainHandler().postDelayed(runnable, delay);
+    }
+
     void showSetting() {
         mController.showSetting();
     }

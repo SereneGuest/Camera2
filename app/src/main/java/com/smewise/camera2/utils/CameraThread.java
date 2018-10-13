@@ -1,5 +1,7 @@
 package com.smewise.camera2.utils;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Process;
 import android.util.Log;
 
@@ -16,14 +18,29 @@ public class CameraThread extends Thread {
     private static final String TAG = Config.getTag(CameraThread.class);
 
     private volatile boolean mActive = true;
-    private LinkedBlockingQueue<Runnable> mQueue;
+    private LinkedBlockingQueue<JobItem> mQueue;
+    private Handler mMainHandler;
 
     public CameraThread() {
         mQueue = new LinkedBlockingQueue<>();
+        mMainHandler = new Handler(Looper.getMainLooper());
     }
 
     public void post(Runnable job) {
-        if (!mQueue.offer(job)) {
+        JobItem item = new JobItem();
+        item.job = job;
+        item.callback = null;
+        if (!mQueue.offer(item)) {
+            Log.e(TAG, "failed to add job");
+        }
+        this.notifyJob();
+    }
+
+    public void post(Runnable job, JobItem.JobCallback callback) {
+        JobItem item = new JobItem();
+        item.job = job;
+        item.callback = callback;
+        if (!mQueue.offer(item)) {
             Log.e(TAG, "failed to add job");
         }
         this.notifyJob();
@@ -40,8 +57,17 @@ public class CameraThread extends Thread {
                     break;
                 }
             } else {
-                Runnable job = mQueue.poll();
-                job.run();
+                final JobItem item = mQueue.poll();
+                assert item != null;
+                item.job.run();
+                if (item.callback != null) {
+                    mMainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            item.callback.onJobDone();
+                        }
+                    });
+                }
             }
         }
         // loop end
@@ -63,6 +89,14 @@ public class CameraThread extends Thread {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public static class JobItem {
+        public interface JobCallback {
+            void onJobDone();
+        }
+        public Runnable job;
+        public JobCallback callback;
     }
 
 }
