@@ -48,7 +48,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
     protected void init() {
         mUI = new PhotoUI(appContext, mainHandler, mCameraUiEvent);
         mUI.setCoverView(getCoverView());
-        mDeviceMgr = new SingleDeviceManager(appContext, getCameraThread(), mCameraEvent);
+        mDeviceMgr = new SingleDeviceManager(appContext, getExecutor(), mCameraEvent);
         mFocusManager = new FocusOverlayManager(getBaseUI().getFocusView(), mainHandler.getLooper());
         mFocusManager.setListener(mCameraUiEvent);
         mCameraMenu = new CameraMenu(appContext, R.xml.menu_preference, mMenuInfo);

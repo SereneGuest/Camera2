@@ -7,26 +7,25 @@ import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.smewise.camera2.Config;
-import com.smewise.camera2.utils.CameraThread;
+import com.smewise.camera2.utils.JobExecutor;
 
 public class DualDeviceManager extends  DeviceManager{
     private final String TAG = Config.getTag(DualDeviceManager.class);
 
     private CameraDevice mDevice;
     private CameraDevice mAuxDevice;
-    private CameraThread mWorkThread;
+    private JobExecutor mExecutor;
     private String mCameraId = Config.MAIN_ID;
     private String mAuxCameraId = Config.AUX_ID;
     private CameraEvent mCameraEvent;
 
-    public DualDeviceManager(Context context, CameraThread thread, CameraEvent event) {
+    public DualDeviceManager(Context context, JobExecutor executor, CameraEvent event) {
         super(context);
-        mWorkThread = thread;
+        mExecutor = executor;
         mCameraEvent = event;
     }
 
@@ -73,27 +72,29 @@ public class DualDeviceManager extends  DeviceManager{
     }
 
     public void openCamera(final Handler mainHandler) {
-        mWorkThread.post(new Runnable() {
+        mExecutor.execute(new JobExecutor.Task<Void>() {
             @Override
-            public void run() {
+            public Void run() {
                 openDevice(mCameraId, mainHandler);
                 openDevice(mAuxCameraId, mainHandler);
+                return super.run();
             }
         });
     }
 
     public void releaseCamera() {
-        mWorkThread.post(new Runnable() {
+        mExecutor.execute(new JobExecutor.Task<Void>() {
             @Override
-            public void run() {
+            public Void run() {
                 closeDevice();
+                return super.run();
             }
         });
 
     }
 
     @SuppressLint("MissingPermission")
-    private void openDevice(String cameraId, Handler handler) {
+    private synchronized void openDevice(String cameraId, Handler handler) {
         // no need to check permission, because we check permission in onStart() every time
         try {
             cameraManager.openCamera(cameraId, stateCallback, handler);
@@ -102,7 +103,7 @@ public class DualDeviceManager extends  DeviceManager{
         }
     }
 
-    private void closeDevice() {
+    private synchronized void closeDevice() {
         if (mDevice != null) {
             mDevice.close();
             mDevice = null;

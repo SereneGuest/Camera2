@@ -18,6 +18,7 @@ import com.smewise.camera2.manager.CameraToolKit;
 import com.smewise.camera2.manager.Controller;
 import com.smewise.camera2.manager.ModuleManager;
 import com.smewise.camera2.ui.AppBaseUI;
+import com.smewise.camera2.utils.JobExecutor;
 
 public class CameraFragment extends Fragment {
 
@@ -122,10 +123,11 @@ public class CameraFragment extends Fragment {
     }
 
     private void updateThumbnail(final Context context) {
-        mToolKit.getCameraThread().post(new Runnable() {
+        mToolKit.getExecutor().execute(new JobExecutor.Task<Void>() {
             @Override
-            public void run() {
+            public Void run() {
                 mBaseUI.updateThumbnail(context, mToolKit.getMainHandler());
+                return super.run();
             }
         });
     }

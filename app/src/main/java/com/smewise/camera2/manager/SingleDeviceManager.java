@@ -5,26 +5,25 @@ import android.content.Context;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
-import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.smewise.camera2.Config;
-import com.smewise.camera2.utils.CameraThread;
+import com.smewise.camera2.utils.JobExecutor;
 
 public class SingleDeviceManager  extends  DeviceManager{
     private final String TAG = Config.getTag(SingleDeviceManager.class);
 
     private CameraDevice mDevice;
-    private CameraThread mWorkThread;
+    private JobExecutor mJobExecutor;
     private String mCameraId = Config.MAIN_ID;
     private CameraEvent mCameraEvent;
 
-    public SingleDeviceManager(Context context, CameraThread thread, CameraEvent event) {
+    public SingleDeviceManager(Context context, JobExecutor executor, CameraEvent event) {
         super(context);
-        mWorkThread = thread;
+        mJobExecutor = executor;
         mCameraEvent = event;
     }
 
@@ -60,26 +59,27 @@ public class SingleDeviceManager  extends  DeviceManager{
     }
 
     public void openCamera(final Handler mainHandler) {
-        mWorkThread.post(new Runnable() {
+        mJobExecutor.execute(new JobExecutor.Task<Void>() {
             @Override
-            public void run() {
+            public Void run() {
                 openDevice(mainHandler);
+                return super.run();
             }
         });
     }
 
     public void releaseCamera() {
-        mWorkThread.post(new Runnable() {
+        mJobExecutor.execute(new JobExecutor.Task<Void>() {
             @Override
-            public void run() {
+            public Void run() {
                 closeDevice();
+                return super.run();
             }
         });
-
     }
 
     @SuppressLint("MissingPermission")
-    private void openDevice(Handler handler) {
+    private synchronized void openDevice(Handler handler) {
         // no need to check permission, because we check permission in onStart() every time
         try {
             cameraManager.openCamera(mCameraId, stateCallback, handler);
@@ -88,7 +88,7 @@ public class SingleDeviceManager  extends  DeviceManager{
         }
     }
 
-    private void closeDevice() {
+    private synchronized void closeDevice() {
         if (mDevice != null) {
             mDevice.close();
             mDevice = null;

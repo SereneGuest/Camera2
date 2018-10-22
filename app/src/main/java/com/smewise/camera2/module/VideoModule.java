@@ -27,8 +27,8 @@ import com.smewise.camera2.ui.CameraBaseMenu;
 import com.smewise.camera2.ui.CameraMenu;
 import com.smewise.camera2.ui.ShutterButton;
 import com.smewise.camera2.ui.VideoUI;
-import com.smewise.camera2.utils.CameraThread;
 import com.smewise.camera2.utils.FileSaver;
+import com.smewise.camera2.utils.JobExecutor;
 import com.smewise.camera2.utils.MediaFunc;
 
 /**
@@ -50,7 +50,7 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
     protected void init() {
         mUI = new VideoUI(appContext, mainHandler, mCameraUiEvent);
         mUI.setCoverView(getCoverView());
-        mDeviceMgr = new SingleDeviceManager(appContext, getCameraThread(), mCameraEvent);
+        mDeviceMgr = new SingleDeviceManager(appContext, getExecutor(), mCameraEvent);
         mFocusManager = new FocusOverlayManager(getBaseUI().getFocusView(), mainHandler.getLooper());
         mFocusManager.setListener(mCameraUiEvent);
         mCameraMenu = new CameraMenu(appContext, R.xml.menu_preference, mMenuInfo);
@@ -148,11 +148,12 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
         getBaseUI().setUIClickable(false);
         if (stateEnabled(Controller.CAMERA_STATE_UI_READY)) {
             Log.i(TAG, "start record start");
-            getCameraThread().post(new Runnable() {
+            getExecutor().execute(new JobExecutor.Task<Void>() {
                 @Override
-                public void run() {
+                public Void run() {
                     mSession.applyRequest(Session.RQ_START_RECORD,
                             getToolKit().getOrientation());
+                    return super.run();
                 }
             });
             Log.i(TAG, "start record end");
@@ -164,14 +165,16 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
         getBaseUI().setShutterMode(ShutterButton.VIDEO_MODE);
         getBaseUI().setUIClickable(false);
         Log.i(TAG, "stop record start");
-        getCameraThread().post(new Runnable() {
+        getExecutor().execute(new JobExecutor.Task<Void>() {
             @Override
-            public void run() {
+            public Void run() {
                 mSession.applyRequest(Session.RQ_STOP_RECORD);
+                return super.run();
             }
-        }, new CameraThread.JobItem.JobCallback() {
+
             @Override
-            public void onJobDone() {
+            public void onMainThread(Void result) {
+                super.onMainThread(result);
                 mUI.stopVideoTimer();
                 getBaseUI().setUIClickable(true);
                 Log.i(TAG, "stop record end");

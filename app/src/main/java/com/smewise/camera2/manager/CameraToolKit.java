@@ -6,9 +6,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.OrientationEventListener;
 
-import com.smewise.camera2.module.SettingFragment;
-import com.smewise.camera2.utils.CameraThread;
 import com.smewise.camera2.utils.FileSaver;
+import com.smewise.camera2.utils.JobExecutor;
 
 /**
  * Created by wenzhe on 9/12/17.
@@ -17,19 +16,18 @@ import com.smewise.camera2.utils.FileSaver;
 public class CameraToolKit {
 
     private Context mContext;
-    private CameraThread mCameraThread;
     private Handler mMainHandler;
     private MyOrientationListener mOrientationListener;
     private FileSaver mFileSaver;
     private int mRotation = 0;
-    private SettingFragment mSettingFragment;
+    private JobExecutor mJobExecutor;
 
     public CameraToolKit(Context context) {
         mContext = context;
         mMainHandler = new Handler(Looper.getMainLooper());
         mFileSaver = new FileSaver(mContext.getContentResolver(), mMainHandler);
         setOrientationListener();
-        startCameraThread();
+        mJobExecutor = new JobExecutor();
     }
 
     public void destroy() {
@@ -37,7 +35,7 @@ public class CameraToolKit {
             mFileSaver.release();
         }
         mOrientationListener.disable();
-        stopCameraThread();
+        mJobExecutor.destroy();
     }
 
     public FileSaver getFileSaver() {
@@ -52,15 +50,8 @@ public class CameraToolKit {
         return mMainHandler;
     }
 
-    public CameraThread getCameraThread() {
-        return mCameraThread;
-    }
-
-    public SettingFragment getSettingFragment() {
-        if (mSettingFragment == null) {
-            mSettingFragment = new SettingFragment();
-        }
-        return mSettingFragment;
+    public JobExecutor getExecutor() {
+        return mJobExecutor;
     }
 
     private class MyOrientationListener extends OrientationEventListener {
@@ -81,25 +72,6 @@ public class CameraToolKit {
             mOrientationListener.enable();
         } else {
             mOrientationListener.disable();
-        }
-    }
-
-    private void startCameraThread() {
-        if (mCameraThread == null) {
-            mCameraThread = new CameraThread();
-            mCameraThread.start();
-        }
-    }
-
-    private void stopCameraThread() {
-        if (mCameraThread != null) {
-            mCameraThread.terminate();
-            try {
-                mCameraThread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            mCameraThread = null;
         }
     }
 }

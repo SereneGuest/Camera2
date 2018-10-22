@@ -13,8 +13,8 @@ import com.smewise.camera2.manager.Controller;
 import com.smewise.camera2.manager.FocusOverlayManager;
 import com.smewise.camera2.ui.AppBaseUI;
 import com.smewise.camera2.ui.CoverView;
-import com.smewise.camera2.utils.CameraThread;
 import com.smewise.camera2.utils.FileSaver;
+import com.smewise.camera2.utils.JobExecutor;
 
 /**
  * Created by wenzhe on 16-3-9.
@@ -93,11 +93,12 @@ public abstract class CameraModule {
 
     void saveFile(final byte[] data, final int width, final int height, final String cameraId,
                   final String formatKey, final String tag) {
-        getCameraThread().post(new Runnable() {
+        getExecutor().execute(new JobExecutor.Task<Void>() {
             @Override
-            public void run() {
+            public Void run() {
                 int format = getSettings().getPicFormat(cameraId, formatKey);
                 fileSaver.saveFile(width, height, getToolKit().getOrientation(), data, tag, format);
+                return super.run();
             }
         });
     }
@@ -119,8 +120,8 @@ public abstract class CameraModule {
         return mController.getCameraSettings(appContext);
     }
 
-    CameraThread getCameraThread() {
-        return getToolKit().getCameraThread();
+    JobExecutor getExecutor() {
+        return getToolKit().getExecutor();
     }
 
     AppBaseUI getBaseUI() {

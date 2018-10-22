@@ -50,7 +50,7 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
         mUI.setCoverView(getCoverView());
         mFocusManager = new FocusOverlayManager(getBaseUI().getFocusView(), mainHandler.getLooper());
         mFocusManager.setListener(mCameraUiEvent);
-        mDeviceMgr = new DualDeviceManager(appContext, getCameraThread(), mCameraEvent);
+        mDeviceMgr = new DualDeviceManager(appContext, getExecutor(), mCameraEvent);
         mSession = new CameraSession(appContext, mainHandler, getSettings());
         mAuxSession = new CameraSession(appContext, mainHandler, getSettings());
     }

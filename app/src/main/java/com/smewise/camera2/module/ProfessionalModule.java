@@ -45,7 +45,7 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
         mUI.setCoverView(getCoverView());
         mFocusManager = new FocusOverlayManager(getBaseUI().getFocusView(), mainHandler.getLooper());
         mFocusManager.setListener(mCameraUiEvent);
-        mDeviceMgr = new SingleDeviceManager(appContext, getCameraThread(), mCameraEvent);
+        mDeviceMgr = new SingleDeviceManager(appContext, getExecutor(), mCameraEvent);
         mSession = new CameraSession(appContext, mainHandler, getSettings());
     }
 
