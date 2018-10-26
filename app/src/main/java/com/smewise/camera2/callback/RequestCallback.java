@@ -21,4 +21,8 @@ public abstract class RequestCallback {
     public void onRecordStarted(boolean success) {
         // default empty implementation
     }
+
+    public void onRecordStopped(String filePath, int width, int height) {
+        // default empty implementation
+    }
 }

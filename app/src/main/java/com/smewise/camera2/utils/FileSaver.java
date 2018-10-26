@@ -6,18 +6,17 @@ import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.location.Location;
 import android.media.Image;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.media.ExifInterface;
 import android.util.Log;
 
 import com.smewise.camera2.Config;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Created by wenzhe on 9/6/17.
@@ -28,6 +27,7 @@ public class FileSaver {
     private static final String TAG = Config.getTag(FileSaver.class);
 
     private final String JPEG = "image/jpeg";
+    private final String VIDEO = "video/mpeg";
     private final String YUV = "image/yuv";
 
     private ContentResolver mResolver;
@@ -62,8 +62,8 @@ public class FileSaver {
     }
 
     public void saveFile(int width, int height, int orientation, byte[] data, String tag,
-            int format) {
-        File file = MediaFunc.getOutputMediaFile(getSaveType(format), tag);
+            int saveType) {
+        File file = MediaFunc.getOutputMediaFile(saveType, tag);
         if (file == null) {
             mHandler.post(new Runnable() {
                 @Override
@@ -75,7 +75,7 @@ public class FileSaver {
         }
         ImageInfo info = new ImageInfo();
         info.imgData = data;
-        if (orientation == 0 || orientation == 180) {
+        if (orientation % 180 == 0) {
             info.imgWidth = height;
             info.imgHeight = width;
         } else {
@@ -86,8 +86,29 @@ public class FileSaver {
         info.imgDate = System.currentTimeMillis();
         info.imgPath = file.getPath();
         info.imgTitle = file.getName();
-        info.imgMimeType = getMimeType(format);
+        info.imgMimeType = getMimeType(saveType);
         startSaveProcess(info);
+    }
+
+    public void saveVideoFile(int width, int height, int orientation,
+                              final String path, int type) {
+        if (orientation % 180 == 0) {
+            width = width + height;
+            height = width - height;
+            width = width - height;
+        }
+        File file = new File(path);
+        final Uri uri = Storage.addVideoToDB(mResolver, file.getName(),
+                System.currentTimeMillis(), null, file.length(), path,
+                width, height, getMimeType(type));
+        if (mListener != null) {
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mListener.onFileSaved(uri, path, null);
+                }
+            });
+        }
     }
 
     public void saveFile(Image image, int orientation, String tag, int format) {
@@ -120,9 +141,11 @@ public class FileSaver {
         }
     }
 
-    private String getMimeType(int format) {
-        if (format == ImageFormat.JPEG) {
+    private String getMimeType(int type) {
+        if (type == MediaFunc.MEDIA_TYPE_IMAGE) {
             return JPEG;
+        } else if (type == MediaFunc.MEDIA_TYPE_VIDEO) {
+            return VIDEO;
         } else {
             return YUV;
         }
@@ -131,6 +154,14 @@ public class FileSaver {
     private void startSaveProcess(final ImageInfo info) {
         final Bitmap thumbnail = getThumbnail(info);
         Storage.writeFile(info.imgPath, info.imgData);
+        try {
+            ExifInterface exif = new ExifInterface(info.imgPath);
+            // fix width and height
+            info.imgWidth = exif.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, info.imgWidth);
+            info.imgHeight = exif.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, info.imgHeight);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         final Uri uri = Storage.addImageToDB(mResolver, info.imgTitle, info.imgDate,
                 info.imgLocation, info.imgOrientation, info.imgData.length, info.imgPath,
                 info.imgWidth, info.imgHeight, info.imgMimeType);

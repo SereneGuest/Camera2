@@ -1,6 +1,7 @@
 package com.smewise.camera2.module;
 
 import android.content.Context;
+import android.graphics.ImageFormat;
 import android.hardware.camera2.CaptureResult;
 import android.os.Handler;
 import android.view.View;
@@ -15,6 +16,7 @@ import com.smewise.camera2.ui.AppBaseUI;
 import com.smewise.camera2.ui.CoverView;
 import com.smewise.camera2.utils.FileSaver;
 import com.smewise.camera2.utils.JobExecutor;
+import com.smewise.camera2.utils.MediaFunc;
 
 /**
  * Created by wenzhe on 16-3-9.
@@ -97,7 +99,11 @@ public abstract class CameraModule {
             @Override
             public Void run() {
                 int format = getSettings().getPicFormat(cameraId, formatKey);
-                fileSaver.saveFile(width, height, getToolKit().getOrientation(), data, tag, format);
+                int saveType = MediaFunc.MEDIA_TYPE_IMAGE;
+                if (format != ImageFormat.JPEG) {
+                    saveType = MediaFunc.MEDIA_TYPE_YUV;
+                }
+                fileSaver.saveFile(width, height, getToolKit().getOrientation(), data, tag, saveType);
                 return super.run();
             }
         });

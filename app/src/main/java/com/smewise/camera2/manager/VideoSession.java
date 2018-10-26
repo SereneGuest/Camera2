@@ -167,10 +167,12 @@ public class VideoSession extends Session {
         try {
             mMediaRecorder.stop();
             mMediaRecorder.reset();
+            mCallback.onRecordStopped(mCurrentRecordFile.getPath(),
+                    mVideoSize.getWidth(), mVideoSize.getHeight());
         } catch (Exception e) {
             mMediaRecorder.reset();
-            if (mCurrentRecordFile.exists()) {
-                mCurrentRecordFile.delete();
+            if (mCurrentRecordFile.exists() && mCurrentRecordFile.delete()) {
+                Log.w(TAG, "video file delete success");
             }
             Log.e(TAG, e.getMessage());
         }

@@ -6,7 +6,9 @@ import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.MeteringRectangle;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -99,30 +101,58 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
 
     private RequestCallback mRequestCallback = new RequestCallback() {
         @Override
-        public void onViewChange(int width, int height) {
+        public void onViewChange(final int width, final int height) {
             super.onViewChange(width, height);
-            getBaseUI().updateUiSize(width, height);
-            mFocusManager.setPreviewSize(width, height);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    getBaseUI().updateUiSize(width, height);
+                    mFocusManager.setPreviewSize(width, height);
+                }
+            });
         }
 
         @Override
-        public void onAFStateChanged(int state) {
+        public void onAFStateChanged(final int state) {
             super.onAFStateChanged(state);
-            updateAFState(state, mFocusManager);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    updateAFState(state, mFocusManager);
+                }
+            });
         }
 
         @Override
-        public void onRecordStarted(boolean success) {
+        public void onRecordStarted(final boolean success) {
             super.onRecordStarted(success);
-            Log.i(TAG, "start record onRecordStarted");
-            getBaseUI().setUIClickable(true);
-            if (success) {
-                getBaseUI().setShutterMode(ShutterButton.VIDEO_RECORDING_MODE);
-                mUI.startVideoTimer();
-            } else {
-                disableState(Controller.CAMERA_STATE_START_RECORD);
-                getBaseUI().setShutterMode(ShutterButton.VIDEO_MODE);
-            }
+           runOnUiThread(new Runnable() {
+               @Override
+               public void run() {
+                   handleRecordStarted(success);
+               }
+           });
+        }
+
+        @Override
+        public void onRecordStopped(final String filePath, final int width, final int height) {
+            getExecutor().execute(new JobExecutor.Task<Bitmap>() {
+                @Override
+                public Bitmap run() {
+                    return getVideoThumbnail(filePath);
+                }
+
+                @Override
+                public void onJobThread(Bitmap result) {
+                    fileSaver.saveVideoFile(width, height, getToolKit().getOrientation(),
+                            filePath, MediaFunc.MEDIA_TYPE_VIDEO);
+                }
+
+                @Override
+                public void onMainThread(Bitmap result) {
+                    getBaseUI().setThumbnail(result);
+                }
+            });
         }
     };
 
@@ -143,11 +173,26 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
         Log.d(TAG, "stop module");
     }
 
+    private Bitmap getVideoThumbnail(String path) {
+        return ThumbnailUtils.createVideoThumbnail(
+                path, MediaStore.Video.Thumbnails.MICRO_KIND);
+    }
+
+    private void handleRecordStarted(boolean success) {
+        getBaseUI().setUIClickable(true);
+        if (success) {
+            getBaseUI().setShutterMode(ShutterButton.VIDEO_RECORDING_MODE);
+            mUI.startVideoTimer();
+        } else {
+            disableState(Controller.CAMERA_STATE_START_RECORD);
+            getBaseUI().setShutterMode(ShutterButton.VIDEO_MODE);
+        }
+    }
+
     private void startVideoRecording() {
         enableState(Controller.CAMERA_STATE_START_RECORD);
         getBaseUI().setUIClickable(false);
         if (stateEnabled(Controller.CAMERA_STATE_UI_READY)) {
-            Log.i(TAG, "start record start");
             getExecutor().execute(new JobExecutor.Task<Void>() {
                 @Override
                 public Void run() {
@@ -156,7 +201,6 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
                     return super.run();
                 }
             });
-            Log.i(TAG, "start record end");
         }
     }
 
@@ -164,11 +208,12 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
         disableState(Controller.CAMERA_STATE_START_RECORD);
         getBaseUI().setShutterMode(ShutterButton.VIDEO_MODE);
         getBaseUI().setUIClickable(false);
-        Log.i(TAG, "stop record start");
         getExecutor().execute(new JobExecutor.Task<Void>() {
             @Override
             public Void run() {
                 mSession.applyRequest(Session.RQ_STOP_RECORD);
+                mSession.applyRequest(Session.RQ_START_PREVIEW,
+                        mSurfaceTexture, mRequestCallback);
                 return super.run();
             }
 
@@ -177,7 +222,6 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
                 super.onMainThread(result);
                 mUI.stopVideoTimer();
                 getBaseUI().setUIClickable(true);
-                Log.i(TAG, "stop record end");
             }
         });
     }
@@ -193,7 +237,6 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
         MediaFunc.setCurrentUri(uri);
         mUI.setUIClickable(true);
         getBaseUI().setUIClickable(true);
-        getBaseUI().setThumbnail(thumbnail);
         Log.d(TAG, "uri:" + uri.toString());
     }
 
@@ -317,8 +360,6 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
     private void handleShutterClick() {
         if (stateEnabled(Controller.CAMERA_STATE_START_RECORD)) {
             stopVideoRecording();
-            mSession.applyRequest(Session.RQ_START_PREVIEW,
-                    mSurfaceTexture, mRequestCallback);
         } else {
             startVideoRecording();
         }
@@ -357,7 +398,10 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
     private void switchCamera() {
         int currentId = Integer.parseInt(mDeviceMgr.getCameraId());
         currentId++;
-        if (currentId >= mDeviceMgr.getCameraIdList().length) {
+        int cameraNum = mDeviceMgr.getCameraIdList().length;
+        if (cameraNum == 1) {
+            return;
+        } else if (currentId >= cameraNum) {
             currentId = 0;
         }
         String switchId = String.valueOf(currentId);
