@@ -86,6 +86,10 @@ public class AppBaseUI implements View.OnClickListener {
         mMenuContainer.addView(view);
     }
 
+    public void setShutterMode(String mode) {
+        mShutter.setMode(mode);
+    }
+
     public void removeMenuView() {
         mMenuContainer.removeAllViews();
     }
@@ -126,6 +130,7 @@ public class AppBaseUI implements View.OnClickListener {
         mFocusView.initFocusArea(width, height);
     }
 
+    /* should not call in main thread */
     public void updateThumbnail(Context context, Handler handler) {
         final Bitmap bitmap = MediaFunc.getThumb(context);
         handler.post(new Runnable() {

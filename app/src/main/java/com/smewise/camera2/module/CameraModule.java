@@ -1,6 +1,7 @@
 package com.smewise.camera2.module;
 
 import android.content.Context;
+import android.graphics.ImageFormat;
 import android.hardware.camera2.CaptureResult;
 import android.os.Handler;
 import android.view.View;
@@ -13,8 +14,9 @@ import com.smewise.camera2.manager.Controller;
 import com.smewise.camera2.manager.FocusOverlayManager;
 import com.smewise.camera2.ui.AppBaseUI;
 import com.smewise.camera2.ui.CoverView;
-import com.smewise.camera2.utils.CameraThread;
 import com.smewise.camera2.utils.FileSaver;
+import com.smewise.camera2.utils.JobExecutor;
+import com.smewise.camera2.utils.MediaFunc;
 
 /**
  * Created by wenzhe on 16-3-9.
@@ -93,11 +95,16 @@ public abstract class CameraModule {
 
     void saveFile(final byte[] data, final int width, final int height, final String cameraId,
                   final String formatKey, final String tag) {
-        getCameraThread().post(new Runnable() {
+        getExecutor().execute(new JobExecutor.Task<Void>() {
             @Override
-            public void run() {
+            public Void run() {
                 int format = getSettings().getPicFormat(cameraId, formatKey);
-                fileSaver.saveFile(width, height, getToolKit().getOrientation(), data, tag, format);
+                int saveType = MediaFunc.MEDIA_TYPE_IMAGE;
+                if (format != ImageFormat.JPEG) {
+                    saveType = MediaFunc.MEDIA_TYPE_YUV;
+                }
+                fileSaver.saveFile(width, height, getToolKit().getOrientation(), data, tag, saveType);
+                return super.run();
             }
         });
     }
@@ -119,8 +126,8 @@ public abstract class CameraModule {
         return mController.getCameraSettings(appContext);
     }
 
-    CameraThread getCameraThread() {
-        return getToolKit().getCameraThread();
+    JobExecutor getExecutor() {
+        return getToolKit().getExecutor();
     }
 
     AppBaseUI getBaseUI() {
@@ -129,6 +136,10 @@ public abstract class CameraModule {
 
     protected void runOnUiThread(Runnable runnable) {
         getToolKit().getMainHandler().post(runnable);
+    }
+
+    protected void runOnUiThreadDelay(Runnable runnable, long delay) {
+        getToolKit().getMainHandler().postDelayed(runnable, delay);
     }
 
     void showSetting() {

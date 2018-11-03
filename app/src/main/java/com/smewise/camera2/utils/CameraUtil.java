@@ -6,6 +6,7 @@ import android.graphics.Point;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.params.StreamConfigurationMap;
+import android.media.MediaRecorder;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Size;
@@ -75,6 +76,38 @@ public class CameraUtil {
         return supportSize[0];
     }
 
+    public static Size getPreviewSizeByRatio(StreamConfigurationMap map, Point displaySize, double ratio) {
+        Size[] supportSize = map.getOutputSizes(SurfaceTexture.class);
+        sortCamera2Size(supportSize);
+        for (Size size : supportSize) {
+            boolean isRatioMatch = (int) (size.getHeight() * ratio) == size.getWidth();
+            if (!isRatioMatch) {
+                continue;
+            }
+            if ((size.getHeight() == displaySize.x)
+                    || (size.getWidth() <= displaySize.y && size.getHeight() <= displaySize.x)) {
+                return size;
+            }
+        }
+        return supportSize[0];
+    }
+
+    /**
+     * Get default video size from support video size list
+     * @param map specific stream configuration map used for get supported picture size
+     * @return size match screen size or largest size in supported list
+     */
+    public static Size getDefaultVideoSize(StreamConfigurationMap map, Point displaySize) {
+        Size[] supportSize = map.getOutputSizes(MediaRecorder.class);
+        sortCamera2Size(supportSize);
+        for (Size size : supportSize) {
+            if (Config.videoRatioMatched(size) && size.getHeight() <= displaySize.x) {
+                return size;
+            }
+        }
+        return supportSize[0];
+    }
+
     /* size format is "width x height"*/
     public static String[] getPictureSizeList(StreamConfigurationMap map, int format) {
         Size[] supportSize = map.getOutputSizes(format);
@@ -88,6 +121,16 @@ public class CameraUtil {
 
     public static String[] getPreviewSizeList(StreamConfigurationMap map) {
         Size[] supportSize = map.getOutputSizes(SurfaceTexture.class);
+        sortCamera2Size(supportSize);
+        String[] sizeStr = new String[supportSize.length];
+        for (int i = 0; i < supportSize.length; i++) {
+            sizeStr[i] = supportSize[i].getWidth() + SPLIT_TAG + supportSize[i].getHeight();
+        }
+        return sizeStr;
+    }
+
+    public static String[] getVideoSizeList(StreamConfigurationMap map) {
+        Size[] supportSize = map.getOutputSizes(MediaRecorder.class);
         sortCamera2Size(supportSize);
         String[] sizeStr = new String[supportSize.length];
         for (int i = 0; i < supportSize.length; i++) {

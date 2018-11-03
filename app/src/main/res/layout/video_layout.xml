@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/rl_preview_container">
+
+    <com.smewise.camera2.ui.GestureTextureView
+        android:id="@+id/texture_preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+    <LinearLayout
+        android:id="@+id/ll_record_timer"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/record_view_height"
+        android:visibility="gone"
+        android:orientation="horizontal"
+        android:gravity="center">
+        <Button
+            android:id="@+id/btn_record"
+            android:layout_width="@dimen/record_timer_height"
+            android:layout_height="@dimen/record_timer_height"
+            android:background="@drawable/ic_vector_recoding"/>
+        <Chronometer
+            android:id="@+id/record_time"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/record_timer_height"
+            android:gravity="center_vertical"
+            android:background="@drawable/record_time_bg"
+            android:textColor="@color/color_timer_text"
+            android:paddingLeft="@dimen/record_timer_padding"
+            android:paddingRight="@dimen/record_timer_padding"/>
+    </LinearLayout>
+
+</RelativeLayout>

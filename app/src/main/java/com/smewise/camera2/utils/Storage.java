@@ -53,7 +53,7 @@ public class Storage {
 
     // Add the image to media store.
     public static Uri addImageToDB(ContentResolver resolver, String title, long date,
-            Location location, int orientation, int jpegLength,
+            Location location, int orientation, long jpegLength,
             String path, int width, int height, String mimeType) {
         // Insert into MediaStore.
         ContentValues values = new ContentValues(11);
@@ -75,20 +75,36 @@ public class Storage {
             values.put(MediaStore.Images.ImageColumns.LATITUDE, location.getLatitude());
             values.put(MediaStore.Images.ImageColumns.LONGITUDE, location.getLongitude());
         }
-        return insertImage(resolver, values);
+        return insert(resolver, values, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
     }
 
-    private static Uri insertImage(ContentResolver resolver, ContentValues values) {
+    // Add the video to media store.
+    public static Uri addVideoToDB(ContentResolver resolver, String title, long date,
+                                   Location location, long length, String path,
+                                   int width, int height, String mimeType) {
+        // Insert into MediaStore.
+        ContentValues values = new ContentValues(10);
+        values.put(MediaStore.Video.VideoColumns.TITLE, title);
+        values.put(MediaStore.MediaColumns.WIDTH, width);
+        values.put(MediaStore.MediaColumns.HEIGHT, height);
+        values.put(MediaStore.Video.VideoColumns.DISPLAY_NAME, title + ".mp4");
+        values.put(MediaStore.Video.VideoColumns.DATE_TAKEN, date);
+        values.put(MediaStore.Video.VideoColumns.MIME_TYPE, mimeType);
+        values.put(MediaStore.Video.VideoColumns.DATA, path);
+        values.put(MediaStore.Video.VideoColumns.SIZE, length);
+        if (location != null) {
+            values.put(MediaStore.Video.VideoColumns.LATITUDE, location.getLatitude());
+            values.put(MediaStore.Video.VideoColumns.LONGITUDE, location.getLongitude());
+        }
+        return insert(resolver, values, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
+    }
+
+    private static Uri insert(ContentResolver resolver, ContentValues values, Uri targetUri) {
         Uri uri = null;
         try {
-            uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+            uri = resolver.insert(targetUri, values);
         } catch (Throwable th) {
-            // This can happen when the external volume is already mounted, but
-            // MediaScanner has not notify MediaProvider to add that volume.
-            // The picture is still safe and MediaScanner will find it and
-            // insert it into MediaProvider. The only problem is that the user
-            // cannot click the thumbnail to review the picture.
-            Log.e(TAG, "Failed to write MediaStore" + th);
+            Log.e(TAG, "Failed to write MediaStore:" + th);
         }
         return uri;
     }
