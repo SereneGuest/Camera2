@@ -25,7 +25,7 @@ public class CameraToolKit {
     public CameraToolKit(Context context) {
         mContext = context;
         mMainHandler = new Handler(Looper.getMainLooper());
-        mFileSaver = new FileSaver(mContext.getContentResolver(), mMainHandler);
+        mFileSaver = new FileSaver(mContext, mMainHandler);
         setOrientationListener();
         mJobExecutor = new JobExecutor();
     }

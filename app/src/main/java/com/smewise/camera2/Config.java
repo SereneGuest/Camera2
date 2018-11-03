@@ -15,6 +15,7 @@ public class Config {
     public static final float AUX_PREVIEW_SCALE = 0.3F;
     public static final String IMAGE_FORMAT = String.valueOf(ImageFormat.JPEG);
     public static final String NULL_VALUE = "SharedPreference No Value";
+    public static final int THUMB_SIZE = 128;
 
     public static String getTag(Class<?> cls) {
         return TAG_PREFIX + cls.getSimpleName();
