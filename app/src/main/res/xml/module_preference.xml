@@ -3,12 +3,12 @@
     xmlns:camera="http://schemas.android.com/apk/res/com.smewise.camera2">
 
     <com.smewise.camera2.data.CamListPreference
-        camera:key="com.smewise.camera2.module.PhotoModule"
-        camera:title="@string/mode_photo"/>
-
-    <com.smewise.camera2.data.CamListPreference
         camera:key="com.smewise.camera2.module.VideoModule"
         camera:title="@string/mode_video"/>
+
+    <com.smewise.camera2.data.CamListPreference
+        camera:key="com.smewise.camera2.module.PhotoModule"
+        camera:title="@string/mode_photo"/>
 
     <com.smewise.camera2.data.CamListPreference
         camera:key="com.smewise.camera2.module.ProfessionalModule"

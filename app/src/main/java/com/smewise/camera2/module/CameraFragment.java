@@ -38,7 +38,6 @@ public class CameraFragment extends Fragment {
         mRootView = LayoutInflater.from(getActivity()).inflate(R.layout.camera_fragment_layout, null);
         mBaseUI = new AppBaseUI(mAppContext, mRootView);
         mModuleManager = new ModuleManager(mAppContext, mController);
-        mBaseUI.setIndicatorView(mModuleManager.getIndicatorView());
     }
 
     @Nullable

@@ -111,6 +111,7 @@ public abstract class CameraModule {
 
     void setNewModule(int index) {
         mController.changeModule(index);
+        getBaseUI().getIndicatorView().select(index);
     }
 
     CameraToolKit getToolKit() {

@@ -37,4 +37,6 @@
     <color name="icon_tint">#ffffff</color>
     <color name="color_timer_text">#ffffff</color>
 
+    <color name="indicatorNormalColor">#ffffff</color>
+    <color name="indicatorActiveColor">@color/colorAccent</color>
 </resources>

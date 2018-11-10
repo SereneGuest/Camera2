@@ -36,4 +36,8 @@ public class PreferenceGroup {
             mList.remove(index);
         }
     }
+
+    public void clear() {
+        mList.clear();
+    }
 }

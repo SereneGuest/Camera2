@@ -20,7 +20,6 @@ import com.smewise.camera2.utils.MediaFunc;
 
 public class AppBaseUI implements View.OnClickListener {
     private CoverView mCoverView;
-    private LinearLayout mIndicatorContainer;
     private RelativeLayout mPreviewRootView;
     private ShutterButton mShutter;
     private ImageButton mSetting;
@@ -29,6 +28,7 @@ public class AppBaseUI implements View.OnClickListener {
     private FocusView mFocusView;
     private LinearLayout mMenuContainer;
     private CameraUiEvent mEvent;
+    private IndicatorView mIndicatorView;
 
     private Point mDisplaySize;
     private int mVirtualKeyHeight;
@@ -36,7 +36,6 @@ public class AppBaseUI implements View.OnClickListener {
 
     public AppBaseUI(Context context, View rootView) {
         mCoverView = rootView.findViewById(R.id.cover_view);
-        mIndicatorContainer = rootView.findViewById(R.id.module_indicator_container);
 
         mPreviewRootView = rootView.findViewById(R.id.preview_root_view);
         mShutter = rootView.findViewById(R.id.btn_shutter);
@@ -47,6 +46,7 @@ public class AppBaseUI implements View.OnClickListener {
         mThumbnail = rootView.findViewById(R.id.thumbnail);
         mThumbnail.setOnClickListener(this);
         mMenuContainer = rootView.findViewById(R.id.menu_container);
+        mIndicatorView = rootView.findViewById(R.id.indicator_view);
 
         mDisplaySize = CameraUtil.getDisplaySize(context);
         mVirtualKeyHeight = CameraUtil.getVirtualKeyHeight(context);
@@ -58,11 +58,6 @@ public class AppBaseUI implements View.OnClickListener {
 
     public void setCameraUiEvent(CameraUiEvent event) {
         mEvent = event;
-    }
-
-    public void setIndicatorView(View view) {
-        mIndicatorContainer.removeAllViews();
-        mIndicatorContainer.addView(view);
     }
 
     public RelativeLayout getRootView() {
@@ -79,6 +74,10 @@ public class AppBaseUI implements View.OnClickListener {
 
     public View getBottomView() {
         return mBottomContainer;
+    }
+
+    public IndicatorView getIndicatorView() {
+        return mIndicatorView;
     }
 
     public void setMenuView(View view) {
@@ -159,7 +158,7 @@ public class AppBaseUI implements View.OnClickListener {
         if (mMenuContainer.getChildCount() > 0) {
             mMenuContainer.getChildAt(0).setClickable(clickable);
         }
-        mIndicatorContainer.getChildAt(0).setClickable(clickable);
+        mIndicatorView.setClickable(clickable);
     }
 
     @Override

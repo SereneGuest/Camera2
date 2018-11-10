@@ -1,32 +1,23 @@
 package com.smewise.camera2.manager;
 
 import android.content.Context;
-import android.util.Log;
-import android.view.View;
 
 import com.smewise.camera2.R;
-import com.smewise.camera2.data.CamListPreference;
-import com.smewise.camera2.data.PrefListAdapter;
 import com.smewise.camera2.data.PreferenceGroup;
 import com.smewise.camera2.module.CameraModule;
 import com.smewise.camera2.module.DualCameraModule;
-import com.smewise.camera2.module.PhotoModule;
-import com.smewise.camera2.module.ProfessionalModule;
-import com.smewise.camera2.ui.ModuleIndicator;
+import com.smewise.camera2.ui.IndicatorView;
 import com.smewise.camera2.utils.XmlInflater;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by wenzhe on 9/12/17.
  */
 
-public class ModuleManager implements PrefListAdapter.PrefClickListener {
+public class ModuleManager implements IndicatorView.IndicatorListener {
     private static int sModuleNum = 1;
-    private static int mCurrentIndex = 0;
+    private static int mCurrentIndex = 1;
     private CameraModule mCurrentModule;
-    private ModuleIndicator mIndicator;
+    private IndicatorView mIndicatorView;
     private Class<?>[] mModulesClass;
     private Controller mController;
 
@@ -37,11 +28,34 @@ public class ModuleManager implements PrefListAdapter.PrefClickListener {
      */
     public ModuleManager(Context context, Controller controller) {
         mController = controller;
-        mIndicator = new ModuleIndicator(context);
+        mIndicatorView = mController.getBaseUI().getIndicatorView();
+        XmlInflater inflater = new XmlInflater(context);
+        PreferenceGroup group = inflater.inflate(R.xml.module_preference);
+        mIndicatorView.setIndicatorListener(this);
         boolean loadDualCamera = mController.getCameraSettings(context).isDualCameraEnable();
-        mModulesClass = mIndicator.getModuleClass(loadDualCamera);
+        mModulesClass = getModuleClass(group, loadDualCamera);
         sModuleNum = mModulesClass.length;
-        mIndicator.setPrefClickListener(this);
+        // init default position
+        mIndicatorView.select(mCurrentIndex);
+    }
+
+    private Class<?>[] getModuleClass(PreferenceGroup group, boolean loadDualCamera) {
+        if (!loadDualCamera) {
+            group.remove(DualCameraModule.class.getName());
+        }
+        Class<?>[] moduleCls = new Class[group.size()];
+        for (int i = 0; i < group.size(); i++) {
+            // use reflection to get module class
+            try {
+                moduleCls[i] = Class.forName(group.get(i).getKey());
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            // add indicator item
+            mIndicatorView.addItem(group.get(i).getTitle());
+        }
+        group.clear();
+        return moduleCls;
     }
 
     public boolean needChangeModule(int index) {
@@ -49,7 +63,6 @@ public class ModuleManager implements PrefListAdapter.PrefClickListener {
             return false;
         } else {
             mCurrentIndex = index;
-            mIndicator.updateHighlightIndex(mCurrentIndex);
             return true;
         }
     }
@@ -67,10 +80,6 @@ public class ModuleManager implements PrefListAdapter.PrefClickListener {
         return mCurrentModule;
     }
 
-    public View getIndicatorView() {
-        return mIndicator.getIndicatorView();
-    }
-
     public static int getCurrentIndex() {
         return mCurrentIndex;
     }
@@ -84,7 +93,7 @@ public class ModuleManager implements PrefListAdapter.PrefClickListener {
     }
 
     @Override
-    public void onClick(View view, int position, CamListPreference preference) {
-        mController.changeModule(position);
+    public void onPositionChanged(int index) {
+        mController.changeModule(index);
     }
 }
