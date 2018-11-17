@@ -6,13 +6,11 @@ import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
-import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.MeteringRectangle;
 import android.hardware.camera2.params.StreamConfigurationMap;
-import android.media.Image;
 import android.media.ImageReader;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -25,32 +23,27 @@ import com.smewise.camera2.Config;
 import com.smewise.camera2.callback.RequestCallback;
 import com.smewise.camera2.utils.CameraUtil;
 
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
 
 public class CameraSession extends Session {
     private final String TAG = Config.getTag(CameraSession.class);
 
-    private Context mContext;
     private Handler mMainHandler;
-    private CameraSettings mSettings;
-    private CameraDevice mDevice;
-    private RequestHelper mHelper;
+    private RequestManager mRequestMgr;
     private RequestCallback mCallback;
     private SurfaceTexture mTexture;
     private Surface mSurface;
     private ImageReader mImageReader;
-    private CameraCaptureSession mSession;
     private CaptureRequest.Builder mPreviewBuilder;
     private CaptureRequest.Builder mCaptureBuilder;
     private int mLatestAfState = -1;
+    private CaptureRequest mOriginPreviewRequest;
 
     public CameraSession(Context context, Handler mainHandler, CameraSettings settings) {
-        mContext = context;
+        super(context, settings);
         mMainHandler = mainHandler;
-        mSettings = settings;
-        mHelper = new RequestHelper(mContext, mMainHandler);
+        mRequestMgr = new RequestManager();
     }
 
 
@@ -115,7 +108,7 @@ public class CameraSession extends Session {
                 break;
             }
             case RQ_FLASH_MODE: {
-                mHelper.setFlashRequest((String) value1);
+                mRequestMgr.applyFlashRequest(getPreviewBuilder(), (String) value1);
                 break;
             }
             case RQ_RESTART_PREVIEW: {
@@ -133,9 +126,9 @@ public class CameraSession extends Session {
 
     @Override
     public void release() {
-        if (mSession != null) {
-            mSession.close();
-            mSession = null;
+        if (cameraSession != null) {
+            cameraSession.close();
+            cameraSession = null;
         }
         if (mImageReader != null) {
             mImageReader.close();
@@ -144,13 +137,16 @@ public class CameraSession extends Session {
     }
 
     private void sendFlashRequest(String value) {
-        Log.e(TAG, "flash value:" + value);
-        mHelper.setFlashRequest(value);
-        mHelper.applyPreviewRequest(getPreviewRequestBuilder(mSurface), mPreviewCallback);
+        Log.d(TAG, "flash value:" + value);
+        CaptureRequest request = mRequestMgr.getFlashRequest(getPreviewBuilder(), value);
+        sendRepeatingRequest(request, mPreviewCallback, mMainHandler);
     }
 
     private void setCameraDevice(CameraDevice device) {
-        mDevice = device;
+        cameraDevice = device;
+        // device changed, get new Characteristics
+        initCharacteristics();
+        mRequestMgr.setCharacteristics(characteristics);
         // camera device may change, reset builder
         mPreviewBuilder = null;
         mCaptureBuilder = null;
@@ -163,7 +159,7 @@ public class CameraSession extends Session {
         mTexture = texture;
         mSurface = new Surface(mTexture);
         try {
-            mDevice.createCaptureSession(setOutputSize(mDevice.getId(), mTexture),
+            cameraDevice.createCaptureSession(setOutputSize(cameraDevice.getId(), mTexture),
                     sessionStateCb, mMainHandler);
         } catch (CameraAccessException | IllegalStateException e) {
             e.printStackTrace();
@@ -172,63 +168,68 @@ public class CameraSession extends Session {
     }
 
     private void sendPreviewRequest() {
-        mHelper.setPreviewRequest();
-        mHelper.applyPreviewRequest(getPreviewRequestBuilder(mSurface), mPreviewCallback);
+        CaptureRequest request = mRequestMgr.getPreviewRequest(getPreviewBuilder());
+        if (mOriginPreviewRequest == null) {
+            mOriginPreviewRequest = request;
+        }
+        sendRepeatingRequest(request, mPreviewCallback, mMainHandler);
     }
 
     private void sendControlAfAeRequest(MeteringRectangle focusRect,
                                         MeteringRectangle meteringRect) {
-        mHelper.setControlAfAeRequest(focusRect, meteringRect);
-        mHelper.applyPreviewRequest(getPreviewRequestBuilder(mSurface), mPreviewCallback);
-        mHelper.applyCaptureRequest(getPreviewRequestBuilder(mSurface), mPreviewCallback);
+        CaptureRequest.Builder builder = getPreviewBuilder();
+        CaptureRequest request = mRequestMgr
+                .getTouch2FocusRequest(builder, focusRect, meteringRect);
+        sendRepeatingRequest(request, mPreviewCallback, mMainHandler);
+        // trigger af
+        builder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_START);
+        sendCaptureRequest(builder.build(), null, mMainHandler);
     }
 
     private void sendControlFocusModeRequest(int focusMode) {
         Log.d(TAG, "focusMode:" + focusMode);
-        mHelper.setControlFocusModeRequest(focusMode);
-        mHelper.applyPreviewRequest(getPreviewRequestBuilder(mSurface), mPreviewCallback);
-        // cancel af trigger
-        mHelper.applyCaptureRequest(getPreviewRequestBuilder(mSurface), mPreviewCallback);
+        CaptureRequest request = mRequestMgr.getFocusModeRequest(getPreviewBuilder(), focusMode);
+        sendRepeatingRequest(request, mPreviewCallback, mMainHandler);
     }
 
-    private void sendCaptureRequest(int deviceRotation) {
-        int jpegRotation = CameraUtil.getJpgRotation(getCharacteristics(), deviceRotation);
-        mHelper.setCaptureRequest(jpegRotation);
-        mHelper.applyCaptureRequest(getCaptureRequestBuilder(
-                mImageReader.getSurface(), false), null);
+    private void sendCaptureRequest(int rotation) {
+        int jpegRotation = CameraUtil.getJpgRotation(characteristics, rotation);
+        CaptureRequest request = mRequestMgr.getStillPictureRequest(
+                getCaptureBuilder(false, mImageReader.getSurface()), jpegRotation);
+        sendCaptureRequest(request, mCaptureCallback, mMainHandler);
     }
 
     private void sendRestartPreviewRequest() {
-        Log.d(TAG, "need start preview :" + mSettings.needStartPreview());
-        if (mSettings.needStartPreview()) {
+        Log.d(TAG, "need start preview :" + cameraSettings.needStartPreview());
+        if (cameraSettings.needStartPreview()) {
             sendPreviewRequest();
         }
     }
 
     private void sendControlFocusDistanceRequest(float value) {
-        mHelper.setControlFocusDistanceRequest(value);
-        mHelper.applyPreviewRequest(getPreviewRequestBuilder(mSurface), mPreviewCallback);
+        CaptureRequest request = mRequestMgr.getFocusDistanceRequest(getPreviewBuilder(), value);
+        sendRepeatingRequest(request, mPreviewCallback, mMainHandler);
     }
 
-
-    private CameraCharacteristics getCharacteristics() {
-        CameraManager manager = (CameraManager) mContext.getSystemService(Context.CAMERA_SERVICE);
-        try {
-            return manager.getCameraCharacteristics(mDevice.getId());
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
-        return null;
+    private void updateRequestFromSetting() {
+        String flashValue = cameraSettings.getGlobalPref(CameraSettings.KEY_FLASH_MODE);
+        mRequestMgr.getFlashRequest(getPreviewBuilder(), flashValue);
     }
 
-    private CaptureRequest.Builder getPreviewRequestBuilder(Surface surface) {
+    private void resetTriggerState() {
+        CaptureRequest.Builder builder = getPreviewBuilder();
+        builder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_CANCEL);
+        sendCaptureRequest(builder.build(), null, mMainHandler);
+    }
+
+    private CaptureRequest.Builder getPreviewBuilder() {
         if (mPreviewBuilder == null) {
-            mPreviewBuilder = createBuilder(CameraDevice.TEMPLATE_PREVIEW, surface);
+            mPreviewBuilder = createBuilder(CameraDevice.TEMPLATE_PREVIEW, mSurface);
         }
         return mPreviewBuilder;
     }
 
-    private CaptureRequest.Builder getCaptureRequestBuilder(Surface surface, boolean create) {
+    private CaptureRequest.Builder getCaptureBuilder( boolean create, Surface surface) {
         if (create) {
             return createBuilder(CameraDevice.TEMPLATE_STILL_CAPTURE, surface);
         } else {
@@ -239,30 +240,19 @@ public class CameraSession extends Session {
         }
     }
 
-    private CaptureRequest.Builder createBuilder(int type, Surface surface) {
-        try {
-            CaptureRequest.Builder builder = mDevice.createCaptureRequest(type);
-            builder.addTarget(surface);
-            return builder;
-        } catch (CameraAccessException | IllegalStateException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     //config picture size and preview size
     private List<Surface> setOutputSize(String id, SurfaceTexture texture) {
-        StreamConfigurationMap map = getCharacteristics()
+        StreamConfigurationMap map = characteristics
                 .get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
         // parameters key
         String picKey = CameraSettings.KEY_PICTURE_SIZE;
         String preKey = CameraSettings.KEY_PREVIEW_SIZE;
         String formatKey = CameraSettings.KEY_PICTURE_FORMAT;
         // get value from setting
-        int format = mSettings.getPicFormat(id, formatKey);
-        Size previewSize = mSettings.getPreviewSize(id, preKey, map);
+        int format = cameraSettings.getPicFormat(id, formatKey);
+        Size previewSize = cameraSettings.getPreviewSize(id, preKey, map);
         texture.setDefaultBufferSize(previewSize.getWidth(), previewSize.getHeight());
-        Size pictureSize = mSettings.getPictureSize(id, picKey, map, format);
+        Size pictureSize = cameraSettings.getPictureSize(id, picKey, map, format);
         // config surface
         Surface surface = new Surface(texture);
         if (mImageReader != null) {
@@ -278,23 +268,9 @@ public class CameraSession extends Session {
                         reader.getWidth(), reader.getHeight());
             }
         }, null);
-        Size uiSize = CameraUtil.getPreviewUiSize(mContext, previewSize);
+        Size uiSize = CameraUtil.getPreviewUiSize(appContext, previewSize);
         mCallback.onViewChange(uiSize.getHeight(), uiSize.getWidth());
         return Arrays.asList(surface, mImageReader.getSurface());
-    }
-
-    private byte[] getByteFromReader(ImageReader reader) {
-        Image image = reader.acquireLatestImage();
-        int totalSize = 0;
-        for (Image.Plane plane : image.getPlanes()) {
-            totalSize += plane.getBuffer().remaining();
-        }
-        ByteBuffer totalBuffer = ByteBuffer.allocate(totalSize);
-        for (Image.Plane plane : image.getPlanes()) {
-            totalBuffer.put(plane.getBuffer());
-        }
-        image.close();
-        return totalBuffer.array();
     }
 
     //session callback
@@ -303,8 +279,9 @@ public class CameraSession extends Session {
         @Override
         public void onConfigured(@NonNull CameraCaptureSession session) {
             Log.d(TAG, " session onConfigured id:" + session.getDevice().getId());
-            mSession = session;
-            mHelper.setCameraCaptureSession(mSession);
+            cameraSession = session;
+            //mHelper.setCameraCaptureSession(cameraSession);
+            updateRequestFromSetting();
             sendPreviewRequest();
         }
 
@@ -330,6 +307,24 @@ public class CameraSession extends Session {
             super.onCaptureCompleted(session, request, result);
             updateAfState(result);
             mCallback.onRequestComplete();
+        }
+    };
+
+    private CameraCaptureSession.CaptureCallback mCaptureCallback = new CameraCaptureSession
+            .CaptureCallback() {
+
+        @Override
+        public void onCaptureProgressed(@NonNull CameraCaptureSession session, @NonNull
+                CaptureRequest request, @NonNull CaptureResult partialResult) {
+            super.onCaptureProgressed(session, request, partialResult);
+        }
+
+        @Override
+        public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull
+                CaptureRequest request, @NonNull TotalCaptureResult result) {
+            super.onCaptureCompleted(session, request, result);
+            Log.i(TAG, "capture complete");
+            //resetTriggerState();
         }
     };
 

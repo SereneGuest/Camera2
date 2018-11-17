@@ -72,7 +72,6 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
         getBaseUI().setMenuView(mCameraMenu.getView());
         getBaseUI().setShutterMode(ShutterButton.VIDEO_MODE);
         addModuleView(mUI.getRootView());
-        loadSettingFromPref();
         Log.d(TAG, "start module");
     }
 
@@ -312,13 +311,6 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
             }
         }
     };
-
-    private void loadSettingFromPref() {
-        mSession.setRequest(Session.RQ_FLASH_MODE,
-                mMenuInfo.getCurrentValue(CameraSettings.KEY_FLASH_MODE));
-    }
-
-
 
     private MenuInfo mMenuInfo = new MenuInfo() {
         @Override
