@@ -29,6 +29,13 @@ import java.util.List;
 public class CameraSession extends Session {
     private final String TAG = Config.getTag(CameraSession.class);
 
+    private static final int STATE_PREVIEW = 0;
+    private static final int STATE_WAITING_LOCK = 1;
+    private static final int STATE_WAITING_PRE_CAPTURE = 2;
+    private static final int STATE_WAITING_NON_PRE_CAPTURE = 3;
+    private static final int STATE_PICTURE_TAKEN = 4;
+    private int mState = STATE_PREVIEW;
+
     private Handler mMainHandler;
     private RequestManager mRequestMgr;
     private RequestCallback mCallback;
@@ -39,6 +46,7 @@ public class CameraSession extends Session {
     private CaptureRequest.Builder mCaptureBuilder;
     private int mLatestAfState = -1;
     private CaptureRequest mOriginPreviewRequest;
+    private int mDeviceRotation;
 
     public CameraSession(Context context, Handler mainHandler, CameraSettings settings) {
         super(context, settings);
@@ -79,7 +87,9 @@ public class CameraSession extends Session {
                 break;
             }
             case RQ_TAKE_PICTURE: {
-                sendCaptureRequest((Integer) value1);
+                mDeviceRotation = (Integer) value1;
+                triggerAFCaptureSequence();
+                //sendStillPictureRequest(mDeviceRotation);
                 break;
             }
             default: {
@@ -164,7 +174,6 @@ public class CameraSession extends Session {
         } catch (CameraAccessException | IllegalStateException e) {
             e.printStackTrace();
         }
-
     }
 
     private void sendPreviewRequest() {
@@ -192,11 +201,18 @@ public class CameraSession extends Session {
         sendRepeatingRequest(request, mPreviewCallback, mMainHandler);
     }
 
-    private void sendCaptureRequest(int rotation) {
-        int jpegRotation = CameraUtil.getJpgRotation(characteristics, rotation);
+    private void sendStillPictureRequest() {
+        int jpegRotation = CameraUtil.getJpgRotation(characteristics, mDeviceRotation);
+        CaptureRequest.Builder builder = getCaptureBuilder(false, mImageReader.getSurface());
+        Integer aeFlash = getPreviewBuilder().get(CaptureRequest.CONTROL_AE_MODE);
+        Integer afMode = getPreviewBuilder().get(CaptureRequest.CONTROL_AF_MODE);
+        Integer flashMode = getPreviewBuilder().get(CaptureRequest.FLASH_MODE);
+        builder.set(CaptureRequest.CONTROL_AE_MODE, aeFlash);
+        builder.set(CaptureRequest.CONTROL_AF_MODE, afMode);
+        builder.set(CaptureRequest.FLASH_MODE, flashMode);
         CaptureRequest request = mRequestMgr.getStillPictureRequest(
                 getCaptureBuilder(false, mImageReader.getSurface()), jpegRotation);
-        sendCaptureRequest(request, mCaptureCallback, mMainHandler);
+        sendCaptureRequestWithStop(request, mCaptureCallback, mMainHandler);
     }
 
     private void sendRestartPreviewRequest() {
@@ -217,9 +233,13 @@ public class CameraSession extends Session {
     }
 
     private void resetTriggerState() {
+        mState = STATE_PREVIEW;
         CaptureRequest.Builder builder = getPreviewBuilder();
-        builder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_CANCEL);
-        sendCaptureRequest(builder.build(), null, mMainHandler);
+        builder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_IDLE);
+        builder.set(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
+                CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_IDLE);
+        sendRepeatingRequest(builder.build(), mPreviewCallback, mMainHandler);
+        sendCaptureRequest(builder.build(), mPreviewCallback, mMainHandler);
     }
 
     private CaptureRequest.Builder getPreviewBuilder() {
@@ -299,6 +319,7 @@ public class CameraSession extends Session {
                 CaptureRequest request, @NonNull CaptureResult partialResult) {
             super.onCaptureProgressed(session, request, partialResult);
             updateAfState(partialResult);
+            processPreCapture(partialResult);
         }
 
         @Override
@@ -306,6 +327,7 @@ public class CameraSession extends Session {
                 CaptureRequest request, @NonNull TotalCaptureResult result) {
             super.onCaptureCompleted(session, request, result);
             updateAfState(result);
+            processPreCapture(result);
             mCallback.onRequestComplete();
         }
     };
@@ -324,9 +346,71 @@ public class CameraSession extends Session {
                 CaptureRequest request, @NonNull TotalCaptureResult result) {
             super.onCaptureCompleted(session, request, result);
             Log.i(TAG, "capture complete");
-            //resetTriggerState();
+            resetTriggerState();
         }
     };
+
+    private void processPreCapture(CaptureResult result) {
+        switch (mState) {
+            case STATE_PREVIEW: {
+                // We have nothing to do when the camera preview is working normally.
+                break;
+            }
+            case STATE_WAITING_LOCK: {
+                Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
+                if (afState == null) {
+                    sendStillPictureRequest();
+                } else if (CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED == afState ||
+                        CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED == afState) {
+                    // CONTROL_AE_STATE can be null on some devices
+                    Integer aeState = result.get(CaptureResult.CONTROL_AE_STATE);
+                    if (aeState == null ||
+                            aeState == CaptureResult.CONTROL_AE_STATE_CONVERGED) {
+                        mState = STATE_PICTURE_TAKEN;
+                        sendStillPictureRequest();
+                    } else {
+                        triggerAECaptureSequence();
+                    }
+                }
+                break;
+            }
+            case STATE_WAITING_PRE_CAPTURE: {
+                // CONTROL_AE_STATE can be null on some devices
+                Integer aeState = result.get(CaptureResult.CONTROL_AE_STATE);
+                if (aeState == null ||
+                        aeState == CaptureResult.CONTROL_AE_STATE_PRECAPTURE ||
+                        aeState == CaptureRequest.CONTROL_AE_STATE_FLASH_REQUIRED) {
+                    mState = STATE_WAITING_NON_PRE_CAPTURE;
+                }
+                break;
+            }
+            case STATE_WAITING_NON_PRE_CAPTURE: {
+                // CONTROL_AE_STATE can be null on some devices
+                Integer aeState = result.get(CaptureResult.CONTROL_AE_STATE);
+                if (aeState == null || aeState != CaptureResult.CONTROL_AE_STATE_PRECAPTURE) {
+                    mState = STATE_PICTURE_TAKEN;
+                    sendStillPictureRequest();
+                }
+                break;
+            }
+        }
+    }
+
+    private void triggerAECaptureSequence() {
+        CaptureRequest.Builder builder = getPreviewBuilder();
+        builder.set(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
+                CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_START);
+        mState = STATE_WAITING_PRE_CAPTURE;
+        sendCaptureRequest(builder.build(), mPreviewCallback, mMainHandler);
+    }
+
+    private void triggerAFCaptureSequence() {
+        CaptureRequest.Builder builder = getPreviewBuilder();
+        builder.set(CaptureRequest.CONTROL_AF_TRIGGER,
+                CaptureRequest.CONTROL_AF_TRIGGER_START);
+        mState = STATE_WAITING_LOCK;
+        sendCaptureRequest(builder.build(), mPreviewCallback, mMainHandler);
+    }
 
     private void updateAfState(CaptureResult result) {
         Integer state = result.get(CaptureResult.CONTROL_AF_STATE);

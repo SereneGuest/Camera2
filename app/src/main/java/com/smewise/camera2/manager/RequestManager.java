@@ -29,7 +29,7 @@ public class RequestManager {
         builder.set(CaptureRequest.CONTROL_AF_MODE, afMode);
         builder.set(CaptureRequest.CONTROL_AE_ANTIBANDING_MODE, antiBMode);
         builder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO);
-        builder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_CANCEL);
+        builder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_IDLE);
         return builder.build();
     }
 

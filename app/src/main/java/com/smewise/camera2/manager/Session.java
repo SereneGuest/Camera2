@@ -123,4 +123,15 @@ public abstract class Session {
         }
     }
 
+    void sendCaptureRequestWithStop(CaptureRequest request,
+                            CameraCaptureSession.CaptureCallback callback, Handler handler) {
+        try {
+            cameraSession.stopRepeating();
+            cameraSession.abortCaptures();
+            cameraSession.capture(request, callback, handler);
+        } catch (CameraAccessException | IllegalStateException e) {
+            Log.e(TAG, "send capture request error:" + e.getMessage());
+        }
+    }
+
 }
