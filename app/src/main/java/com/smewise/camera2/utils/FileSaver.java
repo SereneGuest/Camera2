@@ -161,9 +161,17 @@ public class FileSaver {
     }
 
     private Bitmap rotateAndWriteJpegData(ExifInterface exif, ImageInfo info) {
-        int orientation = exif.getTagIntValue(ExifInterface.TAG_ORIENTATION);
-        int oriW = exif.getTagIntValue(ExifInterface.TAG_IMAGE_WIDTH);
-        int oriH = exif.getTagIntValue(ExifInterface.TAG_IMAGE_LENGTH);
+        int orientation = ExifInterface.Orientation.TOP_LEFT;
+        int oriW = info.imgWidth;
+        int oriH = info.imgHeight;
+        try {
+            orientation = exif.getTagIntValue(ExifInterface.TAG_ORIENTATION);
+            oriW = exif.getTagIntValue(ExifInterface.TAG_IMAGE_WIDTH);
+            oriH = exif.getTagIntValue(ExifInterface.TAG_IMAGE_LENGTH);
+        } catch (Exception e) {
+            // getTagIntValue() may cause NullPointerException
+            e.printStackTrace();
+        }
         // no need rotate, just save and return
         if (orientation == ExifInterface.Orientation.TOP_LEFT) {
             // use exif width & height

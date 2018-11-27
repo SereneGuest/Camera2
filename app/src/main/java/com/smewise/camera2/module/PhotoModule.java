@@ -181,6 +181,8 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
 
         @Override
         public void onTouchToFocus(float x, float y) {
+            // close all menu when touch to focus
+            mCameraMenu.close();
             mFocusManager.startFocus(x, y);
             CameraCharacteristics c = mDeviceMgr.getCharacteristics();
             MeteringRectangle focusRect = mFocusManager.getFocusArea(c, true);
@@ -205,6 +207,8 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
 
         @Override
         public <T> void onAction(String type, T value) {
+            // close all menu when ui click
+            mCameraMenu.close();
             switch (type) {
                 case CameraUiEvent.ACTION_CLICK:
                     handleClick((View) value);
@@ -278,8 +282,12 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
 
     private void switchCamera() {
         int currentId = Integer.parseInt(mDeviceMgr.getCameraId());
+        int cameraCount = mDeviceMgr.getCameraIdList().length;
         currentId++;
-        if (currentId >= mDeviceMgr.getCameraIdList().length) {
+        if (cameraCount < 2) {
+            // only one camera, just return
+            return;
+        } else if (currentId >= cameraCount) {
             currentId = 0;
         }
         String switchId = String.valueOf(currentId);

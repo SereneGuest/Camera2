@@ -33,6 +33,7 @@ public class JobExecutor {
                         postOnMainThread(task, res);
                         task.onJobThread(res);
                     } catch (Exception e) {
+                        e.printStackTrace();
                         Log.e(TAG, "job execute error:" + e.getMessage());
                         task.onError(e.getMessage());
                     }

@@ -36,7 +36,7 @@ public class CameraSubMenu extends CameraBaseMenu{
         mPopWindow.setBackgroundDrawable(new ColorDrawable(color));
         mPopWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
         mPopWindow.setAnimationStyle(-1);
-        mPopWindow.setOutsideTouchable(true);
+        mPopWindow.setOutsideTouchable(false);
     }
 
     public void setItemClickListener(SubPrefListAdapter.PrefItemClickListener listener) {
@@ -66,11 +66,13 @@ public class CameraSubMenu extends CameraBaseMenu{
     public void show(View view, int xOffset, int yOffset) {
         if (!mPopWindow.isShowing()) {
             mPopWindow.showAtLocation(view, Gravity.TOP | Gravity.CENTER, xOffset, yOffset);
+        } else  {
+            mPopWindow.dismiss();
         }
     }
 
     public void close() {
-        if (mPopWindow != null) {
+        if (mPopWindow != null && mPopWindow.isShowing()) {
             mPopWindow.dismiss();
         }
     }
