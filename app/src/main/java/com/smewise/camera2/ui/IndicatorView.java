@@ -152,8 +152,7 @@ public class IndicatorView extends View {
             currentOffset +=  mPaddingHor * 2 + mIndicatorItems.get(i).width;
         }
         currentOffset += mIndicatorItems.get(index).width / 2 + mPaddingHor;
-        // -5(align center)
-        return halfWidth - currentOffset - 5;
+        return halfWidth - currentOffset;
     }
 
     private void selectWithAnimation(int from, int to) {

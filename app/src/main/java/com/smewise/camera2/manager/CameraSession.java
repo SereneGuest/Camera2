@@ -6,6 +6,7 @@ import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
+import android.hardware.camera2.CaptureFailure;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
@@ -88,8 +89,7 @@ public class CameraSession extends Session {
             }
             case RQ_TAKE_PICTURE: {
                 mDeviceRotation = (Integer) value1;
-                triggerAFCaptureSequence();
-                //sendStillPictureRequest(mDeviceRotation);
+                runCaptureStep();
                 break;
             }
             default: {
@@ -230,6 +230,7 @@ public class CameraSession extends Session {
     private void updateRequestFromSetting() {
         String flashValue = cameraSettings.getGlobalPref(CameraSettings.KEY_FLASH_MODE);
         mRequestMgr.getFlashRequest(getPreviewBuilder(), flashValue);
+        // TODO: need load more settings
     }
 
     private void resetTriggerState() {
@@ -330,6 +331,13 @@ public class CameraSession extends Session {
             processPreCapture(result);
             mCallback.onRequestComplete();
         }
+
+        @Override
+        public void onCaptureFailed(@NonNull CameraCaptureSession session, @NonNull
+                CaptureRequest request, @NonNull CaptureFailure failure) {
+            super.onCaptureFailed(session, request, failure);
+            Log.w(TAG, "onCaptureFailed reason:" + failure.getReason());
+        }
     };
 
     private CameraCaptureSession.CaptureCallback mCaptureCallback = new CameraCaptureSession
@@ -410,6 +418,17 @@ public class CameraSession extends Session {
                 CaptureRequest.CONTROL_AF_TRIGGER_START);
         mState = STATE_WAITING_LOCK;
         sendCaptureRequest(builder.build(), mPreviewCallback, mMainHandler);
+    }
+
+    private void runCaptureStep() {
+        String flashValue = cameraSettings.getGlobalPref(CameraSettings.KEY_FLASH_MODE);
+        boolean isFlashOn = !CameraSettings.FLASH_VALUE_OFF.equals(flashValue)
+                && !CameraSettings.FLASH_VALUE_TORCH.equals(flashValue);
+        if (mRequestMgr.canTriggerAf() && isFlashOn) {
+            triggerAFCaptureSequence();
+        } else {
+            sendStillPictureRequest();
+        }
     }
 
     private void updateAfState(CaptureResult result) {

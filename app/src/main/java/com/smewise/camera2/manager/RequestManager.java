@@ -195,4 +195,9 @@ public class RequestManager {
         return support != null && support;
     }
 
+    boolean canTriggerAf() {
+        int[] allAFMode = mCharacteristics.get(CameraCharacteristics.CONTROL_AF_AVAILABLE_MODES);
+        return  allAFMode != null && allAFMode.length > 1;
+    }
+
 }

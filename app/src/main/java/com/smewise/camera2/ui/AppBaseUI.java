@@ -32,7 +32,6 @@ public class AppBaseUI implements View.OnClickListener {
 
     private Point mDisplaySize;
     private int mVirtualKeyHeight;
-    private int mBottomDefaultHeight;
     private int mTopBarHeight;
 
     public AppBaseUI(Context context, View rootView) {
@@ -51,8 +50,6 @@ public class AppBaseUI implements View.OnClickListener {
 
         mDisplaySize = CameraUtil.getDisplaySize(context);
         mVirtualKeyHeight = CameraUtil.getVirtualKeyHeight(context);
-        mBottomDefaultHeight = context.getResources()
-                .getDimensionPixelSize(R.dimen.bottom_control_height);
         mTopBarHeight = context.getResources()
                 .getDimensionPixelSize(R.dimen.tab_layout_height);
         mFocusView = new FocusView(context);
@@ -104,7 +101,7 @@ public class AppBaseUI implements View.OnClickListener {
      */
     public void updateUiSize(int width, int height) {
         int realHeight = mDisplaySize.y + mVirtualKeyHeight;
-        int bottomHeight = mBottomDefaultHeight;
+        int bottomHeight = CameraUtil.getBottomBarHeight(mDisplaySize.x);
         RelativeLayout.LayoutParams previewParams = new RelativeLayout.LayoutParams(width, height);
         RelativeLayout.LayoutParams bottomBarParams =
                 (RelativeLayout.LayoutParams) mBottomContainer.getLayoutParams();
