@@ -12,9 +12,10 @@
     <dimen name="setting_elevation">7dp</dimen>
     <dimen name="setting_icon_size">50dp</dimen>
     <dimen name="setting_bg_size">45dp</dimen>
-    <dimen name="thumbnail_size">51dp</dimen>
+    <dimen name="thumbnail_size">50dp</dimen>
     <dimen name="shutter_button_size">80dp</dimen>
     <dimen name="bottom_control_margin">45dp</dimen>
+    <dimen name="bottom_control_height">180dp</dimen>
     <dimen name="border_width">1dp</dimen>
 
     <dimen name="tab_text_size">12sp</dimen>
@@ -50,6 +51,6 @@
     <!--Indicator View-->
     <dimen name="indicatorTextSize">13sp</dimen>
     <dimen name="indicatorPaddingHor">13dp</dimen>
-    <dimen name="indicatorPaddingVer">7dp</dimen>
+    <dimen name="indicatorPaddingVer">10dp</dimen>
 
 </resources>

@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
     <RelativeLayout
         android:id="@+id/preview_root_view"
@@ -10,18 +9,6 @@
         android:layout_height="match_parent">
 
     </RelativeLayout>
-
-    <com.smewise.camera2.ui.IndicatorView
-        android:id="@+id/indicator_view"
-        android:layout_above="@+id/bottom_container"
-        android:background="@color/tab_background"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:textSize="@dimen/indicatorTextSize"
-        app:textColor="@color/indicatorNormalColor"
-        app:activeColor="@color/indicatorActiveColor"
-        app:paddingHor="@dimen/indicatorPaddingHor"
-        app:paddingVer="@dimen/indicatorPaddingVer"/>
 
     <include layout="@layout/camera_bottom_controls" />
 
