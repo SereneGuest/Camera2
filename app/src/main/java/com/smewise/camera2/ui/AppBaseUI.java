@@ -100,6 +100,7 @@ public class AppBaseUI implements View.OnClickListener {
      * @param height preview screen height
      */
     public void updateUiSize(int width, int height) {
+        mFocusView.initFocusArea(width, height);
         int realHeight = mDisplaySize.y + mVirtualKeyHeight;
         int bottomHeight = CameraUtil.getBottomBarHeight(mDisplaySize.x);
         RelativeLayout.LayoutParams previewParams = new RelativeLayout.LayoutParams(width, height);

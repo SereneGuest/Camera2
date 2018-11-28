@@ -32,7 +32,7 @@ public class FocusOverlayManager {
     private float currentY;
     private final int AREA_SIZE = 200;
 
-    private static final int HIDE_FOCUS_DELAY = 3000;
+    private static final int HIDE_FOCUS_DELAY = 4000;
     private static final int MSG_HIDE_FOCUS = 0x10;
 
 
@@ -62,6 +62,7 @@ public class FocusOverlayManager {
     public FocusOverlayManager(FocusView focusView, Looper looper) {
         mFocusView = focusView;
         mHandler = new MainHandler(this, looper);
+        mFocusView.resetToDefaultPosition();
     }
 
     public void setListener(CameraUiEvent listener) {
@@ -104,6 +105,7 @@ public class FocusOverlayManager {
     }
 
     public void hideFocusUI() {
+        mFocusView.resetToDefaultPosition();
         mFocusView.hideFocusView();
     }
 

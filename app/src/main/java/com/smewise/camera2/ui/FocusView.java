@@ -148,6 +148,7 @@ public class FocusView extends View {
         previewWidth = width;
         previewHeight = height;
         Log.d(TAG, "init focus view:" + previewWidth + "x" + previewHeight);
+        resetToDefaultPosition();
     }
 
     public static RectF rectToRectF(Rect r) {

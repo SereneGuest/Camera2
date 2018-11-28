@@ -55,4 +55,5 @@
     <string name="support_info_done">Done</string>
     <string name="show_support_info">show support information</string>
 
+    <string name="open_file_error">Can not found app to open image/video</string>
 </resources>

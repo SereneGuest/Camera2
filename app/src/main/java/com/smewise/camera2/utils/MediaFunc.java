@@ -1,6 +1,7 @@
 package com.smewise.camera2.utils;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
@@ -11,6 +12,9 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.widget.Toast;
+
+import com.smewise.camera2.R;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -138,6 +142,11 @@ public class MediaFunc {
             context.startActivity(intent);
         } catch (Exception e) {
             Intent intent = new Intent(Intent.ACTION_VIEW, mCurrentUri);
+            ComponentName componentName = intent.resolveActivity(context.getPackageManager());
+            if (componentName == null) {
+                Toast.makeText(context, R.string.open_file_error, Toast.LENGTH_LONG).show();
+                return;
+            }
             context.startActivity(intent);
         }
     }

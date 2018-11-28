@@ -50,4 +50,6 @@
     <string name="support_info_done">确定</string>
     <string name="show_support_info">显示设备支持信息</string>
 
+    <string name="open_file_error">找不到打开 图片/视频 的应用</string>
+
 </resources>
