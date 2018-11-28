@@ -25,7 +25,7 @@ public class PhotoUI extends CameraBaseUI implements TextureView.SurfaceTextureL
     public PhotoUI(Context context, Handler handler, CameraUiEvent event) {
         super(event);
         mRootView = (RelativeLayout) LayoutInflater.from(context)
-                .inflate(R.layout.photo_layout, null);
+                .inflate(R.layout.module_photo_layout, null);
         mPreviewTexture = mRootView.findViewById(R.id.texture_preview);
         mPreviewTexture.setSurfaceTextureListener(this);
         mPreviewTexture.setGestureListener(this);

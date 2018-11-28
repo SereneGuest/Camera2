@@ -6,15 +6,15 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:layout_alignParentBottom="true"
-              android:background="@color/tab_background">
+              android:background="@color/bottom_controls_bg">
 
     <com.smewise.camera2.ui.IndicatorView
         android:id="@+id/indicator_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:textSize="@dimen/indicatorTextSizeSmall"
-        app:textColor="@color/indicatorNormalColor"
-        app:activeColor="@color/indicatorActiveColor"
+        app:textColor="@color/indicator_normal_color"
+        app:activeColor="@color/indicator_active_color"
         app:paddingHor="@dimen/indicatorPaddingHorSmall"
         app:paddingVer="@dimen/indicatorPaddingVerSmall"/>
 

@@ -40,7 +40,7 @@ public class ShutterButton extends Button {
 
     public ShutterButton(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        outerRadius = (int) context.getResources().getDimension(R.dimen.outer_radius);
+        outerRadius = (int) context.getResources().getDimension(R.dimen.shutter_outer_radius);
         outerCircleColor = context.getResources().getColor(R.color.outer_circle_color);
         innerCircleColor = context.getResources().getColor(R.color.inner_circle_color);
         recordColor = context.getResources().getColor(R.color.color_record);

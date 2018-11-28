@@ -32,8 +32,8 @@ public class SubPrefListAdapter extends RecyclerView.Adapter<SubPrefListAdapter.
     public SubPrefListAdapter(Context context, CamListPreference pref) {
         mContext = context;
         mPref = pref;
-        mTextColor = context.getResources().getColor(R.color.options_text_color);
-        mHighlightColor = context.getResources().getColor(R.color.options_highlight_color);
+        mTextColor = context.getResources().getColor(R.color.menu_text_color);
+        mHighlightColor = context.getResources().getColor(R.color.menu_highlight_color);
     }
 
     public void setClickListener(PrefItemClickListener listener) {
@@ -57,7 +57,7 @@ public class SubPrefListAdapter extends RecyclerView.Adapter<SubPrefListAdapter.
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.option_item_layout, parent,
+        View view = LayoutInflater.from(mContext).inflate(R.layout.menu_item_layout, parent,
                 false);
         return new MyViewHolder(view);
     }

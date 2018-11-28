@@ -30,7 +30,7 @@ public class DualCameraUI extends CameraBaseUI implements GestureTextureView.Ges
     public DualCameraUI(Context context, Handler mainHandler, CameraUiEvent event) {
         super(event);
         mRootView = (RelativeLayout) LayoutInflater.from(context).inflate(R.layout
-                .dual_camera_layout, null);
+                .module_dual_camera_layout, null);
         mMainPreviewTexture = mRootView.findViewById(R.id.main_texture);
         mMainPreviewTexture.setSurfaceTextureListener(mMainListener);
         mMainPreviewTexture.setGestureListener(this);

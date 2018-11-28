@@ -33,7 +33,7 @@ public class VideoUI extends CameraBaseUI implements TextureView.SurfaceTextureL
     public VideoUI(Context context, Handler handler, CameraUiEvent event) {
         super(event);
         mRootView = (RelativeLayout) LayoutInflater.from(context)
-                .inflate(R.layout.video_layout, null);
+                .inflate(R.layout.module_video_layout, null);
         mRecTimerLayout = mRootView.findViewById(R.id.ll_record_timer);
         mRecTimerLayout.setOnClickListener(this);
         mChronometer = mRootView.findViewById(R.id.record_time);

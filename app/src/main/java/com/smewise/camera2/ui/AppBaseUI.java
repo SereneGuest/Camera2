@@ -51,7 +51,7 @@ public class AppBaseUI implements View.OnClickListener {
         mDisplaySize = CameraUtil.getDisplaySize(context);
         mVirtualKeyHeight = CameraUtil.getVirtualKeyHeight(context);
         mTopBarHeight = context.getResources()
-                .getDimensionPixelSize(R.dimen.tab_layout_height);
+                .getDimensionPixelSize(R.dimen.menu_item_height);
         mFocusView = new FocusView(context);
         mFocusView.setVisibility(View.GONE);
         mPreviewRootView.addView(mFocusView);
