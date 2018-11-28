@@ -47,6 +47,7 @@
             android:key="pref_restart_preview"
             android:defaultValue="true"/>
         <Preference
+            android:layout="@layout/pref_default_layout"
             android:title="@string/support_info_title"
             android:key="pref_support_info"
             android:summary="@string/show_support_info"/>

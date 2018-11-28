@@ -8,8 +8,6 @@
     <dimen name="stroke_width">2dp</dimen>
     <!--for shutter button-->
     <dimen name="shutter_outer_radius">3dp</dimen>
-    <!--for setting bar shadow-->
-    <dimen name="setting_elevation">7dp</dimen>
 
     <!--bottom control-->
     <dimen name="setting_icon_size">50dp</dimen>
@@ -30,12 +28,23 @@
     <dimen name="default_controls_margin">10dp</dimen>
 
     <!--Setting preference-->
+    <dimen name="setting_title_size">18sp</dimen>
     <dimen name="setting_bar_height">60dp</dimen>
     <dimen name="setting_padding">15dp</dimen>
     <dimen name="setting_catalog_padding">15dp</dimen>
-    <dimen name="setting_title_size">17sp</dimen>
+    <dimen name="setting_pref_title_size">15sp</dimen>
     <dimen name="setting_catalog_size">14sp</dimen>
-    <dimen name="setting_text_size">16sp</dimen>
+    <dimen name="setting_summary_size">13sp</dimen>
+    <dimen name="setting_elevation">7dp</dimen>
+    <!--Setting preference small -->
+    <dimen name="setting_title_size_small">15sp</dimen>
+    <dimen name="setting_bar_height_small">40dp</dimen>
+    <dimen name="setting_padding_small">5dp</dimen>
+    <dimen name="setting_catalog_padding_small">5dp</dimen>
+    <dimen name="setting_pref_title_size_small">12sp</dimen>
+    <dimen name="setting_catalog_size_small">11sp</dimen>
+    <dimen name="setting_summary_size_small">10sp</dimen>
+    <dimen name="setting_elevation_small">3dp</dimen>
 
     <!--Camera menu-->
     <dimen name="menu_item_height">50dp</dimen>

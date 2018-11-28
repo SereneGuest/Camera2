@@ -6,27 +6,26 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical">
         <TextView
             android:id="@android:id/title"
-            android:padding="@dimen/setting_padding"
-            android:layout_weight="1"
-            android:layout_width="0dp"
+            android:padding="@dimen/setting_padding_small"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/setting_pref_title_size"
+            android:textSize="@dimen/setting_pref_title_size_small"
             android:textColor="@color/setting_title_color"/>
 
         <Switch
             android:id="@android:id/switch_widget"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="@dimen/setting_padding"/>
+            android:padding="@dimen/setting_padding_small"/>
     </LinearLayout>
     <TextView
         android:id="@android:id/summary"
-        android:paddingLeft="@dimen/setting_padding"
-        android:textSize="@dimen/setting_summary_size"
+        android:paddingLeft="@dimen/setting_padding_small"
         android:layout_width="match_parent"
+        android:textSize="@dimen/setting_summary_size_small"
         android:layout_height="wrap_content" />
 
 
