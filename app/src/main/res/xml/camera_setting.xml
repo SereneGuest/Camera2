@@ -4,22 +4,22 @@
         android:layout="@layout/pref_catalog_layout"
         android:title="@string/setting_photo">
         <ListPreference
-            android:layout="@layout/list_pref_layout"
+            android:layout="@layout/pref_listpref_layout"
             android:title="@string/setting_camera_id"
             android:key="pref_camera_id"
             android:entries="@array/menu_camera_id_list"
             android:entryValues="@array/menu_camera_id_list"
             android:defaultValue="@string/default_camera_id"/>
         <ListPreference
-            android:layout="@layout/list_pref_layout"
+            android:layout="@layout/pref_listpref_layout"
             android:title="@string/setting_picture_format"
             android:key="pref_picture_format"/>
         <ListPreference
-            android:layout="@layout/list_pref_layout"
+            android:layout="@layout/pref_listpref_layout"
             android:title="@string/setting_picture_size"
             android:key="pref_picture_size"/>
         <ListPreference
-            android:layout="@layout/list_pref_layout"
+            android:layout="@layout/pref_listpref_layout"
             android:title="@string/setting_preview_size"
             android:key="pref_preview_size"/>
     </PreferenceCategory>
@@ -27,14 +27,14 @@
         android:layout="@layout/pref_catalog_layout"
         android:title="@string/setting_video">
         <ListPreference
-            android:layout="@layout/list_pref_layout"
+            android:layout="@layout/pref_listpref_layout"
             android:title="@string/setting_camera_id"
             android:key="pref_video_camera_id"
             android:entries="@array/menu_camera_id_list"
             android:entryValues="@array/menu_camera_id_list"
             android:defaultValue="@string/default_camera_id"/>
         <ListPreference
-            android:layout="@layout/list_pref_layout"
+            android:layout="@layout/pref_listpref_layout"
             android:title="@string/setting_video_size"
             android:key="pref_video_size"/>
     </PreferenceCategory>
@@ -42,11 +42,12 @@
         android:layout="@layout/pref_catalog_layout"
         android:title="@string/setting_options">
         <SwitchPreference
-            android:layout="@layout/switch_pref_layout"
+            android:layout="@layout/pref_switch_layout"
             android:title="@string/setting_restart_preview"
             android:key="pref_restart_preview"
             android:defaultValue="true"/>
         <Preference
+            android:layout="@layout/pref_default_layout"
             android:title="@string/support_info_title"
             android:key="pref_support_info"
             android:summary="@string/show_support_info"/>
@@ -55,7 +56,7 @@
         android:layout="@layout/pref_catalog_layout"
         android:title="@string/setting_advance">
         <SwitchPreference
-            android:layout="@layout/switch_pref_layout"
+            android:layout="@layout/pref_switch_layout"
             android:title="@string/title_enable_dual_camera"
             android:key="pref_enable_dual_camera"
             android:summaryOff="@string/summary_restart"
@@ -68,14 +69,14 @@
         android:title="@string/setting_dual_camera"
         android:dependency="pref_enable_dual_camera">
         <ListPreference
-            android:layout="@layout/list_pref_layout"
+            android:layout="@layout/pref_listpref_layout"
             android:title="@string/setting_main_camera_id"
             android:key="pref_main_camera_id"
             android:entries="@array/menu_camera_id_list"
             android:entryValues="@array/menu_camera_id_list"
             android:defaultValue="@string/default_camera_id"/>
         <ListPreference
-            android:layout="@layout/list_pref_layout"
+            android:layout="@layout/pref_listpref_layout"
             android:title="@string/setting_aux_camera_id"
             android:key="pref_aux_camera_id"
             android:entries="@array/menu_camera_id_list"

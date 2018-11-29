@@ -1,17 +1,17 @@
 package com.smewise.camera2.manager;
 
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.params.MeteringRectangle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
 
 import com.smewise.camera2.Config;
 import com.smewise.camera2.callback.CameraUiEvent;
-import com.smewise.camera2.ui.CameraBaseUI;
 import com.smewise.camera2.ui.FocusView;
+import com.smewise.camera2.utils.CoordinateTransformer;
 
 import java.lang.ref.WeakReference;
 
@@ -26,20 +26,20 @@ public class FocusOverlayManager {
     private FocusView mFocusView;
     private MainHandler mHandler;
     private CameraUiEvent mListener;
-    private int previewWidth;
-    private int previewHeight;
     private float currentX;
     private float currentY;
-    private final int AREA_SIZE = 200;
+    private CoordinateTransformer mTransformer;
+    private Rect mPreviewRect;
+    private Rect mFocusRect;
 
-    private static final int HIDE_FOCUS_DELAY = 3000;
+    private static final int HIDE_FOCUS_DELAY = 4000;
     private static final int MSG_HIDE_FOCUS = 0x10;
 
 
     private static class MainHandler extends Handler {
         final WeakReference<FocusOverlayManager> mManager;
 
-        public MainHandler(FocusOverlayManager manager, Looper looper) {
+        MainHandler(FocusOverlayManager manager, Looper looper) {
             super(looper);
             mManager = new WeakReference<>(manager);
         }
@@ -52,6 +52,7 @@ public class FocusOverlayManager {
             }
             switch (msg.what) {
                 case MSG_HIDE_FOCUS:
+                    mManager.get().mFocusView.resetToDefaultPosition();
                     mManager.get().hideFocusUI();
                     mManager.get().mListener.resetTouchToFocus();
                     break;
@@ -62,16 +63,19 @@ public class FocusOverlayManager {
     public FocusOverlayManager(FocusView focusView, Looper looper) {
         mFocusView = focusView;
         mHandler = new MainHandler(this, looper);
+        mFocusView.resetToDefaultPosition();
+        mFocusRect = new Rect();
     }
 
     public void setListener(CameraUiEvent listener) {
         mListener = listener;
     }
 
-    public void setPreviewSize(int width, int height) {
-        previewWidth = width;
-        previewHeight = height;
+    public void onPreviewChanged(int width, int height, CameraCharacteristics c) {
+        mPreviewRect = new Rect(0, 0, width, height);
+        mTransformer = new CoordinateTransformer(c, rectToRectF(mPreviewRect));
     }
+
     /* just set focus view position, not start animation*/
     public void startFocus(float x, float y) {
         currentX = x;
@@ -104,6 +108,7 @@ public class FocusOverlayManager {
     }
 
     public void hideFocusUI() {
+        //mFocusView.resetToDefaultPosition();
         mFocusView.hideFocusView();
     }
 
@@ -111,31 +116,24 @@ public class FocusOverlayManager {
         mHandler.removeMessages(MSG_HIDE_FOCUS);
     }
 
-    public MeteringRectangle getFocusArea(CameraCharacteristics c, boolean isFocusArea) {
+    public MeteringRectangle getFocusArea(float x, float y, boolean isFocusArea) {
+        currentX = x;
+        currentY = y;
         if (isFocusArea) {
-            return calcTapAreaForCamera2(c, previewWidth / 5, 1000);
+            return calcTapAreaForCamera2(mPreviewRect.width() / 5, 1000);
         } else {
-            return calcTapAreaForCamera2(c, previewWidth / 3, 800);
+            return calcTapAreaForCamera2(mPreviewRect.width() / 4, 1000);
         }
     }
 
-    private MeteringRectangle calcTapAreaForCamera2(CameraCharacteristics c, int areaSize, int
-            weight) {
-        Rect rect = c.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE);
-        Log.d(TAG, "active Rect:" + rect.toString());
-        Rect newRect;
-        int leftPos, topPos;
-        float newX = currentY;
-        float newY = previewWidth - currentX;
-        leftPos = (int) ((newX / previewHeight) * rect.right);
-        topPos = (int) ((newY / previewWidth) * rect.bottom);
-        int left = clamp(leftPos - areaSize, 0, rect.right);
-        int top = clamp(topPos - areaSize, 0, rect.bottom);
-        int right = clamp(leftPos + areaSize, leftPos, rect.right);
-        int bottom = clamp(topPos + areaSize, topPos, rect.bottom);
-        newRect = new Rect(left, top, right, bottom);
-        Log.d(TAG, newRect.toString());
-        return new MeteringRectangle(newRect, weight);
+    private MeteringRectangle calcTapAreaForCamera2(int areaSize, int weight) {
+        int left = clamp((int) currentX - areaSize / 2,
+                mPreviewRect.left, mPreviewRect.right - areaSize);
+        int top = clamp((int) currentY - areaSize / 2,
+                mPreviewRect.top, mPreviewRect.bottom - areaSize);
+        RectF rectF = new RectF(left, top, left + areaSize, top + areaSize);
+        toFocusRect(mTransformer.toCameraSpace(rectF));
+        return new MeteringRectangle(mFocusRect, weight);
     }
 
     private int clamp(int x, int min, int max) {
@@ -146,5 +144,16 @@ public class FocusOverlayManager {
             return min;
         }
         return x;
+    }
+
+    private RectF rectToRectF(Rect rect) {
+        return new RectF(rect);
+    }
+
+    private void toFocusRect(RectF rectF) {
+        mFocusRect.left = Math.round(rectF.left);
+        mFocusRect.top = Math.round(rectF.top);
+        mFocusRect.right = Math.round(rectF.right);
+        mFocusRect.bottom = Math.round(rectF.bottom);
     }
 }

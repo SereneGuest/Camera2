@@ -12,11 +12,11 @@
         android:id="@+id/indicator_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:textSize="@dimen/indicatorTextSize"
+        app:textSize="@dimen/indicatorTextSizeSmall"
         app:textColor="@color/indicator_normal_color"
         app:activeColor="@color/indicator_active_color"
-        app:paddingHor="@dimen/indicatorPaddingHor"
-        app:paddingVer="@dimen/indicatorPaddingVer"/>
+        app:paddingHor="@dimen/indicatorPaddingHorSmall"
+        app:paddingVer="@dimen/indicatorPaddingVerSmall"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -25,23 +25,23 @@
         android:gravity="center">
         <com.smewise.camera2.ui.CircleImageView
             android:id="@+id/thumbnail"
-            android:layout_width="@dimen/thumbnail_size"
-            android:layout_height="@dimen/thumbnail_size"
-            app:border_width="@dimen/thumbnail_border_width"
+            android:layout_width="@dimen/thumbnail_size_small"
+            android:layout_height="@dimen/thumbnail_size_small"
+            app:border_width="@dimen/thumbnail_border_width_small"
             app:border_color="@color/setting_normal_color"
-            android:layout_marginEnd="@dimen/bottom_control_margin" />
+            android:layout_marginEnd="@dimen/bottom_control_margin_small" />
 
         <com.smewise.camera2.ui.ShutterButton
             android:id="@+id/btn_shutter"
-            android:layout_width="@dimen/shutter_button_size"
-            android:layout_height="@dimen/shutter_button_size" />
+            android:layout_width="@dimen/shutter_button_size_small"
+            android:layout_height="@dimen/shutter_button_size_small" />
 
         <ImageButton
             android:id="@+id/btn_setting"
             android:background="@drawable/setting_background"
-            android:layout_width="@dimen/setting_icon_size"
-            android:layout_height="@dimen/setting_icon_size"
-            android:layout_marginStart="@dimen/bottom_control_margin"
+            android:layout_width="@dimen/setting_icon_size_small"
+            android:layout_height="@dimen/setting_icon_size_small"
+            android:layout_marginStart="@dimen/bottom_control_margin_small"
             android:contentDescription="@string/app_name"
             android:scaleType="center"
             android:src="@drawable/ic_vector_settings" />

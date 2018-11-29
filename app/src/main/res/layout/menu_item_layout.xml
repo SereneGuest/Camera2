@@ -3,17 +3,17 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="wrap_content"
-    android:minWidth="@dimen/options_min_width"
-    android:minHeight="@dimen/options_item_height"
+    android:minWidth="@dimen/menu_min_width"
+    android:minHeight="@dimen/menu_item_height"
     android:layout_height="wrap_content"
-    android:padding="@dimen/options_layout_margin"
+    android:padding="@dimen/menu_layout_margin"
     android:gravity="center"
     android:background="?android:attr/selectableItemBackgroundBorderless">
     <ImageView
         android:id="@+id/item_icon"
-        android:layout_width="@dimen/options_img_size"
-        android:layout_height="@dimen/options_img_size"
-        android:layout_marginTop="@dimen/options_text_margin"
+        android:layout_width="@dimen/menu_img_size"
+        android:layout_height="@dimen/menu_img_size"
+        android:layout_marginTop="@dimen/menu_text_margin"
         android:scaleType="centerInside"
         android:background="@drawable/setting_icon_bg_normal"
         android:clickable="false"
@@ -23,9 +23,9 @@
         android:clickable="false"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/options_text_margin"
-        android:textSize="@dimen/options_text_size"
-        android:textColor="@color/options_text_color"
+        android:paddingTop="@dimen/menu_text_margin"
+        android:textSize="@dimen/menu_text_size"
+        android:textColor="@color/menu_text_color"
         android:layout_gravity="center"/>
 
 </LinearLayout>

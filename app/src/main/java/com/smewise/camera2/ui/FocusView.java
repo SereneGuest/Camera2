@@ -23,6 +23,8 @@ public class FocusView extends View {
     private final String TAG = this.getClass().getSimpleName();
     private int radiusOuter, radiusInner, strokeWidth;
     private int colorSuccess, colorFailed, colorNormal, colorCurrent;
+    private int previewWidth;
+    private int previewHeight;
     private RectF outerRectF, innerRectF;
     private Paint paint;
     private ObjectAnimator animator;
@@ -141,13 +143,11 @@ public class FocusView extends View {
         this.setTranslationY(y);
     }
 
-
-    private int previewWidth, previewHeight;
-
     public void initFocusArea(int width, int height) {
         previewWidth = width;
         previewHeight = height;
         Log.d(TAG, "init focus view:" + previewWidth + "x" + previewHeight);
+        resetToDefaultPosition();
     }
 
     public static RectF rectToRectF(Rect r) {

@@ -158,7 +158,7 @@ public class SettingFragment extends PreferenceFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable
             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.setting_list, container, false);
+        View view = inflater.inflate(R.layout.pref_settings_layout, container, false);
         View bottomBar = view.findViewById(R.id.bottom_bar);
         ImageView menuBack = view.findViewById(R.id.iv_menu_back);
         menuBack.setOnClickListener(new View.OnClickListener() {

@@ -7,44 +7,64 @@
     <dimen name="radius_inner">30dp</dimen>
     <dimen name="stroke_width">2dp</dimen>
     <!--for shutter button-->
-    <dimen name="outer_radius">3dp</dimen>
+    <dimen name="shutter_outer_radius">3dp</dimen>
 
-    <dimen name="setting_elevation">7dp</dimen>
+    <!--bottom control-->
     <dimen name="setting_icon_size">50dp</dimen>
-    <dimen name="setting_bg_size">45dp</dimen>
-    <dimen name="thumbnail_size">51dp</dimen>
+    <dimen name="thumbnail_size">50dp</dimen>
     <dimen name="shutter_button_size">80dp</dimen>
     <dimen name="bottom_control_margin">45dp</dimen>
-    <dimen name="border_width">1dp</dimen>
-
-    <dimen name="tab_text_size">12sp</dimen>
-    <dimen name="tab_max_width">120dp</dimen>
-    <dimen name="tab_indicator_height">1dp</dimen>
-    <dimen name="tab_indicator_margin">25dp</dimen>
-    <dimen name="tab_layout_width">260dp</dimen>
-    <dimen name="tab_layout_height">50dp</dimen>
-
+    <dimen name="thumbnail_border_width">2dp</dimen>
+    <!--bottom control small-->
+    <dimen name="setting_icon_size_small">30dp</dimen>
+    <dimen name="thumbnail_size_small">30dp</dimen>
+    <dimen name="shutter_button_size_small">45dp</dimen>
+    <dimen name="bottom_control_margin_small">10dp</dimen>
+    <dimen name="thumbnail_border_width_small">1dp</dimen>
+    <!--Misc-->
     <dimen name="seek_bar_height">20dp</dimen>
     <dimen name="cover_icon_margin">50dp</dimen>
-
     <dimen name="default_button_size">38dp</dimen>
     <dimen name="default_controls_margin">10dp</dimen>
 
+    <!--Setting preference-->
+    <dimen name="setting_title_size">18sp</dimen>
     <dimen name="setting_bar_height">60dp</dimen>
     <dimen name="setting_padding">15dp</dimen>
     <dimen name="setting_catalog_padding">15dp</dimen>
-    <dimen name="setting_title_size">17sp</dimen>
+    <dimen name="setting_pref_title_size">15sp</dimen>
     <dimen name="setting_catalog_size">14sp</dimen>
-    <dimen name="setting_text_size">16sp</dimen>
+    <dimen name="setting_summary_size">13sp</dimen>
+    <dimen name="setting_elevation">7dp</dimen>
+    <!--Setting preference small -->
+    <dimen name="setting_title_size_small">15sp</dimen>
+    <dimen name="setting_bar_height_small">40dp</dimen>
+    <dimen name="setting_padding_small">5dp</dimen>
+    <dimen name="setting_catalog_padding_small">5dp</dimen>
+    <dimen name="setting_pref_title_size_small">12sp</dimen>
+    <dimen name="setting_catalog_size_small">11sp</dimen>
+    <dimen name="setting_summary_size_small">10sp</dimen>
+    <dimen name="setting_elevation_small">3dp</dimen>
 
-    <dimen name="options_item_height">@dimen/tab_layout_height</dimen>
-    <dimen name="options_img_size">35dp</dimen>
-    <dimen name="options_text_size">13sp</dimen>
-    <dimen name="options_text_margin">5dp</dimen>
-    <dimen name="options_button_text_size">15sp</dimen>
-    <dimen name="options_layout_margin">3dp</dimen>
-    <dimen name="options_min_width">80dp</dimen>
+    <!--Camera menu-->
+    <dimen name="menu_item_height">50dp</dimen>
+    <dimen name="menu_img_size">35dp</dimen>
+    <dimen name="menu_text_size">13sp</dimen>
+    <dimen name="menu_text_margin">5dp</dimen>
+    <dimen name="menu_button_text_size">15sp</dimen>
+    <dimen name="menu_layout_margin">3dp</dimen>
+    <dimen name="menu_min_width">80dp</dimen>
+    <!-- Recording timer -->
     <dimen name="record_timer_padding">10dp</dimen>
     <dimen name="record_timer_height">30dp</dimen>
     <dimen name="record_view_height">60dp</dimen>
+    <!--Indicator View-->
+    <dimen name="indicatorTextSize">13sp</dimen>
+    <dimen name="indicatorPaddingHor">13dp</dimen>
+    <dimen name="indicatorPaddingVer">10dp</dimen>
+    <!--Indicator View small-->
+    <dimen name="indicatorTextSizeSmall">10sp</dimen>
+    <dimen name="indicatorPaddingHorSmall">5dp</dimen>
+    <dimen name="indicatorPaddingVerSmall">5dp</dimen>
+
 </resources>

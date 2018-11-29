@@ -29,7 +29,7 @@ public class CameraActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setWindowFlag();
-        setContentView(R.layout.main_layout);
+        setContentView(R.layout.camera_main_layout);
     }
 
     private boolean isSettingShortcut() {

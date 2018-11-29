@@ -29,7 +29,7 @@ public class ProfessionalUI extends CameraBaseUI implements TextureView.SurfaceT
     public ProfessionalUI(Context context, Handler handler, CameraUiEvent event) {
         super(event);
         mRootView = (RelativeLayout) LayoutInflater.from(context)
-                .inflate(R.layout.professional_layout, null);
+                .inflate(R.layout.module_professional_layout, null);
         mPreviewTexture = mRootView.findViewById(R.id.texture_preview);
         mPreviewTexture.setSurfaceTextureListener(this);
         mPreviewTexture.setGestureListener(this);

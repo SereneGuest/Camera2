@@ -12,10 +12,10 @@
     <string name="permission_btn_setting">去设置界面</string>
     <string name="permission_btn_quit">退出</string>
 
-    <string name="mode_photo">拍照</string>
-    <string name="mode_dual_camera">双摄</string>
-    <string name="mode_professional">专业</string>
-    <string name="mode_video">视频</string>
+    <string name="mode_photo">拍 照</string>
+    <string name="mode_dual_camera">双 摄</string>
+    <string name="mode_professional">专 业</string>
+    <string name="mode_video">视 频</string>
     <string name="un_named">未命名</string>
 
     <string name="settings_msg">设置</string>
@@ -49,5 +49,7 @@
     <string name="support_info_title">Camera2 支持情况</string>
     <string name="support_info_done">确定</string>
     <string name="show_support_info">显示设备支持信息</string>
+
+    <string name="open_file_error">找不到打开 图片/视频 的应用</string>
 
 </resources>

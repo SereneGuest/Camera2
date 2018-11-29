@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="textColor" format="color" />
+    <attr name="textSize" format="dimension" />
+    <attr name="paddingHor" format="dimension" />
+    <attr name="paddingVer" format="dimension" />
+    <attr name="activeColor" format="color" />
+    <declare-styleable name="IndicatorView">
+        <attr name="textColor" />
+        <attr name="textSize" />
+        <attr name="activeColor" />
+        <attr name="paddingVer" />
+        <attr name="paddingHor" />
+    </declare-styleable>
+</resources>

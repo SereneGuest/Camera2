@@ -11,10 +11,6 @@
         <item name="android:listDivider">@color/colorAccent</item>
     </style>
 
-    <style name="TabLayoutTextStyle">
-        <item name="android:textSize">@dimen/tab_text_size</item>
-    </style>
-
     <style name="SeekBarTheme" parent="Widget.AppCompat.SeekBar">
     </style>
 

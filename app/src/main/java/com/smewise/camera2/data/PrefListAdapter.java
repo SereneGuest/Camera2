@@ -32,8 +32,8 @@ public class PrefListAdapter extends RecyclerView.Adapter<PrefListAdapter.MyView
     public PrefListAdapter(Context context, PreferenceGroup group) {
         mContext = context;
         mGroup = group;
-        mTextColor = context.getResources().getColor(R.color.options_text_color);
-        mHighlightColor = context.getResources().getColor(R.color.options_highlight_color);
+        mTextColor = context.getResources().getColor(R.color.menu_text_color);
+        mHighlightColor = context.getResources().getColor(R.color.menu_highlight_color);
     }
 
     public PreferenceGroup getPrefGroup() {
@@ -55,7 +55,7 @@ public class PrefListAdapter extends RecyclerView.Adapter<PrefListAdapter.MyView
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.option_item_layout, parent,
+        View view = LayoutInflater.from(mContext).inflate(R.layout.menu_item_layout, parent,
                 false);
         return new MyViewHolder(view);
     }

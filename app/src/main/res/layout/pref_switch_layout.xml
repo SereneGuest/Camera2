@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@android:id/title"
+            android:padding="@dimen/setting_padding"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/setting_pref_title_size"
+            android:textColor="@color/setting_title_color"/>
+
+        <Switch
+            android:id="@android:id/switch_widget"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/setting_padding"/>
+    </LinearLayout>
+    <TextView
+        android:id="@android:id/summary"
+        android:paddingLeft="@dimen/setting_padding"
+        android:textSize="@dimen/setting_summary_size"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+</LinearLayout>

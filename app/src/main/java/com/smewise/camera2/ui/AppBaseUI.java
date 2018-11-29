@@ -20,7 +20,6 @@ import com.smewise.camera2.utils.MediaFunc;
 
 public class AppBaseUI implements View.OnClickListener {
     private CoverView mCoverView;
-    private LinearLayout mIndicatorContainer;
     private RelativeLayout mPreviewRootView;
     private ShutterButton mShutter;
     private ImageButton mSetting;
@@ -29,6 +28,7 @@ public class AppBaseUI implements View.OnClickListener {
     private FocusView mFocusView;
     private LinearLayout mMenuContainer;
     private CameraUiEvent mEvent;
+    private IndicatorView mIndicatorView;
 
     private Point mDisplaySize;
     private int mVirtualKeyHeight;
@@ -36,7 +36,6 @@ public class AppBaseUI implements View.OnClickListener {
 
     public AppBaseUI(Context context, View rootView) {
         mCoverView = rootView.findViewById(R.id.cover_view);
-        mIndicatorContainer = rootView.findViewById(R.id.module_indicator_container);
 
         mPreviewRootView = rootView.findViewById(R.id.preview_root_view);
         mShutter = rootView.findViewById(R.id.btn_shutter);
@@ -47,10 +46,12 @@ public class AppBaseUI implements View.OnClickListener {
         mThumbnail = rootView.findViewById(R.id.thumbnail);
         mThumbnail.setOnClickListener(this);
         mMenuContainer = rootView.findViewById(R.id.menu_container);
+        mIndicatorView = rootView.findViewById(R.id.indicator_view);
 
         mDisplaySize = CameraUtil.getDisplaySize(context);
         mVirtualKeyHeight = CameraUtil.getVirtualKeyHeight(context);
-        mTopBarHeight = context.getResources().getDimensionPixelSize(R.dimen.tab_layout_height);
+        mTopBarHeight = context.getResources()
+                .getDimensionPixelSize(R.dimen.menu_item_height);
         mFocusView = new FocusView(context);
         mFocusView.setVisibility(View.GONE);
         mPreviewRootView.addView(mFocusView);
@@ -58,11 +59,6 @@ public class AppBaseUI implements View.OnClickListener {
 
     public void setCameraUiEvent(CameraUiEvent event) {
         mEvent = event;
-    }
-
-    public void setIndicatorView(View view) {
-        mIndicatorContainer.removeAllViews();
-        mIndicatorContainer.addView(view);
     }
 
     public RelativeLayout getRootView() {
@@ -81,6 +77,10 @@ public class AppBaseUI implements View.OnClickListener {
         return mBottomContainer;
     }
 
+    public IndicatorView getIndicatorView() {
+        return mIndicatorView;
+    }
+
     public void setMenuView(View view) {
         mMenuContainer.removeAllViews();
         mMenuContainer.addView(view);
@@ -94,40 +94,40 @@ public class AppBaseUI implements View.OnClickListener {
         mMenuContainer.removeAllViews();
     }
 
+    /**
+     * Adjust layout when based on preview width
+     * @param width preview screen width
+     * @param height preview screen height
+     */
     public void updateUiSize(int width, int height) {
-        //update preview ui size
-        boolean is4x3 = width * 4 == height * 3;
-        boolean is18x9 = (mDisplaySize.y + mVirtualKeyHeight) * 9 == mDisplaySize.x * 18;
-        RelativeLayout.LayoutParams preParams = new RelativeLayout.LayoutParams(width, height);
+        mFocusView.initFocusArea(width, height);
+        int realHeight = mDisplaySize.y + mVirtualKeyHeight;
+        int bottomHeight = CameraUtil.getBottomBarHeight(mDisplaySize.x);
+        RelativeLayout.LayoutParams previewParams = new RelativeLayout.LayoutParams(width, height);
         RelativeLayout.LayoutParams bottomBarParams =
                 (RelativeLayout.LayoutParams) mBottomContainer.getLayoutParams();
-        int bottomHeight = CameraUtil.getBottomBarHeight(mDisplaySize.x);
-        if (mVirtualKeyHeight == 0 && is4x3) {
-            // 4:3 no virtual key
-            preParams.setMargins(0, mTopBarHeight, 0, 0);
-            bottomHeight -= mTopBarHeight;
-        } else if (mVirtualKeyHeight == 0) {
-            // 16:9 no virtual key
-            bottomHeight -= mTopBarHeight;
-        } else if (!is4x3) {
-            // 16:9 has virtual key
-            if (is18x9) {
-                preParams.setMargins(0, mDisplaySize.y - height, 0, 0);
-            }
-            mBottomContainer.setPadding(0, 0, 0, (int) (mVirtualKeyHeight / 1.5f));
-        } else {
-            // 4:3 has virtual key
-            if (is18x9) {
-                preParams.setMargins(0, mTopBarHeight, 0, 0);
-                bottomHeight = mDisplaySize.y - height - mTopBarHeight + mVirtualKeyHeight;
-            }
-            mBottomContainer.setPadding(0, 0, 0, (int) (mVirtualKeyHeight / 1.5f));
+        int topMargin = 0;
+        boolean needTopMargin = (height + 2 * mTopBarHeight) < realHeight;
+        boolean needAlignCenter = width == height;
+        if (needAlignCenter)  {
+            topMargin = (realHeight - mTopBarHeight - mVirtualKeyHeight - height) / 2;
+        } else if (needTopMargin) {
+            topMargin = mTopBarHeight;
         }
-        mPreviewRootView.setLayoutParams(preParams);
+        int reservedHeight = realHeight - topMargin - height;
+        boolean needAdjustBottomBar = reservedHeight > bottomHeight;
+        if (needAdjustBottomBar) {
+            bottomHeight = reservedHeight;
+        } else {
+            bottomHeight += mVirtualKeyHeight;
+        }
+        // preview
+        previewParams.setMargins(0, topMargin, 0, 0);
+        mPreviewRootView.setLayoutParams(previewParams);
+        // bottom bar
         bottomBarParams.height = bottomHeight;
+        mBottomContainer.setPadding(0, 0, 0, mVirtualKeyHeight);
         mBottomContainer.setLayoutParams(bottomBarParams);
-
-        mFocusView.initFocusArea(width, height);
     }
 
     /* should not call in main thread */
@@ -159,7 +159,7 @@ public class AppBaseUI implements View.OnClickListener {
         if (mMenuContainer.getChildCount() > 0) {
             mMenuContainer.getChildAt(0).setClickable(clickable);
         }
-        mIndicatorContainer.getChildAt(0).setClickable(clickable);
+        mIndicatorView.setClickable(clickable);
     }
 
     @Override

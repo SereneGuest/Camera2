@@ -26,7 +26,7 @@
             android:layout_height="@dimen/record_timer_height"
             android:gravity="center_vertical"
             android:background="@drawable/record_time_bg"
-            android:textColor="@color/color_timer_text"
+            android:textColor="@color/timer_text_color"
             android:paddingLeft="@dimen/record_timer_padding"
             android:paddingRight="@dimen/record_timer_padding"/>
     </LinearLayout>

@@ -67,7 +67,6 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
         getBaseUI().setCameraUiEvent(mCameraUiEvent);
         getBaseUI().setMenuView(mCameraMenu.getView());
         addModuleView(mUI.getRootView());
-        loadSettingFromPref();
         Log.d(TAG, "start module");
     }
 
@@ -107,7 +106,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
         public void onViewChange(int width, int height) {
             super.onViewChange(width, height);
             getBaseUI().updateUiSize(width, height);
-            mFocusManager.setPreviewSize(width, height);
+            mFocusManager.onPreviewChanged(width, height, mDeviceMgr.getCharacteristics());
         }
 
         @Override
@@ -182,10 +181,11 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
 
         @Override
         public void onTouchToFocus(float x, float y) {
+            // close all menu when touch to focus
+            mCameraMenu.close();
             mFocusManager.startFocus(x, y);
-            CameraCharacteristics c = mDeviceMgr.getCharacteristics();
-            MeteringRectangle focusRect = mFocusManager.getFocusArea(c, true);
-            MeteringRectangle meterRect = mFocusManager.getFocusArea(c, false);
+            MeteringRectangle focusRect = mFocusManager.getFocusArea(x, y, true);
+            MeteringRectangle meterRect = mFocusManager.getFocusArea(x, y, false);
             mSession.applyRequest(Session.RQ_AF_AE_REGIONS, focusRect, meterRect);
         }
 
@@ -206,6 +206,8 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
 
         @Override
         public <T> void onAction(String type, T value) {
+            // close all menu when ui click
+            mCameraMenu.close();
             switch (type) {
                 case CameraUiEvent.ACTION_CLICK:
                     handleClick((View) value);
@@ -223,11 +225,6 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
             }
         }
     };
-
-    private void loadSettingFromPref() {
-        mSession.setRequest(Session.RQ_FLASH_MODE,
-                mMenuInfo.getCurrentValue(CameraSettings.KEY_FLASH_MODE));
-    }
 
     private MenuInfo mMenuInfo = new MenuInfo() {
         @Override
@@ -284,8 +281,12 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
 
     private void switchCamera() {
         int currentId = Integer.parseInt(mDeviceMgr.getCameraId());
+        int cameraCount = mDeviceMgr.getCameraIdList().length;
         currentId++;
-        if (currentId >= mDeviceMgr.getCameraIdList().length) {
+        if (cameraCount < 2) {
+            // only one camera, just return
+            return;
+        } else if (currentId >= cameraCount) {
             currentId = 0;
         }
         String switchId = String.valueOf(currentId);
