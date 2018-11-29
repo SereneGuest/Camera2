@@ -113,6 +113,7 @@ public class RequestManager {
                 Log.e(TAG, "error value for flash mode");
                 break;
         }
+        builder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_IDLE);
         return builder.build();
     }
 

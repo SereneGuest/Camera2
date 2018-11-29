@@ -44,6 +44,12 @@ public class CoordinateTransformer {
         return result;
     }
 
+    /**
+     * For matrix, postTranslate() execute before postRotate(),
+     * postRotate() execute before setScale(), below code matrix execute order:
+     * 1.transform.postTranslate() -> 2.transform.postTranslate() -> 3.transform.postRotate()
+     * -> 4.transform.setScale() -> 5.transform.setConcat()
+     */
     private Matrix previewToCameraTransform(boolean mirrorX, int displayOrientation,
           RectF previewRect) {
         Matrix transform = new Matrix();

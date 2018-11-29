@@ -118,6 +118,8 @@ public class AppBaseUI implements View.OnClickListener {
         boolean needAdjustBottomBar = reservedHeight > bottomHeight;
         if (needAdjustBottomBar) {
             bottomHeight = reservedHeight;
+        } else {
+            bottomHeight += mVirtualKeyHeight;
         }
         // preview
         previewParams.setMargins(0, topMargin, 0, 0);
