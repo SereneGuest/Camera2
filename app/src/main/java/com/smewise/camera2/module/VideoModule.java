@@ -106,7 +106,7 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
                 @Override
                 public void run() {
                     getBaseUI().updateUiSize(width, height);
-                    mFocusManager.setPreviewSize(width, height);
+                    mFocusManager.onPreviewChanged(width, height, mDeviceMgr.getCharacteristics());
                 }
             });
         }
@@ -274,8 +274,8 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
             mCameraMenu.close();
             mFocusManager.startFocus(x, y);
             CameraCharacteristics c = mDeviceMgr.getCharacteristics();
-            MeteringRectangle focusRect = mFocusManager.getFocusArea(c, true);
-            MeteringRectangle meterRect = mFocusManager.getFocusArea(c, false);
+            MeteringRectangle focusRect = mFocusManager.getFocusArea(x, y, true);
+            MeteringRectangle meterRect = mFocusManager.getFocusArea(x, y, false);
             mSession.applyRequest(Session.RQ_AF_AE_REGIONS, focusRect, meterRect);
         }
 

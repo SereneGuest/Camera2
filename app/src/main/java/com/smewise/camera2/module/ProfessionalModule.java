@@ -98,7 +98,7 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
         public void onViewChange(int width, int height) {
             super.onViewChange(width, height);
             getBaseUI().updateUiSize(width, height);
-            mFocusManager.setPreviewSize(width, height);
+            mFocusManager.onPreviewChanged(width, height, mDeviceMgr.getCharacteristics());
         }
 
         @Override
@@ -171,8 +171,8 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
         public void onTouchToFocus(float x, float y) {
             mFocusManager.startFocus(x, y);
             CameraCharacteristics c = mDeviceMgr.getCharacteristics();
-            MeteringRectangle focusRect = mFocusManager.getFocusArea(c, true);
-            MeteringRectangle meterRect = mFocusManager.getFocusArea(c, false);
+            MeteringRectangle focusRect = mFocusManager.getFocusArea(x, y, true);
+            MeteringRectangle meterRect = mFocusManager.getFocusArea(x, y, false);
             mSession.applyRequest(Session.RQ_AF_AE_REGIONS, focusRect, meterRect);
         }
 

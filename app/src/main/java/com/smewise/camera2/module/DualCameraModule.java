@@ -115,7 +115,7 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
             super.onViewChange(width, height);
             getBaseUI().updateUiSize(width, height);
             mUI.updateUISize(width, height);
-            mFocusManager.setPreviewSize(width, height);
+            mFocusManager.onPreviewChanged(width, height, mDeviceMgr.getCharacteristics(true));
         }
 
         @Override
@@ -212,10 +212,8 @@ public class DualCameraModule extends CameraModule implements FileSaver.FileList
         @Override
         public void onTouchToFocus(float x, float y) {
             mFocusManager.startFocus(x, y);
-            CameraCharacteristics main = mDeviceMgr.getCharacteristics(true);
-            //CameraCharacteristics aux = mDeviceMgr.getCharacteristics(false);
-            MeteringRectangle focusRect = mFocusManager.getFocusArea(main, true);
-            MeteringRectangle meterRect = mFocusManager.getFocusArea(main, false);
+            MeteringRectangle focusRect = mFocusManager.getFocusArea(x, y, true);
+            MeteringRectangle meterRect = mFocusManager.getFocusArea(x, y, false);
             mSession.applyRequest(Session.RQ_AF_AE_REGIONS, focusRect, meterRect);
             //mAuxSession.applyRequest(Session.RQ_AF_AE_REGIONS, focusRect, meterRect);
         }
