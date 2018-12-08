@@ -226,11 +226,14 @@ public class FileSaver {
         }
         // jpeg rotated, set orientation to normal
         exif.setTagValue(ExifInterface.TAG_ORIENTATION, ExifInterface.Orientation.TOP_LEFT);
-        int width = exif.getTagIntValue(ExifInterface.TAG_IMAGE_WIDTH);
-        int height = exif.getTagIntValue(ExifInterface.TAG_IMAGE_LENGTH);
-        // use exif width & height
-        info.imgWidth = width;
-        info.imgHeight = height;
+        try {
+            // use exif width & height
+            info.imgWidth = exif.getTagIntValue(ExifInterface.TAG_IMAGE_WIDTH);
+            info.imgHeight = exif.getTagIntValue(ExifInterface.TAG_IMAGE_LENGTH);;
+        } catch (Exception e) {
+            // getTagIntValue() may cause NullPointerException
+            e.printStackTrace();
+        }
         Bitmap origin = BitmapFactory.decodeByteArray(info.imgData, 0, info.imgData.length);
         Bitmap rotatedMap = Bitmap.createBitmap(origin,
                 0, 0, origin.getWidth(), origin.getHeight(), matrix, true);

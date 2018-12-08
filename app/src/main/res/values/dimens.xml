@@ -10,9 +10,9 @@
     <dimen name="shutter_outer_radius">3dp</dimen>
 
     <!--bottom control-->
-    <dimen name="setting_icon_size">50dp</dimen>
-    <dimen name="thumbnail_size">50dp</dimen>
-    <dimen name="shutter_button_size">80dp</dimen>
+    <dimen name="setting_icon_size">45dp</dimen>
+    <dimen name="thumbnail_size">45dp</dimen>
+    <dimen name="shutter_button_size">75dp</dimen>
     <dimen name="bottom_control_margin">45dp</dimen>
     <dimen name="thumbnail_border_width">2dp</dimen>
     <!--bottom control small-->

@@ -44,28 +44,17 @@ public class CoordinateTransformer {
         return result;
     }
 
-    /**
-     * For matrix, postTranslate() execute before postRotate(),
-     * postRotate() execute before setScale(), below code matrix execute order:
-     * 1.transform.postTranslate() -> 2.transform.postTranslate() -> 3.transform.postRotate()
-     * -> 4.transform.setScale() -> 5.transform.setConcat()
-     */
-    private Matrix previewToCameraTransform(boolean mirrorX, int displayOrientation,
+    private Matrix previewToCameraTransform(boolean mirrorX, int sensorOrientation,
           RectF previewRect) {
         Matrix transform = new Matrix();
         // Need mirror for front camera.
         transform.setScale(mirrorX ? -1 : 1, 1);
-        // Translate rect to center point, post rotation and then restore to original position
-        transform.postTranslate(-previewRect.width() / 2, -previewRect.height() / 2);
-        transform.postRotate(-displayOrientation);
-        if (displayOrientation == 180) {
-            transform.postTranslate(previewRect.width() / 2, previewRect.height() / 2);
-        } else {
-            transform.postTranslate(previewRect.height() / 2, previewRect.width() / 2);
-        }
-        // transform previewRect coordinates to mDriverRectF coordinates
+        // Because preview orientation is different  form sensor orientation,
+        // rotate to same orientation, Counterclockwise.
+        transform.postRotate(-sensorOrientation);
+        // Map rotated matrix to preview rect
         transform.mapRect(previewRect);
-        // Map  preview coordinates to driver rect coordinates
+        // Map  preview coordinates to driver coordinates
         Matrix fill = new Matrix();
         fill.setRectToRect(previewRect, mDriverRectF, Matrix.ScaleToFit.FILL);
         // Concat the previous transform on top of the fill behavior.
