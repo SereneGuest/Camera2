@@ -18,7 +18,6 @@ public class ShutterButton extends Button {
     private Paint mPaint;
     private int outerRadius;
     private int innerRadius;
-    private int innerSmallRadius;
     private int outerCircleColor;
     private int innerCircleColor;
     private int recordColor;
@@ -54,7 +53,7 @@ public class ShutterButton extends Button {
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         innerRadius = (int) (getWidth() / 2 - 2.5 * outerRadius);
-        innerSmallRadius = getWidth() / 10;
+        int innerSmallRadius = getWidth() / 10;
         rect.left = getWidth() / 2 - innerSmallRadius;
         rect.top = getHeight() / 2 - innerSmallRadius;
         rect.right = getWidth() / 2 + innerSmallRadius;
