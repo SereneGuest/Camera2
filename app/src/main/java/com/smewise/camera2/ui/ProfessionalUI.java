@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.support.v7.widget.AppCompatSeekBar;
 import android.view.LayoutInflater;
 import android.view.TextureView;
+import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 
@@ -25,6 +26,7 @@ public class ProfessionalUI extends CameraBaseUI implements TextureView.SurfaceT
 
     private GestureTextureView mPreviewTexture;
     private AppCompatSeekBar mFocusLensBar;
+    private SeekView mFocusDistanceView;
 
     public ProfessionalUI(Context context, Handler handler, CameraUiEvent event) {
         super(event);
@@ -34,8 +36,14 @@ public class ProfessionalUI extends CameraBaseUI implements TextureView.SurfaceT
         mPreviewTexture.setSurfaceTextureListener(this);
         mPreviewTexture.setGestureListener(this);
 
-        mFocusLensBar = mRootView.findViewById(R.id.sb_focus_length);
-        mFocusLensBar.setOnSeekBarChangeListener(mFocusLensChangerListener);
+        // TODO: common ui
+        mFocusDistanceView = mRootView.findViewById(R.id.focus_distance_view);
+        String[] items = {"AUTO", "10", "20", "30", "40", "50", "60", "70", "80", "90", "100"};
+        mFocusDistanceView.setContent(items);
+        mFocusDistanceView.setVisibility(View.INVISIBLE);
+        //mFocusDistanceView.setSeekListener(mListener);
+        //mFocusLensBar = mRootView.findViewById(R.id.sb_focus_length);
+        //mFocusLensBar.setOnSeekBarChangeListener(mFocusLensChangerListener);
     }
 
     @Override

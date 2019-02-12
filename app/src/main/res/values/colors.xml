@@ -37,4 +37,7 @@
 
     <color name="indicator_normal_color">#ffffff</color>
     <color name="indicator_active_color">@color/colorAccent</color>
+
+    <color name="seekViewNormalColor">#FFFFFF</color>
+    <color name="seekViewActiveColor">@color/colorAccent</color>
 </resources>

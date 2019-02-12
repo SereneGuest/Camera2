@@ -4,6 +4,16 @@
         <attr name="border_width" format="dimension" />
         <attr name="border_color" format="color" />
     </declare-styleable>
+    <!--SeekView start-->
+    <attr name="textColor" format="color" />
+    <attr name="textSize" format="dimension" />
+    <attr name="paddingHor" format="dimension" />
+    <attr name="paddingVer" format="dimension" />
+    <attr name="activeColor" format="color" />
+    <attr name="tickMarkWidth" format="dimension" />
+    <attr name="tickMarkHeight" format="dimension" />
+    <attr name="tickMarkMargin" format="dimension" />
+    <!--SeekView end-->
     <declare-styleable name="CamListPreference">
         <attr name="key" format="string" />
         <attr name="title" format="string" />
@@ -12,5 +22,22 @@
         <attr name="entries" format="reference" />
         <attr name="entryValues" format="reference" />
         <attr name="entryIcons" format="reference" />
+    </declare-styleable>
+    <declare-styleable name="SeekView">
+        <attr name="textColor" />
+        <attr name="textSize" />
+        <attr name="activeColor" />
+        <attr name="paddingVer" />
+        <attr name="paddingHor" />
+        <attr name="tickMarkWidth" />
+        <attr name="tickMarkHeight" />
+        <attr name="tickMarkMargin" />
+    </declare-styleable>
+    <declare-styleable name="IndicatorView">
+        <attr name="textColor" />
+        <attr name="textSize" />
+        <attr name="activeColor" />
+        <attr name="paddingVer" />
+        <attr name="paddingHor" />
     </declare-styleable>
 </resources>

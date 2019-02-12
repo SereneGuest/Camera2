@@ -66,5 +66,12 @@
     <dimen name="indicatorTextSizeSmall">10sp</dimen>
     <dimen name="indicatorPaddingHorSmall">5dp</dimen>
     <dimen name="indicatorPaddingVerSmall">5dp</dimen>
+    <!--Focus distance view-->
+    <dimen name="seekViewTextSize">17sp</dimen>
+    <dimen name="seekViewPaddingHor">20dp</dimen>
+    <dimen name="seekViewPaddingVer">15dp</dimen>
+    <dimen name="tickMarkHeight">5dp</dimen>
+    <dimen name="tickMarkWidth">0.5dp</dimen>
+    <dimen name="tickMarkMargin">5dp</dimen>
 
 </resources>

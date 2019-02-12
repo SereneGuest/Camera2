@@ -18,6 +18,8 @@ import com.smewise.camera2.manager.CameraToolKit;
 import com.smewise.camera2.manager.Controller;
 import com.smewise.camera2.manager.ModuleManager;
 import com.smewise.camera2.ui.AppBaseUI;
+import com.smewise.camera2.ui.CameraBaseMenu;
+import com.smewise.camera2.ui.CameraMenu;
 import com.smewise.camera2.utils.JobExecutor;
 
 public class CameraFragment extends Fragment {
@@ -37,6 +39,7 @@ public class CameraFragment extends Fragment {
         mToolKit = new CameraToolKit(mAppContext);
         mRootView = LayoutInflater.from(getActivity()).inflate(R.layout.camera_fragment_layout, null);
         mBaseUI = new AppBaseUI(mAppContext, mRootView);
+        mBaseUI.getCameraMenu().setOnMenuClickListener(mMenuClickListener);
         mModuleManager = new ModuleManager(mAppContext, mController);
     }
 
@@ -110,6 +113,14 @@ public class CameraFragment extends Fragment {
         @Override
         public AppBaseUI getBaseUI() {
             return mBaseUI;
+        }
+    };
+
+    private CameraBaseMenu.OnMenuClickListener mMenuClickListener =
+            new CameraBaseMenu.OnMenuClickListener() {
+        @Override
+        public void onMenuClick(String key, String value) {
+            mModuleManager.getCurrentModule().onMenuClick(key, value);
         }
     };
 

@@ -26,11 +26,11 @@ public class CamMenuPreference extends CamListPreference{
     public CamMenuPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CamListPreference);
-        mIcon = a.getResourceId(R.styleable.CamListPreference_icon, 0);
+        mIcon = a.getResourceId(R.styleable.CamListPreference_icon, RES_NULL);
         mEntries = a.getTextArray(R.styleable.CamListPreference_entries);
         mEntryValues = a.getTextArray(R.styleable.CamListPreference_entryValues);
         mEntryIcons = getIds(context.getResources(),
-                a.getResourceId(R.styleable.CamListPreference_entryIcons, 0));
+                a.getResourceId(R.styleable.CamListPreference_entryIcons, RES_NULL));
         mDefaultValue = a.getString(R.styleable.CamListPreference_defaultValue);
         a.recycle();
     }

@@ -22,6 +22,7 @@ import com.smewise.camera2.manager.DeviceManager;
 import com.smewise.camera2.manager.FocusOverlayManager;
 import com.smewise.camera2.manager.Session;
 import com.smewise.camera2.manager.SingleDeviceManager;
+import com.smewise.camera2.ui.ProfessionalMenu;
 import com.smewise.camera2.ui.ProfessionalUI;
 import com.smewise.camera2.utils.FileSaver;
 import com.smewise.camera2.utils.MediaFunc;
@@ -36,6 +37,7 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
     private CameraSession mSession;
     private SingleDeviceManager mDeviceMgr;
     private FocusOverlayManager mFocusManager;
+    private ProfessionalMenu mMenu;
 
     private static final String TAG = Config.getTag(ProfessionalModule.class);
 
@@ -47,6 +49,7 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
         mFocusManager.setListener(mCameraUiEvent);
         mDeviceMgr = new SingleDeviceManager(appContext, getExecutor(), mCameraEvent);
         mSession = new CameraSession(appContext, mainHandler, getSettings());
+        mMenu = new ProfessionalMenu(appContext, R.xml.professional_menu_preference);
     }
 
     @Override
@@ -58,6 +61,7 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
         // when module changed , need update listener
         fileSaver.setFileListener(this);
         getBaseUI().setCameraUiEvent(mCameraUiEvent);
+        getBaseUI().addProMenu(mMenu.getView());
         addModuleView(mUI.getRootView());
         Log.d(TAG, "start module");
     }
@@ -111,6 +115,7 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
     @Override
     public void stop() {
         getBaseUI().setCameraUiEvent(null);
+        getBaseUI().removeProMenu();
         getCoverView().showCover();
         mFocusManager.removeDelayMessage();
         mFocusManager.hideFocusUI();

@@ -84,6 +84,10 @@ public abstract class CameraModule {
 
     protected abstract void stop();
 
+    public void onMenuClick(String key, String value) {
+        // default do nothing, subclass can override
+    }
+
     void addModuleView(View view) {
         if (rootView.getChildAt(0) != view) {
             if (rootView.getChildCount() > 1) {
@@ -112,6 +116,10 @@ public abstract class CameraModule {
     void setNewModule(int index) {
         mController.changeModule(index);
         getBaseUI().getIndicatorView().select(index);
+    }
+
+    void closeCameraMenu() {
+        getBaseUI().getCameraMenu().close();
     }
 
     CameraToolKit getToolKit() {

@@ -8,10 +8,8 @@ import android.view.ViewGroup;
 import android.widget.PopupWindow;
 
 import com.smewise.camera2.R;
-import com.smewise.camera2.callback.MenuInfo;
 import com.smewise.camera2.data.CamListPreference;
 import com.smewise.camera2.data.SubPrefListAdapter;
-import com.smewise.camera2.manager.CameraSettings;
 
 /**
  * Created by wenzhe on 11/27/17.
@@ -43,24 +41,8 @@ public class CameraSubMenu extends CameraBaseMenu{
         mAdapter.setClickListener(listener);
     }
 
-    public void notifyDataSetChange(CamListPreference preference, MenuInfo info) {
-        updatePrefValueByMenuInfo(preference, info);
+    public void notifyDataSetChange(CamListPreference preference) {
         mAdapter.updateDataSet(preference);
-    }
-
-    private void updatePrefValueByMenuInfo(CamListPreference preference, MenuInfo info) {
-        if (info == null) { return; }
-        switch (preference.getKey()) {
-            case CameraSettings.KEY_SWITCH_CAMERA:
-                preference.setEntries(info.getCameraIdList());
-                preference.setEntryValues(info.getCameraIdList());
-                mAdapter.updateHighlightIndex(getIndex(info.getCameraIdList(),
-                        info.getCurrentCameraId()), false);
-                break;
-            default:
-                mAdapter.updateHighlightIndex(-1, false);
-                break;
-        }
     }
 
     public void show(View view, int xOffset, int yOffset) {

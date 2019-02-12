@@ -16,7 +16,6 @@ import android.widget.Toast;
 import com.smewise.camera2.Config;
 import com.smewise.camera2.R;
 import com.smewise.camera2.callback.CameraUiEvent;
-import com.smewise.camera2.callback.MenuInfo;
 import com.smewise.camera2.callback.RequestCallback;
 import com.smewise.camera2.manager.CameraSettings;
 import com.smewise.camera2.manager.Controller;
@@ -44,7 +43,6 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
     private VideoSession mSession;
     private SingleDeviceManager mDeviceMgr;
     private FocusOverlayManager mFocusManager;
-    private CameraMenu mCameraMenu;
 
     private static final String TAG = Config.getTag(VideoModule.class);
 
@@ -55,8 +53,6 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
         mDeviceMgr = new SingleDeviceManager(appContext, getExecutor(), mCameraEvent);
         mFocusManager = new FocusOverlayManager(getBaseUI().getFocusView(), mainHandler.getLooper());
         mFocusManager.setListener(mCameraUiEvent);
-        mCameraMenu = new CameraMenu(appContext, R.xml.menu_preference, mMenuInfo);
-        mCameraMenu.setOnMenuClickListener(this);
         mSession = new VideoSession(appContext, mainHandler, getSettings());
     }
 
@@ -69,7 +65,6 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
         // when module changed , need update listener
         fileSaver.setFileListener(this);
         getBaseUI().setCameraUiEvent(mCameraUiEvent);
-        getBaseUI().setMenuView(mCameraMenu.getView());
         getBaseUI().setShutterMode(ShutterButton.VIDEO_MODE);
         addModuleView(mUI.getRootView());
         Log.d(TAG, "start module");
@@ -157,11 +152,10 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
 
     @Override
     public void stop() {
-        mCameraMenu.close();
+        closeCameraMenu();
         getBaseUI().setCameraUiEvent(null);
         getBaseUI().setShutterMode(ShutterButton.PHOTO_MODE);
         getCoverView().showCover();
-        getBaseUI().removeMenuView();
         mFocusManager.removeDelayMessage();
         mFocusManager.hideFocusUI();
         if (stateEnabled(Controller.CAMERA_STATE_START_RECORD)) {
@@ -271,7 +265,7 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
         @Override
         public void onTouchToFocus(float x, float y) {
             // close all menu when touch to focus
-            mCameraMenu.close();
+            closeCameraMenu();
             mFocusManager.startFocus(x, y);
             CameraCharacteristics c = mDeviceMgr.getCharacteristics();
             MeteringRectangle focusRect = mFocusManager.getFocusArea(x, y, true);
@@ -297,7 +291,7 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
         @Override
         public <T> void onAction(String type, T value) {
             // close all menu when ui click
-            mCameraMenu.close();
+            closeCameraMenu();
             switch (type) {
                 case CameraUiEvent.ACTION_CLICK:
                     handleClick((View) value);
@@ -313,23 +307,6 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
                 default:
                     break;
             }
-        }
-    };
-
-    private MenuInfo mMenuInfo = new MenuInfo() {
-        @Override
-        public String[] getCameraIdList() {
-            return mDeviceMgr.getCameraIdList();
-        }
-
-        @Override
-        public String getCurrentCameraId() {
-            return getSettings().getGlobalPref(CameraSettings.KEY_CAMERA_ID);
-        }
-
-        @Override
-        public String getCurrentValue(String key) {
-            return getSettings().getGlobalPref(key);
         }
     };
 
@@ -403,7 +380,7 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
         }
         String switchId = String.valueOf(currentId);
         mDeviceMgr.setCameraId(switchId);
-        boolean ret = getSettings().setGlobalPref(CameraSettings.KEY_CAMERA_ID, switchId);
+        boolean ret = getSettings().setGlobalPref(CameraSettings.KEY_VIDEO_ID, switchId);
         if (ret) {
             stopModule();
             startModule();

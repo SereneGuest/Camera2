@@ -30,6 +30,19 @@ public class PreferenceGroup {
         return -1;
     }
 
+    public int updateIcon(String key, String value) {
+        int position = find(key);
+        CamListPreference preference = get(position);
+        int index = 0;
+        for (int i = 0; i < preference.getEntryValues().length; i++) {
+            if (preference.getEntryValues()[i].equals(value)) {
+                index = i;
+            }
+        }
+        preference.setIcon(preference.getEntryIcons()[index]);
+        return position;
+    }
+
     public void remove(String key) {
         int index = find(key);
         if (index >= 0) {

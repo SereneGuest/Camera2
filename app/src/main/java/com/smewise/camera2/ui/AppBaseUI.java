@@ -4,7 +4,9 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.Handler;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -27,8 +29,10 @@ public class AppBaseUI implements View.OnClickListener {
     private LinearLayout mBottomContainer;
     private FocusView mFocusView;
     private LinearLayout mMenuContainer;
+    private LinearLayout mProMenuContainer;
     private CameraUiEvent mEvent;
     private IndicatorView mIndicatorView;
+    private CameraMenu mCameraMenu;
 
     private Point mDisplaySize;
     private int mVirtualKeyHeight;
@@ -36,6 +40,7 @@ public class AppBaseUI implements View.OnClickListener {
 
     public AppBaseUI(Context context, View rootView) {
         mCoverView = rootView.findViewById(R.id.cover_view);
+        mCameraMenu = new CameraMenu(context, R.xml.menu_preference);
 
         mPreviewRootView = rootView.findViewById(R.id.preview_root_view);
         mShutter = rootView.findViewById(R.id.btn_shutter);
@@ -46,6 +51,8 @@ public class AppBaseUI implements View.OnClickListener {
         mThumbnail = rootView.findViewById(R.id.thumbnail);
         mThumbnail.setOnClickListener(this);
         mMenuContainer = rootView.findViewById(R.id.menu_container);
+        mProMenuContainer = rootView.findViewById(R.id.professional_menu);
+        mMenuContainer.addView(mCameraMenu.getView());
         mIndicatorView = rootView.findViewById(R.id.indicator_view);
 
         mDisplaySize = CameraUtil.getDisplaySize(context);
@@ -77,17 +84,26 @@ public class AppBaseUI implements View.OnClickListener {
         return mBottomContainer;
     }
 
+    public CameraMenu getCameraMenu() {
+        return mCameraMenu;
+    }
+
     public IndicatorView getIndicatorView() {
         return mIndicatorView;
     }
 
-    public void setMenuView(View view) {
-        mMenuContainer.removeAllViews();
-        mMenuContainer.addView(view);
-    }
-
     public void setShutterMode(String mode) {
         mShutter.setMode(mode);
+    }
+
+    public void addProMenu(View view) {
+        mProMenuContainer.setVisibility(View.VISIBLE);
+        mProMenuContainer.addView(view);
+    }
+
+    public void removeProMenu() {
+        mProMenuContainer.setVisibility(View.GONE);
+        mProMenuContainer.removeAllViews();
     }
 
     public void removeMenuView() {

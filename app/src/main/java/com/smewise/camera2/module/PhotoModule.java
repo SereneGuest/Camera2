@@ -2,7 +2,6 @@ package com.smewise.camera2.module;
 
 import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
-import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.MeteringRectangle;
@@ -14,7 +13,6 @@ import android.widget.Toast;
 import com.smewise.camera2.Config;
 import com.smewise.camera2.R;
 import com.smewise.camera2.callback.CameraUiEvent;
-import com.smewise.camera2.callback.MenuInfo;
 import com.smewise.camera2.callback.RequestCallback;
 import com.smewise.camera2.manager.CameraSession;
 import com.smewise.camera2.manager.CameraSettings;
@@ -40,7 +38,6 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
     private CameraSession mSession;
     private SingleDeviceManager mDeviceMgr;
     private FocusOverlayManager mFocusManager;
-    private CameraMenu mCameraMenu;
 
     private static final String TAG = Config.getTag(PhotoModule.class);
 
@@ -51,8 +48,6 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
         mDeviceMgr = new SingleDeviceManager(appContext, getExecutor(), mCameraEvent);
         mFocusManager = new FocusOverlayManager(getBaseUI().getFocusView(), mainHandler.getLooper());
         mFocusManager.setListener(mCameraUiEvent);
-        mCameraMenu = new CameraMenu(appContext, R.xml.menu_preference, mMenuInfo);
-        mCameraMenu.setOnMenuClickListener(this);
         mSession = new CameraSession(appContext, mainHandler, getSettings());
     }
 
@@ -65,7 +60,6 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
         // when module changed , need update listener
         fileSaver.setFileListener(this);
         getBaseUI().setCameraUiEvent(mCameraUiEvent);
-        getBaseUI().setMenuView(mCameraMenu.getView());
         addModuleView(mUI.getRootView());
         Log.d(TAG, "start module");
     }
@@ -118,10 +112,9 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
 
     @Override
     public void stop() {
-        mCameraMenu.close();
+        closeCameraMenu();
         getBaseUI().setCameraUiEvent(null);
         getCoverView().showCover();
-        getBaseUI().removeMenuView();
         mFocusManager.removeDelayMessage();
         mFocusManager.hideFocusUI();
         mSession.release();
@@ -182,7 +175,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
         @Override
         public void onTouchToFocus(float x, float y) {
             // close all menu when touch to focus
-            mCameraMenu.close();
+            closeCameraMenu();
             mFocusManager.startFocus(x, y);
             MeteringRectangle focusRect = mFocusManager.getFocusArea(x, y, true);
             MeteringRectangle meterRect = mFocusManager.getFocusArea(x, y, false);
@@ -207,7 +200,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
         @Override
         public <T> void onAction(String type, T value) {
             // close all menu when ui click
-            mCameraMenu.close();
+            closeCameraMenu();
             switch (type) {
                 case CameraUiEvent.ACTION_CLICK:
                     handleClick((View) value);
@@ -223,23 +216,6 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
                 default:
                     break;
             }
-        }
-    };
-
-    private MenuInfo mMenuInfo = new MenuInfo() {
-        @Override
-        public String[] getCameraIdList() {
-            return mDeviceMgr.getCameraIdList();
-        }
-
-        @Override
-        public String getCurrentCameraId() {
-            return getSettings().getGlobalPref(CameraSettings.KEY_CAMERA_ID);
-        }
-
-        @Override
-        public String getCurrentValue(String key) {
-            return getSettings().getGlobalPref(key);
         }
     };
 
@@ -260,7 +236,7 @@ public class PhotoModule extends CameraModule implements FileSaver.FileListener,
     }
 
     /**
-     * CameraBaseMenu.OnMenuClickListener
+     * Call when camera menu clicked
      * @param key clicked menu key
      * @param value clicked menu value
      */

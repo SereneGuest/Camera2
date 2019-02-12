@@ -2,17 +2,24 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/rl_preview_container">
     <com.smewise.camera2.ui.GestureTextureView
         android:id="@+id/texture_preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <android.support.v7.widget.AppCompatSeekBar
-        android:id="@+id/sb_focus_length"
+    <com.smewise.camera2.ui.SeekView
+        android:layout_alignParentBottom="true"
+        android:id="@+id/focus_distance_view"
         android:layout_width="match_parent"
-        style="@style/SeekBarTheme"
-        android:layout_height="@dimen/seek_bar_height"
-        android:max="100"/>
+        android:layout_height="wrap_content"
+        app:textSize="@dimen/seekViewTextSize"
+        app:textColor="@color/seekViewNormalColor"
+        app:activeColor="@color/seekViewActiveColor"
+        app:tickMarkWidth="@dimen/tickMarkWidth"
+        app:tickMarkHeight="@dimen/tickMarkHeight"
+        app:tickMarkMargin="@dimen/tickMarkMargin"
+        app:paddingVer="@dimen/seekViewPaddingVer"/>
 
 </RelativeLayout>
