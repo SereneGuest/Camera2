@@ -15,14 +15,16 @@
     <LinearLayout
         android:id="@+id/menu_container"
         android:orientation="horizontal"
+        android:gravity="end"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <LinearLayout
         android:id="@+id/professional_menu"
         android:visibility="gone"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:gravity="center"
+        android:background="@color/pro_menu_background"
         android:layout_above="@id/bottom_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

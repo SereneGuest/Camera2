@@ -4,10 +4,8 @@ import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CaptureRequest;
 import android.os.Handler;
-import android.support.v7.widget.AppCompatSeekBar;
 import android.view.LayoutInflater;
 import android.view.TextureView;
-import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 
@@ -25,8 +23,7 @@ public class ProfessionalUI extends CameraBaseUI implements TextureView.SurfaceT
     private RelativeLayout mRootView;
 
     private GestureTextureView mPreviewTexture;
-    private AppCompatSeekBar mFocusLensBar;
-    private SeekView mFocusDistanceView;
+    private SeekView mSeekView;
 
     public ProfessionalUI(Context context, Handler handler, CameraUiEvent event) {
         super(event);
@@ -36,14 +33,14 @@ public class ProfessionalUI extends CameraBaseUI implements TextureView.SurfaceT
         mPreviewTexture.setSurfaceTextureListener(this);
         mPreviewTexture.setGestureListener(this);
 
-        // TODO: common ui
-        mFocusDistanceView = mRootView.findViewById(R.id.focus_distance_view);
-        String[] items = {"AUTO", "10", "20", "30", "40", "50", "60", "70", "80", "90", "100"};
-        mFocusDistanceView.setContent(items);
-        mFocusDistanceView.setVisibility(View.INVISIBLE);
-        //mFocusDistanceView.setSeekListener(mListener);
-        //mFocusLensBar = mRootView.findViewById(R.id.sb_focus_length);
-        //mFocusLensBar.setOnSeekBarChangeListener(mFocusLensChangerListener);
+        // find seek view and remove from layout,
+        // so we can add seek view to other layout
+        mSeekView = mRootView.findViewById(R.id.focus_distance_view);
+        mRootView.removeViewInLayout(mSeekView);
+    }
+
+    public SeekView getSeekView() {
+        return mSeekView;
     }
 
     @Override

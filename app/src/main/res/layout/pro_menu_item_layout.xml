@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:minWidth="@dimen/menu_min_width"
+    android:minHeight="@dimen/menu_item_height"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/menu_layout_margin"
+    android:gravity="center"
+    android:background="?android:attr/selectableItemBackgroundBorderless">
+    <TextView
+        android:id="@+id/item_title"
+        android:clickable="false"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/proMenuTextSize"
+        android:textColor="@color/proMenuTextColor"
+        android:layout_gravity="center"/>
+    <TextView
+        android:id="@+id/item_summary"
+        android:clickable="false"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/menu_text_margin"
+        android:textSize="@dimen/proMenuDescTextSize"
+        android:textColor="@color/proMenuDescTextColor"
+        android:layout_gravity="center"/>
+
+</LinearLayout>

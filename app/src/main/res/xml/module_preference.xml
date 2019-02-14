@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceGroup
-    xmlns:camera="http://schemas.android.com/apk/res/com.smewise.camera2">
+    xmlns:camera="http://schemas.android.com/apk/res-auto">
 
     <com.smewise.camera2.data.CamListPreference
         camera:key="com.smewise.camera2.module.VideoModule"

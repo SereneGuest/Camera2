@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceGroup xmlns:camera="http://schemas.android.com/apk/res/com.smewise.camera2">
+<PreferenceGroup xmlns:camera="http://schemas.android.com/apk/res-auto">
     <com.smewise.camera2.data.CamMenuPreference
         camera:key="pref_switch_camera"
         camera:icon="@drawable/ic_vector_switch_to_front"

@@ -8,6 +8,7 @@ import android.widget.RelativeLayout;
 import com.smewise.camera2.Config;
 import com.smewise.camera2.data.CamListPreference;
 import com.smewise.camera2.data.PrefListAdapter;
+import com.smewise.camera2.data.ProMenuAdapter;
 import com.smewise.camera2.utils.XmlInflater;
 
 /**
@@ -19,16 +20,15 @@ public class ProfessionalMenu extends CameraBaseMenu {
     public static final String TAG = Config.getTag(ProfessionalMenu.class);
     private Context mContext;
     private OnMenuClickListener mMenuClickListener;
-    private PrefListAdapter mAdapter;
+    private ProMenuAdapter mAdapter;
 
     public ProfessionalMenu(Context context, int resId) {
         super(context);
         mContext = context;
         XmlInflater xmlInflater = new XmlInflater(context);
-        mAdapter = new PrefListAdapter(context, xmlInflater.inflate(resId));
+        mAdapter = new ProMenuAdapter(context, xmlInflater.inflate(resId));
         mAdapter.setClickListener(mMenuListener);
         recycleView.setAdapter(mAdapter);
-        recycleView.setBackgroundColor(0x77000000);
     }
 
     public View getView() {
@@ -42,8 +42,8 @@ public class ProfessionalMenu extends CameraBaseMenu {
     /**
      * Camera menu click listener
      */
-    private PrefListAdapter.PrefClickListener mMenuListener =
-            new PrefListAdapter.PrefClickListener() {
+    private ProMenuAdapter.PrefClickListener mMenuListener =
+            new ProMenuAdapter.PrefClickListener() {
         @Override
         public void onClick(View view, int position, CamListPreference preference) {
             Log.i(TAG, "onClick:" + preference.getKey());

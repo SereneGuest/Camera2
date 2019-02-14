@@ -52,6 +52,7 @@ public class AppBaseUI implements View.OnClickListener {
         mThumbnail.setOnClickListener(this);
         mMenuContainer = rootView.findViewById(R.id.menu_container);
         mProMenuContainer = rootView.findViewById(R.id.professional_menu);
+        // add common menu to layout
         mMenuContainer.addView(mCameraMenu.getView());
         mIndicatorView = rootView.findViewById(R.id.indicator_view);
 
@@ -106,9 +107,13 @@ public class AppBaseUI implements View.OnClickListener {
         mProMenuContainer.removeAllViews();
     }
 
-    public void removeMenuView() {
-        mMenuContainer.removeAllViews();
+    public LinearLayout getProMenuContainer() {
+        return mProMenuContainer;
     }
+
+    /*public void removeMenuView() {
+        mMenuContainer.removeAllViews();
+    }*/
 
     /**
      * Adjust layout when based on preview width

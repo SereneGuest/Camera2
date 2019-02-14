@@ -17,6 +17,7 @@ public class CamListPreference {
     private static final String TAG = Config.getTag(CamListPreference.class);
     private String mKey;
     private String mTitle;
+    private String mSummary;
 
     public static final int RES_NULL = 0;
 
@@ -24,6 +25,7 @@ public class CamListPreference {
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CamListPreference);
         mKey = a.getString(R.styleable.CamListPreference_key);
         mTitle = a.getString(R.styleable.CamListPreference_title);
+        mSummary = a.getString(R.styleable.CamListPreference_summary);
         a.recycle();
     }
 
@@ -33,6 +35,10 @@ public class CamListPreference {
 
     public String getTitle() {
         return mTitle;
+    }
+
+    public String getSummary() {
+        return mSummary;
     }
 
     public int getIcon() {
@@ -54,6 +60,10 @@ public class CamListPreference {
     }
 
     public void setIcon(int icon) {
+    }
+
+    public void setSummary(String summary) {
+        mSummary = summary;
     }
 
     public int[] getEntryIcons() {

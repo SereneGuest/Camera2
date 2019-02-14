@@ -47,6 +47,31 @@
     <string name="flash_on" translatable="false">on</string>
     <string name="flash_auto" translatable="false">auto</string>
     <string name="flash_torch" translatable="false">torch</string>
-
     <!--for menu setting end-->
+
+    <!--for pro menu setting start-->
+    <string name="number_0" translatable="false">0</string>
+    <string name="number_10" translatable="false">10</string>
+    <string name="number_20" translatable="false">20</string>
+    <string name="number_30" translatable="false">30</string>
+    <string name="number_40" translatable="false">40</string>
+    <string name="number_50" translatable="false">50</string>
+    <string name="number_60" translatable="false">60</string>
+    <string name="number_70" translatable="false">70</string>
+    <string name="number_80" translatable="false">80</string>
+    <string name="number_90" translatable="false">90</string>
+    <string name="number_100" translatable="false">100</string>
+    <string-array name="pro_menu_focus_distance">
+        <item>@string/focus_mode_auto</item>
+        <item>@string/number_10</item>
+        <item>@string/number_20</item>
+        <item>@string/number_30</item>
+        <item>@string/number_40</item>
+        <item>@string/number_50</item>
+        <item>@string/number_60</item>
+        <item>@string/number_70</item>
+        <item>@string/number_80</item>
+        <item>@string/number_90</item>
+        <item>@string/number_100</item>
+    </string-array>
 </resources>

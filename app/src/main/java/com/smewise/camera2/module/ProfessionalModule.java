@@ -9,6 +9,7 @@ import android.hardware.camera2.params.MeteringRectangle;
 import android.net.Uri;
 import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.smewise.camera2.Config;
@@ -22,6 +23,7 @@ import com.smewise.camera2.manager.DeviceManager;
 import com.smewise.camera2.manager.FocusOverlayManager;
 import com.smewise.camera2.manager.Session;
 import com.smewise.camera2.manager.SingleDeviceManager;
+import com.smewise.camera2.ui.CameraBaseMenu;
 import com.smewise.camera2.ui.ProfessionalMenu;
 import com.smewise.camera2.ui.ProfessionalUI;
 import com.smewise.camera2.utils.FileSaver;
@@ -30,14 +32,16 @@ import com.smewise.camera2.utils.MediaFunc;
 /**
  * Created by wenzhe on 16-3-8.
  */
-public class ProfessionalModule extends CameraModule implements FileSaver.FileListener {
+public class ProfessionalModule extends CameraModule implements FileSaver.FileListener,
+        CameraBaseMenu.OnMenuClickListener {
 
     private SurfaceTexture mSurfaceTexture;
     private ProfessionalUI mUI;
     private CameraSession mSession;
     private SingleDeviceManager mDeviceMgr;
     private FocusOverlayManager mFocusManager;
-    private ProfessionalMenu mMenu;
+    private ProfessionalMenu mProMenu;
+    private String[] mFocusDistanceStr;
 
     private static final String TAG = Config.getTag(ProfessionalModule.class);
 
@@ -49,7 +53,9 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
         mFocusManager.setListener(mCameraUiEvent);
         mDeviceMgr = new SingleDeviceManager(appContext, getExecutor(), mCameraEvent);
         mSession = new CameraSession(appContext, mainHandler, getSettings());
-        mMenu = new ProfessionalMenu(appContext, R.xml.professional_menu_preference);
+        mProMenu = new ProfessionalMenu(appContext, R.xml.pro_menu_preference);
+        mProMenu.setOnMenuClickListener(this);
+        mFocusDistanceStr = appContext.getResources().getStringArray(R.array.pro_menu_focus_distance);
     }
 
     @Override
@@ -61,7 +67,7 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
         // when module changed , need update listener
         fileSaver.setFileListener(this);
         getBaseUI().setCameraUiEvent(mCameraUiEvent);
-        getBaseUI().addProMenu(mMenu.getView());
+        getBaseUI().addProMenu(mProMenu.getView());
         addModuleView(mUI.getRootView());
         Log.d(TAG, "start module");
     }
@@ -227,6 +233,32 @@ public class ProfessionalModule extends CameraModule implements FileSaver.FileLi
             case R.id.thumbnail:
                 MediaFunc.goToGallery(appContext);
                 break;
+        }
+    }
+
+    @Override
+    public void onMenuClick(String key, String value) {
+        super.onMenuClick(key, value);
+        Log.e("wenzhe1", "key:" + key);
+        showSeekView(key);
+    }
+
+    private void showSeekView(String key) {
+        LinearLayout container = getBaseUI().getProMenuContainer();
+        if (container.getChildCount() > 1) {
+            // already add
+            return;
+        }
+        // TODO: get string-array from resource
+        //String[] items = {"AUTO", "10", "20", "30", "40", "50", "60", "70", "80", "90", "100"};
+        mUI.getSeekView().setContent(mFocusDistanceStr);
+        container.addView(mUI.getSeekView(), 0);
+    }
+
+    private void hideSeekView() {
+        LinearLayout container = getBaseUI().getProMenuContainer();
+        if (container.getChildCount() > 1) {
+            container.removeViewAt(0);
         }
     }
 }

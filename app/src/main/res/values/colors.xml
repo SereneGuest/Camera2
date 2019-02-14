@@ -17,7 +17,7 @@
     <color name="setting_normal_color">#318f8f8f</color>
     <color name="setting_pressed_color">@color/colorAccent</color>
 
-    <color name="bottom_controls_bg">#73000000</color>
+    <color name="bottom_controls_bg">#54000000</color>
 
     <color name="button_color_normal">#3b000000</color>
     <color name="setting_icon_bg_color">#20000000</color>
@@ -31,6 +31,7 @@
     <color name="menu_highlight_color">@color/colorAccent</color>
     <color name="pop_window_bg">#00131313</color>
     <color name="menu_background">@color/pop_window_bg</color>
+    <color name="pro_menu_background">@color/bottom_controls_bg</color>
 
     <color name="icon_tint">#ffffff</color>
     <color name="timer_text_color">#ffffff</color>
@@ -40,4 +41,7 @@
 
     <color name="seekViewNormalColor">#FFFFFF</color>
     <color name="seekViewActiveColor">@color/colorAccent</color>
+    <!--Camera pro menu-->
+    <color name="proMenuTextColor">#FFFFFF</color>
+    <color name="proMenuDescTextColor">#A8A8A8</color>
 </resources>

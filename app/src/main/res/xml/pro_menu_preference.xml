@@ -1,27 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceGroup xmlns:camera="http://schemas.android.com/apk/res/com.smewise.camera2">
-    <com.smewise.camera2.data.CamMenuPreference
+<PreferenceGroup xmlns:camera="http://schemas.android.com/apk/res-auto">
+    <com.smewise.camera2.data.CamListPreference
         camera:key="pref_focus_distance"
-        camera:icon="@drawable/ic_vector_switch_to_front"
-        camera:entries="@array/menu_camera_id_list"
-        camera:entryValues="@array/menu_camera_id_list"
-        camera:entryIcons="@array/menu_switch_icon_list" />
-    <com.smewise.camera2.data.CamMenuPreference
+        camera:title="@string/camera_focus"
+        camera:summary="@string/focus_mode_auto" />
+    <com.smewise.camera2.data.CamListPreference
         camera:key="pref_exposure_time"
-        camera:icon="@drawable/ic_vector_flash_on"
-        camera:entries="@array/menu_flash_entries"
-        camera:entryValues="@array/menu_flash_entries_value"
-        camera:entryIcons="@array/menu_flash_icon_list"/>
-    <com.smewise.camera2.data.CamMenuPreference
+        camera:title="@string/camera_shutter_speed"
+        camera:summary="@string/focus_mode_auto" />
+    <com.smewise.camera2.data.CamListPreference
         camera:key="pref_adjust_iso"
-        camera:icon="@drawable/ic_vector_flash_auto"
-        camera:entries="@array/menu_flash_entries"
-        camera:entryValues="@array/menu_flash_entries_value"
-        camera:entryIcons="@array/menu_flash_icon_list"/>
-    <com.smewise.camera2.data.CamMenuPreference
+        camera:title="@string/camera_iso"
+        camera:summary="@string/focus_mode_auto" />
+    <com.smewise.camera2.data.CamListPreference
         camera:key="pref_white_balance"
-        camera:icon="@drawable/ic_vector_flash_off"
-        camera:entries="@array/menu_flash_entries"
-        camera:entryValues="@array/menu_flash_entries_value"
-        camera:entryIcons="@array/menu_flash_icon_list"/>
+        camera:title="@string/camera_awb"
+        camera:summary="@string/focus_mode_auto" />
 </PreferenceGroup>

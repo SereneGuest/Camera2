@@ -73,5 +73,8 @@
     <dimen name="tickMarkHeight">5dp</dimen>
     <dimen name="tickMarkWidth">0.5dp</dimen>
     <dimen name="tickMarkMargin">5dp</dimen>
+    <!--Camera pro menu-->
+    <dimen name="proMenuTextSize">14sp</dimen>
+    <dimen name="proMenuDescTextSize">12sp</dimen>
 
 </resources>

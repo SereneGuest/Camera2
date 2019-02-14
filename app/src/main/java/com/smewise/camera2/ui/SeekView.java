@@ -95,6 +95,7 @@ public class SeekView extends View {
     }
 
     public void setContent(String[] items) {
+        mIndicatorItems.clear();
         for (String item : items) {
             addItem(item);
         }

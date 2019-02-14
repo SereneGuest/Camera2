@@ -56,4 +56,12 @@
     <string name="show_support_info">show support information</string>
 
     <string name="open_file_error">Can not found app to open image/video</string>
+
+    <string name="focus_mode_auto">Auto</string>
+    <string name="focus_mode_micro">Micro</string>
+    <string name="focus_mode_infinity">Infinity</string>
+    <string name="camera_focus">Focus</string>
+    <string name="camera_iso">ISO</string>
+    <string name="camera_awb">AWB</string>
+    <string name="camera_shutter_speed">ShutterSpeed</string>
 </resources>

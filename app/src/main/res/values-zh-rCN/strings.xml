@@ -52,4 +52,13 @@
 
     <string name="open_file_error">找不到打开 图片/视频 的应用</string>
 
+    <string name="focus_mode_auto">自动</string>
+    <string name="focus_mode_micro">微距</string>
+    <string name="focus_mode_infinity">无限远</string>
+
+    <string name="camera_focus">对焦</string>
+    <string name="camera_iso">感光度</string>
+    <string name="camera_awb">白平衡</string>
+    <string name="camera_shutter_speed">快门时间</string>
+
 </resources>
