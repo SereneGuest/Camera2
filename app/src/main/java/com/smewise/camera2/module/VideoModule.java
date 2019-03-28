@@ -403,7 +403,7 @@ public class VideoModule extends CameraModule implements FileSaver.FileListener,
         }
         String switchId = String.valueOf(currentId);
         mDeviceMgr.setCameraId(switchId);
-        boolean ret = getSettings().setGlobalPref(CameraSettings.KEY_CAMERA_ID, switchId);
+        boolean ret = getSettings().setGlobalPref(CameraSettings.KEY_VIDEO_ID, switchId);
         if (ret) {
             stopModule();
             startModule();
