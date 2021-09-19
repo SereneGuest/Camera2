@@ -2,7 +2,7 @@ package com.smewise.camera2.callback;
 
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CaptureRequest;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public abstract class CameraUiEvent {
 

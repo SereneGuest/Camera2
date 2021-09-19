@@ -8,7 +8,7 @@ import android.graphics.Matrix;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Handler;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.Log;
 
 import com.smewise.camera2.Config;
