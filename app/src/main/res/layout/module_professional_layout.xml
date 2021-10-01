@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <android.support.v7.widget.AppCompatSeekBar
+    <androidx.appcompat.widget.AppCompatSeekBar
         android:id="@+id/sb_focus_length"
         android:layout_width="match_parent"
         style="@style/SeekBarTheme"
